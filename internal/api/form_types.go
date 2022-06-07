@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"github.com/u2lentaru/billbck/internal/models"
 )
 
-// handleFormTypes godoc
+// HandleFormTypes godoc
 // @Summary List form types
 // @Description get form types
 // @Tags form types
@@ -30,7 +30,7 @@ import (
 // @Failure 400,404
 // @Failure 500
 // @Router /form_types [get]
-func (s *PG) handleFormTypes(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 	// type FormType struct {
 	// 	Id            int    `json:"id"`
 	// 	FormTypeName  string `json:"formtypename"`
@@ -108,7 +108,7 @@ func (s *PG) handleFormTypes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.dbpool.Query(ctx, "SELECT * from func_get_form_types_flt($1,$2,$3,$4,$5,$6);", pg, pgs, ftn, ftd, ord, dsc)
+	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_get_form_types_flt($1,$2,$3,$4,$5,$6);", pg, pgs, ftn, ftd, ord, dsc)
 	// rows, err := s.dbpool.Query(ctx, "SELECT * from func_get_form_types();")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -136,7 +136,7 @@ func (s *PG) handleFormTypes(w http.ResponseWriter, r *http.Request) {
 	ftc := 0
 	// err = s.dbpool.QueryRow(ctx, "SELECT count(*) from st_form_types;").Scan(&ftc)
 	// err = s.dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2,$3,$4,$5,$6);", pg, pgs, ftn, ftd, ord, dsc).Scan(&ftc)
-	err = s.dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2);", ftn, ftd).Scan(&ftc)
+	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2);", ftn, ftd).Scan(&ftc)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -155,7 +155,7 @@ func (s *PG) handleFormTypes(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// handleAddFormType godoc
+// HandleAddFormType godoc
 // @Summary Add form type
 // @Description add form type
 // @Tags form types
@@ -166,7 +166,7 @@ func (s *PG) handleFormTypes(w http.ResponseWriter, r *http.Request) {
 // @Failure 400,404
 // @Failure 500
 // @Router /form_types_add [post]
-func (s *PG) handleAddFormType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleAddFormType(w http.ResponseWriter, r *http.Request) {
 	//FormType struct AddFormType
 	type FormType struct {
 		FormTypeName  string `json:"formtypename"`
@@ -196,7 +196,7 @@ func (s *PG) handleAddFormType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fti := 0
-	err = s.dbpool.QueryRow(context.Background(), "SELECT func_add_form_type($1,$2);", ft.FormTypeName, ft.FormTypeDescr).Scan(&fti)
+	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_add_form_type($1,$2);", ft.FormTypeName, ft.FormTypeDescr).Scan(&fti)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -213,7 +213,7 @@ func (s *PG) handleAddFormType(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// handleUpdFormType godoc
+// HandleUpdFormType godoc
 // @Summary Update form types
 // @Description update form types
 // @Tags form types
@@ -223,7 +223,7 @@ func (s *PG) handleAddFormType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Json_id
 // @Failure 500
 // @Router /form_types_upd [post]
-func (s *PG) handleUpdFormType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleUpdFormType(w http.ResponseWriter, r *http.Request) {
 	//FormType struct UpdFormType
 	type FormType struct {
 		Id            int    `json:"id"`
@@ -254,7 +254,7 @@ func (s *PG) handleUpdFormType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fti := 0
-	err = s.dbpool.QueryRow(context.Background(), "SELECT func_upd_form_type($1,$2,$3);", ft.Id, ft.FormTypeName, ft.FormTypeDescr).Scan(&fti)
+	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_upd_form_type($1,$2,$3);", ft.Id, ft.FormTypeName, ft.FormTypeDescr).Scan(&fti)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -273,7 +273,7 @@ func (s *PG) handleUpdFormType(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// handleDelFormType godoc
+// HandleDelFormType godoc
 // @Summary Delete form types
 // @Description delete form types
 // @Tags form types
@@ -283,7 +283,7 @@ func (s *PG) handleUpdFormType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Json_ids
 // @Failure 500
 // @Router /form_types_del [post]
-func (s *PG) handleDelFormType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleDelFormType(w http.ResponseWriter, r *http.Request) {
 	// utils.SetupResponse(&w)
 
 	// if (*r).Method == "OPTIONS" {
@@ -309,7 +309,7 @@ func (s *PG) handleDelFormType(w http.ResponseWriter, r *http.Request) {
 	res := []int{}
 	fti := 0
 	for _, id := range ft.Ids {
-		err = s.dbpool.QueryRow(context.Background(), "SELECT func_del_form_type($1);", id).Scan(&fti)
+		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_del_form_type($1);", id).Scan(&fti)
 		// log.Printf("id: %v fti : %v", id, fti)
 		res = append(res, fti)
 
@@ -335,7 +335,7 @@ func (s *PG) handleDelFormType(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// handleGetFormType godoc
+// HandleGetFormType godoc
 // @Summary Form type
 // @Description get form type
 // @Tags form types
@@ -344,14 +344,14 @@ func (s *PG) handleDelFormType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.FormType_count
 // @Failure 500
 // @Router /form_types/{id} [get]
-func (s *PG) handleGetFormType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleGetFormType(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	fti := vars["id"]
 	fts := models.FormType{}
 	out_arr := []models.FormType{}
 
 	// err := s.dbpool.QueryRow(context.Background(), "SELECT * from func_get_form_type($1);", ft.Id).Scan(&fts.Id, &fts.FormTypeName, &fts.FormTypeDescr)
-	err := s.dbpool.QueryRow(context.Background(), "SELECT * from func_get_form_type($1);", fti).Scan(&fts.Id, &fts.FormTypeName, &fts.FormTypeDescr)
+	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_get_form_type($1);", fti).Scan(&fts.Id, &fts.FormTypeName, &fts.FormTypeDescr)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_get_form_type: ", err)

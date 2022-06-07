@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	"github.com/u2lentaru/billbck/internal/models"
 )
 
-// handleSubTypes godoc
+// HandleSubTypes godoc
 // @Summary List subjects types
 // @Description get subjects types
 // @Tags sub types
@@ -28,7 +28,7 @@ import (
 // @Success 200 {array} models.SubType_count
 // @Failure 500
 // @Router /sub_types [get]
-func (s *PG) handleSubTypes(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 	st := models.SubType{}
 	ctx := context.Background()
 	out_arr := []models.SubType{}
@@ -92,7 +92,7 @@ func (s *PG) handleSubTypes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.dbpool.Query(ctx, "SELECT * from func_sub_types_get($1,$2,$3,$4,$5,$6);", pg, pgs, stn, std, ord, dsc)
+	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_sub_types_get($1,$2,$3,$4,$5,$6);", pg, pgs, stn, std, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -110,7 +110,7 @@ func (s *PG) handleSubTypes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	stc := 0
-	err = s.dbpool.QueryRow(ctx, "SELECT * from func_sub_types_cnt($1,$2);", stn, std).Scan(&stc)
+	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_types_cnt($1,$2);", stn, std).Scan(&stc)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -130,7 +130,7 @@ func (s *PG) handleSubTypes(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// handleAddSubType godoc
+// HandleAddSubType godoc
 // @Summary Add subjects types
 // @Description add subjects types
 // @Tags sub types
@@ -140,7 +140,7 @@ func (s *PG) handleSubTypes(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Json_id
 // @Failure 500
 // @Router /sub_types_add [post]
-func (s *PG) handleAddSubType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleAddSubType(w http.ResponseWriter, r *http.Request) {
 	ast := models.AddSubType{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -158,7 +158,7 @@ func (s *PG) handleAddSubType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	asti := 0
-	err = s.dbpool.QueryRow(context.Background(), "SELECT func_sub_types_add($1,$2);", ast.SubTypeDescr, ast.SubTypeName).Scan(&asti)
+	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_types_add($1,$2);", ast.SubTypeDescr, ast.SubTypeName).Scan(&asti)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -176,7 +176,7 @@ func (s *PG) handleAddSubType(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// handleUpdSubType godoc
+// HandleUpdSubType godoc
 // @Summary Update subjects types
 // @Description update subjects types
 // @Tags sub types
@@ -186,7 +186,7 @@ func (s *PG) handleAddSubType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Json_id
 // @Failure 500
 // @Router /sub_types_upd [post]
-func (s *PG) handleUpdSubType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleUpdSubType(w http.ResponseWriter, r *http.Request) {
 	ust := models.SubType{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -204,7 +204,7 @@ func (s *PG) handleUpdSubType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	usti := 0
-	err = s.dbpool.QueryRow(context.Background(), "SELECT func_sub_types_upd($1,$2,$3);", ust.Id, ust.SubTypeName, ust.SubTypeDescr).Scan(&usti)
+	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_types_upd($1,$2,$3);", ust.Id, ust.SubTypeName, ust.SubTypeDescr).Scan(&usti)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -223,7 +223,7 @@ func (s *PG) handleUpdSubType(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// handleDelSubType godoc
+// HandleDelSubType godoc
 // @Summary Delete subjects types
 // @Description delete subjects types
 // @Tags sub types
@@ -233,7 +233,7 @@ func (s *PG) handleUpdSubType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Json_ids
 // @Failure 500
 // @Router /sub_types_del [post]
-func (s *PG) handleDelSubType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleDelSubType(w http.ResponseWriter, r *http.Request) {
 	dst := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -253,7 +253,7 @@ func (s *PG) handleDelSubType(w http.ResponseWriter, r *http.Request) {
 	res := []int{}
 	sti := 0
 	for _, id := range dst.Ids {
-		err = s.dbpool.QueryRow(context.Background(), "SELECT func_sub_types_del($1);", id).Scan(&sti)
+		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_types_del($1);", id).Scan(&sti)
 		res = append(res, sti)
 
 		if err != nil {
@@ -277,7 +277,7 @@ func (s *PG) handleDelSubType(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// handleGetSubType godoc
+// HandleGetSubType godoc
 // @Summary Subjects type
 // @Description get subject type
 // @Tags sub types
@@ -286,13 +286,13 @@ func (s *PG) handleDelSubType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.SubType_count
 // @Failure 500
 // @Router /sub_types/{id} [get]
-func (s *PG) handleGetSubType(w http.ResponseWriter, r *http.Request) {
+func (s *APG) HandleGetSubType(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	sti := vars["id"]
 	st := models.SubType{}
 	out_arr := []models.SubType{}
 
-	err := s.dbpool.QueryRow(context.Background(), "SELECT * from func_sub_type_get($1);", sti).Scan(&st.Id, &st.SubTypeName, &st.SubTypeDescr)
+	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_sub_type_get($1);", sti).Scan(&st.Id, &st.SubTypeName, &st.SubTypeDescr)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)

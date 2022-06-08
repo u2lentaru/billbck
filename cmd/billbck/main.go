@@ -37,7 +37,7 @@ type PG struct {
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 //posterc.kz:44475 localhost:8080
-// @host posterc.kz:44475
+// @host localhost:8080
 // @BasePath /
 
 // @securityDefinitions.apikey ApiKeyAuth

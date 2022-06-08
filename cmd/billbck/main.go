@@ -19,7 +19,7 @@ import (
 	// "github.com/mfuentesg/go-jwtmiddleware"
 
 	httpSwagger "github.com/swaggo/http-swagger"
-	_ "github.com/u2lentaru/billbck/internal/docs"
+	_ "github.com/u2lentaru/billbck/cmd/billbck/docs"
 	"github.com/urfave/negroni"
 )
 

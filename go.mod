@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/swaggo/http-swagger v1.2.8
-	github.com/swaggo/swag v1.8.1
+	github.com/swaggo/swag v1.8.2
 	github.com/urfave/negroni v1.0.0
 	github.com/xuri/excelize/v2 v2.6.0
 )

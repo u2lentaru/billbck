@@ -2960,7 +2960,7 @@ definitions:
           $ref: '#/definitions/models.Voltage'
         type: array
     type: object
-host: posterc.kz:44475
+host: localhost:8080
 info:
   contact: {}
   description: This is a backend server.

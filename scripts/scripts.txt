@@ -1,0 +1,3 @@
+http://localhost:8080/form_types?page=1&page_size=5&formtypename=a&formtypedescr=&ordering="id"&desc=1
+http://posterc.kz:44475/form_types?page=1&page_size=100&formtypename=&formtypedescr=о&ordering="id"&desc=0
+http://localhost:8080/sub_types?page=1&page_size=5&subtypename=&subtypedescr=&ordering="id"&desc=1

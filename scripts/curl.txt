@@ -1,0 +1,2 @@
+curl -X GET "http://posterc.kz:44475/acttypes" -H "accept: application/json"
+curl -X POST "http://posterc.kz:44475/acttypes_upd" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"acttypename\": \"at3_upd\", \"id\": 3}"

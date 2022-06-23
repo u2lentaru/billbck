@@ -2,18 +2,16 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strings"
+	"os/signal"
+	"syscall"
+	"time"
 
-	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/u2lentaru/billbck/internal/api"
-	"github.com/u2lentaru/billbck/internal/models"
 	"github.com/u2lentaru/billbck/internal/routes"
 	"github.com/u2lentaru/billbck/internal/utils"
 
@@ -84,14 +82,9 @@ func main() {
 		log.Println("version:", v)
 	}
 
-	pgs := PG{dbpool}
 	apg := api.APG{Dbpool: dbpool}
 	route := mux.NewRouter()
 
-	route.HandleFunc("/", handleRoot).Methods("GET", "OPTIONS")
-	route.HandleFunc("/", pgs.handleLogin).Methods("GET", "OPTIONS")
-	route.HandleFunc("/admin/", pgs.handleAdmin).Methods("GET", "OPTIONS")
-	// route.HandleFunc("/login/", pgs.handleLogin).Methods("GET", "OPTIONS")
 	route.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler).Methods("GET", "OPTIONS")
 
 	art := &apg
@@ -116,134 +109,43 @@ func main() {
 	}
 
 	if !((len(os.Args) > 1 && os.Args[1] == "noauth") || noauth) {
-		// log.Fatal(http.ListenAndServe(":8080", route))
 		n.Use(negroni.HandlerFunc(utils.AuthValidate))
 	}
-	// } else {
-	// 	// log.Fatal(http.ListenAndServe(":8080", n))
-	// }
 
 	n.UseHandler(route)
-	log.Fatal(http.ListenAndServe(":8080", n))
-}
+	// log.Fatal(http.ListenAndServe(":8080", n))
 
-func (s *PG) handleAdmin(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(fmt.Sprintf("It's handleAdmin!\n")))
-
-	ctx := context.Background()
-	v := ""
-
-	err := s.dbpool.QueryRow(ctx, "SELECT version();").Scan(&v)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+	//GS start
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: n,
 	}
 
-	w.Write([]byte(fmt.Sprintf(v, "\n")))
-	return
-}
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-func handleRoot(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte(fmt.Sprintf("It's handleRoot!\n")))
-
-	return
-}
-
-/*
-// handleLogin godoc
-// @Summary List user forms
-// @Description Get user forms
-// @Tags login
-// @Produce  json
-// @Success 200 {array} []string
-// @Failure 500
-// @Security ApiKeyAuth
-// @param Authorization header string true "Authorization"
-// @Router / [get]*/
-func (s *PG) handleLogin(w http.ResponseWriter, r *http.Request) {
-	type Claims struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-		jwt.StandardClaims
-	}
-
-	utils.SetupResponse(&w)
-
-	if (*r).Method == "OPTIONS" {
-		return
-	}
-
-	ctx := context.Background()
-
-	var jwtSecretKey = []byte("jwt_secret_key")
-
-	claims := &Claims{}
-
-	bearerToken := r.Header.Get("Authorization")
-
-	if bearerToken == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(fmt.Sprintf("Token is empty!\n")))
-
-		return
-	}
-
-	tokenString := strings.Split(bearerToken, " ")[1]
-
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecretKey, nil
-	})
-	if err != nil {
-		http.Error(w, "Error parse token (login): "+err.Error(), 500)
-		return
-	}
-
-	if !token.Valid {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(fmt.Sprintf("Error: %s\n", err)))
-
-		return
-	}
-
-	// out_arr := []string{}
-	out_arr := []models.LoginForm{}
-
-	rows, err := s.dbpool.Query(ctx, "SELECT * from func_get_user_forms($1);", claims.Username)
-	// rows, err := s.dbpool.Query(ctx, "SELECT to_jsonb(func_get_user_forms($1));", claims.Username)
-
-	if err != nil {
-		http.Error(w, "Error SELECT * from func_get_user_forms: "+err.Error(), 500)
-		return
-	}
-
-	defer rows.Close()
-
-	// w.Write([]byte("["))
-
-	for rows.Next() {
-		f := models.LoginForm{}
-		err = rows.Scan(&f.Form, &f.Rights, &f.UserId)
-		// err = rows.Scan(&f)
-
-		// w.Write([]byte(f + "\n"))
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
 		}
+	}()
+	log.Print("Server Started")
 
-		out_arr = append(out_arr, f)
+	<-done
+	log.Print("Server Stopped")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer func() {
+		// extra handling here
+		log.Println("Sleep on")
+		time.Sleep(time.Second * 3)
+		log.Println("Sleep off")
+		cancel()
+	}()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("Server Shutdown Failed:%+v", err)
 	}
-	// w.Write([]byte("]"))
-
-	output, err := json.Marshal(out_arr)
-	if err != nil {
-		http.Error(w, "Error marshal output: "+err.Error(), 500)
-		return
-	}
-
-	w.Write(output)
-
-	return
+	log.Print("Server Exited Properly")
 
 }

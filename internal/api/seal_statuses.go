@@ -25,7 +25,7 @@ import (
 // @Param sealstatusname query string false "sealstatusname search pattern"
 // @Param ordering query string false "order by {id|sealstatusname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.SealStatus_count
+// @Success 200 {object} models.SealStatus_count
 // @Failure 500
 // @Router /sealstatuses [get]
 func (s *APG) HandleSealStatuses(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleSealStatuses(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddSealStatus true "New sealstatus"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sealstatuses_add [post]
 func (s *APG) HandleAddSealStatus(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddSealStatus(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.SealStatus true "Update sealstatus"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sealstatuses_upd [post]
 func (s *APG) HandleUpdSealStatus(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdSealStatus(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete sealstatuses"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sealstatuses_del [post]
 func (s *APG) HandleDelSealStatus(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func (s *APG) HandleDelSealStatus(w http.ResponseWriter, r *http.Request) {
 // @Tags sealstatuses
 // @Produce  json
 // @Param id path int true "SealStatus by id"
-// @Success 200 {array} models.SealStatus_count
+// @Success 200 {object} models.SealStatus_count
 // @Failure 500
 // @Router /sealstatuses/{id} [get]
 func (s *APG) HandleGetSealStatus(w http.ResponseWriter, r *http.Request) {

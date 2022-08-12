@@ -25,7 +25,7 @@ import (
 // @Param resultname query string false "resultname search pattern"
 // @Param ordering query string false "order by {id|resultname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Result_count
+// @Success 200 {object} models.Result_count
 // @Failure 500
 // @Router /results [get]
 func (s *APG) HandleResults(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleResults(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddResult true "New result"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /results_add [post]
 func (s *APG) HandleAddResult(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddResult(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Result true "Update result"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /results_upd [post]
 func (s *APG) HandleUpdResult(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdResult(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete results"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /results_del [post]
 func (s *APG) HandleDelResult(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelResult(w http.ResponseWriter, r *http.Request) {
 // @Tags results
 // @Produce  json
 // @Param id path int true "Result by id"
-// @Success 200 {array} models.Result_count
+// @Success 200 {object} models.Result_count
 // @Failure 500
 // @Router /results/{id} [get]
 func (s *APG) HandleGetResult(w http.ResponseWriter, r *http.Request) {

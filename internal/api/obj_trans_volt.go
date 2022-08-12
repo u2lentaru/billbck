@@ -26,7 +26,7 @@ import (
 // @Param transvoltname query string false "transvoltname search pattern"
 // @Param ordering query string false "order by {id|objectname|transvoltname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ObjTransVolt_count
+// @Success 200 {object} models.ObjTransVolt_count
 // @Failure 500
 // @Router /objtransvolt [get]
 func (s *APG) HandleObjTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +144,7 @@ func (s *APG) HandleObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddObjTransVolt true "New objtransvolt. Significant params: ObjId, ObjTypeId, TransVolt.Id, Startdate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtransvolt_add [post]
 func (s *APG) HandleAddObjTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -189,7 +189,7 @@ func (s *APG) HandleAddObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ObjTransVolt true "Update objtransvolt. Significant params: Id, ObjId, ObjTypeId, TransVolt.Id, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtransvolt_upd [post]
 func (s *APG) HandleUpdObjTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -236,7 +236,7 @@ func (s *APG) HandleUpdObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete objtransvolts"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objtransvolt_del [post]
 func (s *APG) HandleDelObjTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -283,7 +283,7 @@ func (s *APG) HandleDelObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Tags objtransvolt
 // @Produce  json
 // @Param id path int true "Objtransvolt by id"
-// @Success 200 {array} models.ObjTransVolt_count
+// @Success 200 {object} models.ObjTransVolt_count
 // @Failure 500
 // @Router /objtransvolt/{id} [get]
 func (s *APG) HandleGetObjTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -323,7 +323,7 @@ func (s *APG) HandleGetObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param objid query string false "obj&tgu id"
 // @Param tid query string false "obj&tgu type id (obj - type = 0, tgu - type > 0)"
-// @Success 200 {array} models.ObjTransVolt_count
+// @Success 200 {object} models.ObjTransVolt_count
 // @Failure 500
 // @Router /objtransvolt_obj [get]
 func (s *APG) HandleObjTransVoltByObj(w http.ResponseWriter, r *http.Request) {

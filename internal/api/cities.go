@@ -25,7 +25,7 @@ import (
 // @Param cityname query string false "cityname search pattern"
 // @Param ordering query string false "order by {id|cityname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.City_count
+// @Success 200 {object} models.City_count
 // @Failure 500
 // @Router /cities [get]
 func (s *APG) HandleCities(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleCities(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddCity true "New city"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /cities_add [post]
 func (s *APG) HandleAddCity(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddCity(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.City true "Update city"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /cities_upd [post]
 func (s *APG) HandleUpdCity(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdCity(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete cities"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /cities_del [post]
 func (s *APG) HandleDelCity(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelCity(w http.ResponseWriter, r *http.Request) {
 // @Tags cities
 // @Produce  json
 // @Param id path int true "City by id"
-// @Success 200 {array} models.City_count
+// @Success 200 {object} models.City_count
 // @Failure 500
 // @Router /cities/{id} [get]
 func (s *APG) HandleGetCity(w http.ResponseWriter, r *http.Request) {

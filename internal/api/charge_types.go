@@ -25,7 +25,7 @@ import (
 // @Param chargetypename query string false "chargetypename search pattern"
 // @Param ordering query string false "order by {id|chargetypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ChargeType_count
+// @Success 200 {object} models.ChargeType_count
 // @Failure 500
 // @Router /chargetypes [get]
 func (s *APG) HandleChargeTypes(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleChargeTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddChargeType true "New chargetype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /chargetypes_add [post]
 func (s *APG) HandleAddChargeType(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddChargeType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ChargeType true "Update chargetype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /chargetypes_upd [post]
 func (s *APG) HandleUpdChargeType(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdChargeType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete chargetypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /chargetypes_del [post]
 func (s *APG) HandleDelChargeType(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelChargeType(w http.ResponseWriter, r *http.Request) {
 // @Tags chargetypes
 // @Produce  json
 // @Param id path int true "ChargeType by id"
-// @Success 200 {array} models.ChargeType_count
+// @Success 200 {object} models.ChargeType_count
 // @Failure 500
 // @Router /chargetypes/{id} [get]
 func (s *APG) HandleGetChargeType(w http.ResponseWriter, r *http.Request) {

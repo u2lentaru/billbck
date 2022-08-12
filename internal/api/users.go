@@ -25,7 +25,7 @@ import (
 // @Param username query string false "username search pattern"
 // @Param ordering query string false "order by {id|username}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.User_count
+// @Success 200 {object} models.User_count
 // @Failure 500
 // @Router /users [get]
 func (s *APG) HandleUsers(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleUsers(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddUser true "New user. Significant params: UserName, OrgInfo.Id, Lang.Id, ChangePass, Position.Id, UserFullName, Created"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /users_add [post]
 func (s *APG) HandleAddUser(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddUser(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.User true "Update user. Significant params: Id, UserName, OrgInfo.Id, Lang.Id, ChangePass, Position.Id, UserFullName, Created, Closed(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /users_upd [post]
 func (s *APG) HandleUpdUser(w http.ResponseWriter, r *http.Request) {
@@ -219,7 +219,7 @@ func (s *APG) HandleUpdUser(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete users"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /users_del [post]
 func (s *APG) HandleDelUser(w http.ResponseWriter, r *http.Request) {
@@ -266,7 +266,7 @@ func (s *APG) HandleDelUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Produce  json
 // @Param id path int true "User by id"
-// @Success 200 {array} models.User_count
+// @Success 200 {object} models.User_count
 // @Failure 500
 // @Router /users/{id} [get]
 func (s *APG) HandleGetUser(w http.ResponseWriter, r *http.Request) {

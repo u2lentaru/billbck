@@ -26,7 +26,7 @@ import (
 // @Param areaname query string false "areaname search pattern"
 // @Param ordering query string false "order by {areanumber|areaname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Area_count
+// @Success 200 {object} models.Area_count
 // @Failure 500
 // @Router /areas [get]
 func (s *APG) HandleAreas(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +139,7 @@ func (s *APG) HandleAreas(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddArea true "New area"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /areas_add [post]
 func (s *APG) HandleAddArea(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +184,7 @@ func (s *APG) HandleAddArea(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Area true "Update area"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /areas_upd [post]
 func (s *APG) HandleUpdArea(w http.ResponseWriter, r *http.Request) {
@@ -229,7 +229,7 @@ func (s *APG) HandleUpdArea(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete areas"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /areas_del [post]
 func (s *APG) HandleDelArea(w http.ResponseWriter, r *http.Request) {
@@ -276,7 +276,7 @@ func (s *APG) HandleDelArea(w http.ResponseWriter, r *http.Request) {
 // @Tags areas
 // @Produce  json
 // @Param id path int true "Area by id"
-// @Success 200 {array} models.Area_count
+// @Success 200 {object} models.Area_count
 // @Failure 500
 // @Router /areas/{id} [get]
 func (s *APG) HandleGetArea(w http.ResponseWriter, r *http.Request) {

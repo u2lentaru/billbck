@@ -25,7 +25,7 @@ import (
 // @Param conclusionname query string false "conclusionname search pattern"
 // @Param ordering query string false "order by {id|conclusionname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Conclusion_count
+// @Success 200 {object} models.Conclusion_count
 // @Failure 500
 // @Router /conclusions [get]
 func (s *APG) HandleConclusions(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleConclusions(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddConclusion true "New conclusion"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /conclusions_add [post]
 func (s *APG) HandleAddConclusion(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddConclusion(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Conclusion true "Update conclusion"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /conclusions_upd [post]
 func (s *APG) HandleUpdConclusion(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdConclusion(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete conclusions"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /conclusions_del [post]
 func (s *APG) HandleDelConclusion(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelConclusion(w http.ResponseWriter, r *http.Request) {
 // @Tags conclusions
 // @Produce  json
 // @Param id path int true "Conclusion by id"
-// @Success 200 {array} models.Conclusion_count
+// @Success 200 {object} models.Conclusion_count
 // @Failure 500
 // @Router /conclusions/{id} [get]
 func (s *APG) HandleGetConclusion(w http.ResponseWriter, r *http.Request) {

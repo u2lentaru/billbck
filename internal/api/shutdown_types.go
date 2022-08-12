@@ -25,7 +25,7 @@ import (
 // @Param shutdowntypename query string false "shutdowntypename search pattern"
 // @Param ordering query string false "order by {id|shutdowntypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ShutdownType_count
+// @Success 200 {object} models.ShutdownType_count
 // @Failure 500
 // @Router /shutdowntypes [get]
 func (s *APG) HandleShutdownTypes(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleShutdownTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddShutdownType true "New shutdowntype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /shutdowntypes_add [post]
 func (s *APG) HandleAddShutdownType(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddShutdownType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ShutdownType true "Update shutdowntype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /shutdowntypes_upd [post]
 func (s *APG) HandleUpdShutdownType(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdShutdownType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete shutdowntypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /shutdowntypes_del [post]
 func (s *APG) HandleDelShutdownType(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelShutdownType(w http.ResponseWriter, r *http.Request) {
 // @Tags shutdowntypes
 // @Produce  json
 // @Param id path int true "ShutdownType by id"
-// @Success 200 {array} models.ShutdownType_count
+// @Success 200 {object} models.ShutdownType_count
 // @Failure 500
 // @Router /shutdowntypes/{id} [get]
 func (s *APG) HandleGetShutdownType(w http.ResponseWriter, r *http.Request) {

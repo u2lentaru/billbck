@@ -25,7 +25,7 @@ import (
 // @Param equipmenttypename query string false "equipmenttypename search pattern"
 // @Param ordering query string false "order by {id|equipmenttypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.EquipmentType_count
+// @Success 200 {object} models.EquipmentType_count
 // @Failure 500
 // @Router /equipmenttypes [get]
 func (s *APG) HandleEquipmentTypes(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleEquipmentTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddEquipmentType true "New equipmenttype. Significant params: EquipmentTypeName, EquipmentTypePower"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /equipmenttypes_add [post]
 func (s *APG) HandleAddEquipmentType(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +173,7 @@ func (s *APG) HandleAddEquipmentType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.EquipmentType true "Update equipmenttype. Significant params: Id, EquipmentTypeName, EquipmentTypePower"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /equipmenttypes_upd [post]
 func (s *APG) HandleUpdEquipmentType(w http.ResponseWriter, r *http.Request) {
@@ -221,7 +221,7 @@ func (s *APG) HandleUpdEquipmentType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete equipmenttypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /equipmenttypes_del [post]
 func (s *APG) HandleDelEquipmentType(w http.ResponseWriter, r *http.Request) {
@@ -270,7 +270,7 @@ func (s *APG) HandleDelEquipmentType(w http.ResponseWriter, r *http.Request) {
 // @Tags equipment types
 // @Produce  json
 // @Param id path int true "EquipmentType by id"
-// @Success 200 {array} models.EquipmentType_count
+// @Success 200 {object} models.EquipmentType_count
 // @Failure 500
 // @Router /equipmenttypes/{id} [get]
 func (s *APG) HandleGetEquipmentType(w http.ResponseWriter, r *http.Request) {

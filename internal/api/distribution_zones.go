@@ -25,7 +25,7 @@ import (
 // @Param distributionzonename query string false "distributionzonename search pattern"
 // @Param ordering query string false "order by {id|distributionzonename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.DistributionZone_count
+// @Success 200 {object} models.DistributionZone_count
 // @Failure 500
 // @Router /distributionzones [get]
 func (s *APG) HandleDistributionZones(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleDistributionZones(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddDistributionZone true "New distributionzone"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /distributionzones_add [post]
 func (s *APG) HandleAddDistributionZone(w http.ResponseWriter, r *http.Request) {
@@ -170,7 +170,7 @@ func (s *APG) HandleAddDistributionZone(w http.ResponseWriter, r *http.Request) 
 // @Accept json
 // @Produce  json
 // @Param u body models.DistributionZone true "Update distributionzone"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /distributionzones_upd [post]
 func (s *APG) HandleUpdDistributionZone(w http.ResponseWriter, r *http.Request) {
@@ -215,7 +215,7 @@ func (s *APG) HandleUpdDistributionZone(w http.ResponseWriter, r *http.Request) 
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete distributionzones"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /distributionzones_del [post]
 func (s *APG) HandleDelDistributionZone(w http.ResponseWriter, r *http.Request) {
@@ -262,7 +262,7 @@ func (s *APG) HandleDelDistributionZone(w http.ResponseWriter, r *http.Request) 
 // @Tags distributionzones
 // @Produce  json
 // @Param id path int true "DistributionZone by id"
-// @Success 200 {array} models.DistributionZone_count
+// @Success 200 {object} models.DistributionZone_count
 // @Failure 500
 // @Router /distributionzones/{id} [get]
 func (s *APG) HandleGetDistributionZone(w http.ResponseWriter, r *http.Request) {

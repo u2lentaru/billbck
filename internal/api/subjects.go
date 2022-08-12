@@ -28,7 +28,7 @@ import (
 // @Param hideclosed query boolean false "hide closed, default true"
 // @Param ordering query string false "order by {subname|subdescr}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Subject_count
+// @Success 200 {object} models.Subject_count
 // @Failure 500
 // @Router /subjects [get]
 func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
@@ -161,7 +161,7 @@ func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param asb body models.AddSubject true "New Subject. Significant params: SubType.Id, SubPhys, SubDescr, SubName, SubBin, SubHeadPos.Id(n), SubHeadName(n), SubAccPos.Id(n), SubAccName(n), SubAddr, SubPhone, SubStart, SubAccNumber, Job(n), Email(n), MobPhone(n), JobPhone(n), Notes(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subjects_add [post]
 func (s *APG) HandleAddSubject(w http.ResponseWriter, r *http.Request) {
@@ -210,7 +210,7 @@ func (s *APG) HandleAddSubject(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Param usb body models.Subject true "Update sybject. Significant params: SubId, SubType.Id, SubPhys, SubDescr, SubName, SubBin, SubHeadPos.Id(n), SubHeadName(n), SubAccPos.Id(n), SubAccName(n), SubAddr, SubPhone, SubStart, SubAccNumber, Job(n), Email(n), MobPhone(n), JobPhone(n), Notes(n)""
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subjects_upd [post]
 func (s *APG) HandleUpdSubject(w http.ResponseWriter, r *http.Request) {
@@ -260,7 +260,7 @@ func (s *APG) HandleUpdSubject(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param dsb body models.SubjectClose true "Close subject"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subjects_del [post]
 func (s *APG) HandleDelSubject(w http.ResponseWriter, r *http.Request) {
@@ -304,7 +304,7 @@ func (s *APG) HandleDelSubject(w http.ResponseWriter, r *http.Request) {
 // @Tags subjects
 // @Produce  json
 // @Param id path int true "Subject by id"
-// @Success 200 {array} models.Subject_count
+// @Success 200 {object} models.Subject_count
 // @Failure 500
 // @Router /subjects/{id} [get]
 func (s *APG) HandleGetSubject(w http.ResponseWriter, r *http.Request) {
@@ -353,7 +353,7 @@ func (s *APG) HandleGetSubject(w http.ResponseWriter, r *http.Request) {
 // @Tags subjects
 // @Produce  json
 // @Param id path int true "Subject history by id"
-// @Success 200 {array} string
+// @Success 200 {object} string
 // @Failure 500
 // @Router /subjects_hist/{id} [get]
 func (s *APG) HandleGetSubjectHist(w http.ResponseWriter, r *http.Request) {

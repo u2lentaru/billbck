@@ -25,7 +25,7 @@ import (
 // @Param reasonname query string false "reasonname search pattern"
 // @Param ordering query string false "order by {id|reasonname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Reason_count
+// @Success 200 {object} models.Reason_count
 // @Failure 500
 // @Router /reasons [get]
 func (s *APG) HandleReasons(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleReasons(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddReason true "New reason"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /reasons_add [post]
 func (s *APG) HandleAddReason(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddReason(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Reason true "Update reason"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /reasons_upd [post]
 func (s *APG) HandleUpdReason(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdReason(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete reasons"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /reasons_del [post]
 func (s *APG) HandleDelReason(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelReason(w http.ResponseWriter, r *http.Request) {
 // @Tags reasons
 // @Produce  json
 // @Param id path int true "Reason by id"
-// @Success 200 {array} models.Reason_count
+// @Success 200 {object} models.Reason_count
 // @Failure 500
 // @Router /reasons/{id} [get]
 func (s *APG) HandleGetReason(w http.ResponseWriter, r *http.Request) {

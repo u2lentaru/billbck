@@ -277,10 +277,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Act_count"
-                            }
+                            "$ref": "#/definitions/models.Act_count"
                         }
                     },
                     "500": {
@@ -312,10 +309,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Act_count"
-                            }
+                            "$ref": "#/definitions/models.Act_count"
                         }
                     },
                     "500": {
@@ -354,10 +348,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -394,10 +385,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -434,10 +422,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -474,10 +459,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -532,10 +514,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ActType_count"
-                            }
+                            "$ref": "#/definitions/models.ActType_count"
                         }
                     },
                     "500": {
@@ -567,10 +546,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ActType_count"
-                            }
+                            "$ref": "#/definitions/models.ActType_count"
                         }
                     },
                     "500": {
@@ -607,10 +583,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -647,10 +620,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -687,10 +657,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -751,10 +718,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Area_count"
-                            }
+                            "$ref": "#/definitions/models.Area_count"
                         }
                     },
                     "500": {
@@ -786,10 +750,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Area_count"
-                            }
+                            "$ref": "#/definitions/models.Area_count"
                         }
                     },
                     "500": {
@@ -826,10 +787,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -866,10 +824,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -906,10 +861,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -964,10 +916,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.CableResistance_count"
-                            }
+                            "$ref": "#/definitions/models.CableResistance_count"
                         }
                     },
                     "500": {
@@ -999,10 +948,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.AskueType_count"
-                            }
+                            "$ref": "#/definitions/models.AskueType_count"
                         }
                     },
                     "500": {
@@ -1039,10 +985,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -1079,10 +1022,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -1119,10 +1059,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -1173,10 +1110,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Balance"
-                            }
+                            "$ref": "#/definitions/models.Balance"
                         }
                     },
                     "500": {
@@ -1215,10 +1149,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Balance"
-                            }
+                            "$ref": "#/definitions/models.Balance"
                         }
                     },
                     "500": {
@@ -1257,10 +1188,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BalanceTab_sum"
-                            }
+                            "$ref": "#/definitions/models.BalanceTab_sum"
                         }
                     }
                 }
@@ -1308,10 +1236,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_sum"
-                            }
+                            "$ref": "#/definitions/models.Json_sum"
                         }
                     }
                 }
@@ -1359,10 +1284,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_sum"
-                            }
+                            "$ref": "#/definitions/models.Json_sum"
                         }
                     }
                 }
@@ -1410,10 +1332,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_sum"
-                            }
+                            "$ref": "#/definitions/models.Json_sum"
                         }
                     }
                 }
@@ -1473,10 +1392,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BalanceTab_sum"
-                            }
+                            "$ref": "#/definitions/models.BalanceTab_sum"
                         }
                     }
                 }
@@ -1536,10 +1452,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BalanceTab_sum"
-                            }
+                            "$ref": "#/definitions/models.BalanceTab_sum"
                         }
                     }
                 }
@@ -1597,10 +1510,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Bank_count"
-                            }
+                            "$ref": "#/definitions/models.Bank_count"
                         }
                     },
                     "500": {
@@ -1632,10 +1542,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Bank_count"
-                            }
+                            "$ref": "#/definitions/models.Bank_count"
                         }
                     },
                     "500": {
@@ -1672,10 +1579,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -1712,10 +1616,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -1752,10 +1653,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -1810,10 +1708,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BuildingType_count"
-                            }
+                            "$ref": "#/definitions/models.BuildingType_count"
                         }
                     },
                     "500": {
@@ -1845,10 +1740,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.BuildingType_count"
-                            }
+                            "$ref": "#/definitions/models.BuildingType_count"
                         }
                     },
                     "500": {
@@ -1885,10 +1777,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -1925,10 +1814,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -1965,10 +1851,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2221,10 +2104,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.CalculationType_count"
-                            }
+                            "$ref": "#/definitions/models.CalculationType_count"
                         }
                     },
                     "500": {
@@ -2256,10 +2136,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.CalculationType_count"
-                            }
+                            "$ref": "#/definitions/models.CalculationType_count"
                         }
                     },
                     "500": {
@@ -2296,10 +2173,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2336,10 +2210,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -2376,10 +2247,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2434,10 +2302,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Cashdesk_count"
-                            }
+                            "$ref": "#/definitions/models.Cashdesk_count"
                         }
                     },
                     "500": {
@@ -2469,10 +2334,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Cashdesk_count"
-                            }
+                            "$ref": "#/definitions/models.Cashdesk_count"
                         }
                     },
                     "500": {
@@ -2509,10 +2371,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2549,10 +2408,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -2589,10 +2445,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2653,10 +2506,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Charge_count"
-                            }
+                            "$ref": "#/definitions/models.Charge_count"
                         }
                     },
                     "500": {
@@ -2688,10 +2538,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Charge_count"
-                            }
+                            "$ref": "#/definitions/models.Charge_count"
                         }
                     },
                     "500": {
@@ -2728,10 +2575,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2768,10 +2612,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -2803,10 +2644,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2843,10 +2681,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -2901,10 +2736,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ChargeType_count"
-                            }
+                            "$ref": "#/definitions/models.ChargeType_count"
                         }
                     },
                     "500": {
@@ -2936,10 +2768,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ChargeType_count"
-                            }
+                            "$ref": "#/definitions/models.ChargeType_count"
                         }
                     },
                     "500": {
@@ -2976,10 +2805,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3016,10 +2842,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -3056,10 +2879,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3114,10 +2934,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.City_count"
-                            }
+                            "$ref": "#/definitions/models.City_count"
                         }
                     },
                     "500": {
@@ -3149,10 +2966,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.City_count"
-                            }
+                            "$ref": "#/definitions/models.City_count"
                         }
                     },
                     "500": {
@@ -3189,10 +3003,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3229,10 +3040,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -3269,10 +3077,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3327,10 +3132,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ClaimType_count"
-                            }
+                            "$ref": "#/definitions/models.ClaimType_count"
                         }
                     },
                     "500": {
@@ -3362,10 +3164,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ClaimType_count"
-                            }
+                            "$ref": "#/definitions/models.ClaimType_count"
                         }
                     },
                     "500": {
@@ -3402,10 +3201,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3442,10 +3238,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -3482,10 +3275,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3540,10 +3330,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Conclusion_count"
-                            }
+                            "$ref": "#/definitions/models.Conclusion_count"
                         }
                     },
                     "500": {
@@ -3575,10 +3362,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Conclusion_count"
-                            }
+                            "$ref": "#/definitions/models.Conclusion_count"
                         }
                     },
                     "500": {
@@ -3615,10 +3399,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3655,10 +3436,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -3695,10 +3473,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3753,10 +3528,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Connector_count"
-                            }
+                            "$ref": "#/definitions/models.Connector_count"
                         }
                     },
                     "500": {
@@ -3788,10 +3560,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Connector_count"
-                            }
+                            "$ref": "#/definitions/models.Connector_count"
                         }
                     },
                     "500": {
@@ -3828,10 +3597,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3868,10 +3634,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -3908,10 +3671,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -3972,10 +3732,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ContractMot_count"
-                            }
+                            "$ref": "#/definitions/models.ContractMot_count"
                         }
                     },
                     "500": {
@@ -4007,10 +3764,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ContractMot_count"
-                            }
+                            "$ref": "#/definitions/models.ContractMot_count"
                         }
                     },
                     "500": {
@@ -4047,10 +3801,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -4087,10 +3838,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -4127,10 +3875,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -4263,10 +4008,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Contract_count"
-                            }
+                            "$ref": "#/definitions/models.Contract_count"
                         }
                     },
                     "500": {
@@ -4298,10 +4040,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Contract_count"
-                            }
+                            "$ref": "#/definitions/models.Contract_count"
                         }
                     },
                     "500": {
@@ -4338,10 +4077,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -4378,10 +4114,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -4419,10 +4152,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjContract"
-                            }
+                            "$ref": "#/definitions/models.ObjContract"
                         }
                     },
                     "500": {
@@ -4454,10 +4184,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -4494,10 +4221,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -4750,10 +4474,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.CustomerGroup_count"
-                            }
+                            "$ref": "#/definitions/models.CustomerGroup_count"
                         }
                     },
                     "500": {
@@ -4785,10 +4506,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.CustomerGroup_count"
-                            }
+                            "$ref": "#/definitions/models.CustomerGroup_count"
                         }
                     },
                     "500": {
@@ -4825,10 +4543,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -4865,10 +4580,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -4905,10 +4617,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -4963,10 +4672,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.DistributionZone_count"
-                            }
+                            "$ref": "#/definitions/models.DistributionZone_count"
                         }
                     },
                     "500": {
@@ -4998,10 +4704,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.DistributionZone_count"
-                            }
+                            "$ref": "#/definitions/models.DistributionZone_count"
                         }
                     },
                     "500": {
@@ -5038,10 +4741,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5078,10 +4778,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -5118,10 +4815,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5182,10 +4876,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Equipment_count"
-                            }
+                            "$ref": "#/definitions/models.Equipment_count"
                         }
                     },
                     "500": {
@@ -5217,10 +4908,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Equipment_count"
-                            }
+                            "$ref": "#/definitions/models.Equipment_count"
                         }
                     },
                     "500": {
@@ -5257,10 +4945,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5297,10 +4982,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -5337,10 +5019,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -5377,10 +5056,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -5417,10 +5093,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5475,10 +5148,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.EquipmentType_count"
-                            }
+                            "$ref": "#/definitions/models.EquipmentType_count"
                         }
                     },
                     "500": {
@@ -5510,10 +5180,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.EquipmentType_count"
-                            }
+                            "$ref": "#/definitions/models.EquipmentType_count"
                         }
                     },
                     "500": {
@@ -5550,10 +5217,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5590,10 +5254,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -5630,10 +5291,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5688,10 +5346,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Eso_count"
-                            }
+                            "$ref": "#/definitions/models.Eso_count"
                         }
                     },
                     "500": {
@@ -5723,10 +5378,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Eso_count"
-                            }
+                            "$ref": "#/definitions/models.Eso_count"
                         }
                     },
                     "500": {
@@ -5763,10 +5415,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5803,10 +5452,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -5843,10 +5489,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -5907,10 +5550,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.FormType_count"
-                            }
+                            "$ref": "#/definitions/models.FormType_count"
                         }
                     },
                     "400": {
@@ -5948,10 +5588,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.FormType_count"
-                            }
+                            "$ref": "#/definitions/models.FormType_count"
                         }
                     },
                     "500": {
@@ -5988,10 +5625,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "400": {
@@ -6034,10 +5668,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -6074,10 +5705,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6132,10 +5760,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.GRp_count"
-                            }
+                            "$ref": "#/definitions/models.GRp_count"
                         }
                     },
                     "500": {
@@ -6167,10 +5792,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.GRp_count"
-                            }
+                            "$ref": "#/definitions/models.GRp_count"
                         }
                     },
                     "500": {
@@ -6207,10 +5829,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6247,10 +5866,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -6287,10 +5903,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6357,10 +5970,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.House_count"
-                            }
+                            "$ref": "#/definitions/models.House_count"
                         }
                     },
                     "500": {
@@ -6392,10 +6002,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.House_count"
-                            }
+                            "$ref": "#/definitions/models.House_count"
                         }
                     },
                     "500": {
@@ -6432,10 +6039,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6472,10 +6076,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -6512,10 +6113,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6570,10 +6168,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.InputType_count"
-                            }
+                            "$ref": "#/definitions/models.InputType_count"
                         }
                     },
                     "500": {
@@ -6605,10 +6200,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.InputType_count"
-                            }
+                            "$ref": "#/definitions/models.InputType_count"
                         }
                     },
                     "500": {
@@ -6645,10 +6237,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6685,10 +6274,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -6725,10 +6311,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6789,10 +6372,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Ksk_count"
-                            }
+                            "$ref": "#/definitions/models.Ksk_count"
                         }
                     },
                     "500": {
@@ -6824,10 +6404,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Ksk_count"
-                            }
+                            "$ref": "#/definitions/models.Ksk_count"
                         }
                     },
                     "500": {
@@ -6864,10 +6441,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -6904,10 +6478,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -6944,10 +6515,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7020,10 +6588,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjContract_count"
-                            }
+                            "$ref": "#/definitions/models.ObjContract_count"
                         }
                     },
                     "500": {
@@ -7061,10 +6626,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjContract_count"
-                            }
+                            "$ref": "#/definitions/models.ObjContract_count"
                         }
                     },
                     "500": {
@@ -7101,10 +6663,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7141,10 +6700,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7181,10 +6737,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7251,10 +6804,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Object_count"
-                            }
+                            "$ref": "#/definitions/models.Object_count"
                         }
                     },
                     "500": {
@@ -7286,10 +6836,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Object_count"
-                            }
+                            "$ref": "#/definitions/models.Object_count"
                         }
                     },
                     "500": {
@@ -7326,10 +6873,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7366,10 +6910,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -7407,10 +6948,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjContract"
-                            }
+                            "$ref": "#/definitions/models.ObjContract"
                         }
                     },
                     "500": {
@@ -7442,10 +6980,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Object_count"
-                            }
+                            "$ref": "#/definitions/models.Object_count"
                         }
                     },
                     "500": {
@@ -7482,10 +7017,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7546,10 +7078,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjLine_count"
-                            }
+                            "$ref": "#/definitions/models.ObjLine_count"
                         }
                     },
                     "500": {
@@ -7581,10 +7110,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjLine_count"
-                            }
+                            "$ref": "#/definitions/models.ObjLine_count"
                         }
                     },
                     "500": {
@@ -7621,10 +7147,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7661,10 +7184,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -7701,10 +7221,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjLine_count"
-                            }
+                            "$ref": "#/definitions/models.ObjLine_count"
                         }
                     },
                     "500": {
@@ -7741,10 +7258,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7799,10 +7313,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjStatus_count"
-                            }
+                            "$ref": "#/definitions/models.ObjStatus_count"
                         }
                     },
                     "500": {
@@ -7834,10 +7345,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjStatus_count"
-                            }
+                            "$ref": "#/definitions/models.ObjStatus_count"
                         }
                     },
                     "500": {
@@ -7874,10 +7382,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -7914,10 +7419,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -7954,10 +7456,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8018,10 +7517,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransCurr_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransCurr_count"
                         }
                     },
                     "500": {
@@ -8053,10 +7549,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransCurr_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransCurr_count"
                         }
                     },
                     "500": {
@@ -8093,10 +7586,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8133,10 +7623,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -8173,10 +7660,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransCurr_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransCurr_count"
                         }
                     },
                     "500": {
@@ -8213,10 +7697,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8277,10 +7758,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransPwr_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransPwr_count"
                         }
                     },
                     "500": {
@@ -8312,10 +7790,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransPwr_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransPwr_count"
                         }
                     },
                     "500": {
@@ -8352,10 +7827,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8392,10 +7864,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -8432,10 +7901,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransPwr_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransPwr_count"
                         }
                     },
                     "500": {
@@ -8472,10 +7938,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8536,10 +7999,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransVolt_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransVolt_count"
                         }
                     },
                     "500": {
@@ -8571,10 +8031,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransVolt_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransVolt_count"
                         }
                     },
                     "500": {
@@ -8611,10 +8068,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8651,10 +8105,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -8691,10 +8142,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjTransVolt_count"
-                            }
+                            "$ref": "#/definitions/models.ObjTransVolt_count"
                         }
                     },
                     "500": {
@@ -8731,10 +8179,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8789,10 +8234,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjType_count"
-                            }
+                            "$ref": "#/definitions/models.ObjType_count"
                         }
                     },
                     "500": {
@@ -8824,10 +8266,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ObjType_count"
-                            }
+                            "$ref": "#/definitions/models.ObjType_count"
                         }
                     },
                     "500": {
@@ -8864,10 +8303,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -8904,10 +8340,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -8944,10 +8377,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9002,10 +8432,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.OrderType_count"
-                            }
+                            "$ref": "#/definitions/models.OrderType_count"
                         }
                     },
                     "500": {
@@ -9037,10 +8464,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.OrderType_count"
-                            }
+                            "$ref": "#/definitions/models.OrderType_count"
                         }
                     },
                     "500": {
@@ -9077,10 +8501,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9117,10 +8538,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -9157,10 +8575,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9221,10 +8636,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.OrgInfo_count"
-                            }
+                            "$ref": "#/definitions/models.OrgInfo_count"
                         }
                     },
                     "500": {
@@ -9256,10 +8668,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.OrgInfo_count"
-                            }
+                            "$ref": "#/definitions/models.OrgInfo_count"
                         }
                     },
                     "500": {
@@ -9296,10 +8705,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9336,10 +8742,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9376,10 +8779,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9440,10 +8840,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Payment_count"
-                            }
+                            "$ref": "#/definitions/models.Payment_count"
                         }
                     },
                     "500": {
@@ -9475,10 +8872,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Payment_count"
-                            }
+                            "$ref": "#/definitions/models.Payment_count"
                         }
                     },
                     "500": {
@@ -9515,10 +8909,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9555,10 +8946,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -9595,10 +8983,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9653,10 +9038,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.PaymentType_count"
-                            }
+                            "$ref": "#/definitions/models.PaymentType_count"
                         }
                     },
                     "500": {
@@ -9688,10 +9070,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.PaymentType_count"
-                            }
+                            "$ref": "#/definitions/models.PaymentType_count"
                         }
                     },
                     "500": {
@@ -9728,10 +9107,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9768,10 +9144,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -9808,10 +9181,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9866,10 +9236,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Period_count"
-                            }
+                            "$ref": "#/definitions/models.Period_count"
                         }
                     },
                     "500": {
@@ -9906,10 +9273,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Period_count"
-                            }
+                            "$ref": "#/definitions/models.Period_count"
                         }
                     },
                     "500": {
@@ -9946,10 +9310,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -9986,10 +9347,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -10026,10 +9384,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -10084,10 +9439,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Position_count"
-                            }
+                            "$ref": "#/definitions/models.Position_count"
                         }
                     },
                     "500": {
@@ -10119,10 +9471,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Position_count"
-                            }
+                            "$ref": "#/definitions/models.Position_count"
                         }
                     },
                     "500": {
@@ -10159,10 +9508,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -10199,10 +9545,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -10239,10 +9582,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -10333,10 +9673,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Pu_count"
-                            }
+                            "$ref": "#/definitions/models.Pu_count"
                         }
                     },
                     "500": {
@@ -10368,10 +9705,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Pu_count"
-                            }
+                            "$ref": "#/definitions/models.Pu_count"
                         }
                     },
                     "500": {
@@ -10408,10 +9742,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -10448,10 +9779,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -10488,10 +9816,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Pu_count"
-                            }
+                            "$ref": "#/definitions/models.Pu_count"
                         }
                     },
                     "500": {
@@ -10528,10 +9853,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -10586,10 +9908,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.PuType_count"
-                            }
+                            "$ref": "#/definitions/models.PuType_count"
                         }
                     },
                     "500": {
@@ -10621,10 +9940,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.PuType_count"
-                            }
+                            "$ref": "#/definitions/models.PuType_count"
                         }
                     },
                     "500": {
@@ -10661,10 +9977,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -10701,10 +10014,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -10741,10 +10051,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11071,10 +10378,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.PuType_count"
-                            }
+                            "$ref": "#/definitions/models.PuType_count"
                         }
                     },
                     "500": {
@@ -11106,10 +10410,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.PuValueType_count"
-                            }
+                            "$ref": "#/definitions/models.PuValueType_count"
                         }
                     },
                     "500": {
@@ -11146,10 +10447,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11186,10 +10484,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -11226,10 +10521,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11284,10 +10576,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Reason_count"
-                            }
+                            "$ref": "#/definitions/models.Reason_count"
                         }
                     },
                     "500": {
@@ -11319,10 +10608,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Reason_count"
-                            }
+                            "$ref": "#/definitions/models.Reason_count"
                         }
                     },
                     "500": {
@@ -11359,10 +10645,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11399,10 +10682,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -11439,10 +10719,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11497,10 +10774,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Reliability_count"
-                            }
+                            "$ref": "#/definitions/models.Reliability_count"
                         }
                     },
                     "500": {
@@ -11532,10 +10806,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Reliability_count"
-                            }
+                            "$ref": "#/definitions/models.Reliability_count"
                         }
                     },
                     "500": {
@@ -11572,10 +10843,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11612,10 +10880,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -11652,10 +10917,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11710,10 +10972,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.RequestKind_count"
-                            }
+                            "$ref": "#/definitions/models.RequestKind_count"
                         }
                     },
                     "500": {
@@ -11745,10 +11004,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.RequestKind_count"
-                            }
+                            "$ref": "#/definitions/models.RequestKind_count"
                         }
                     },
                     "500": {
@@ -11785,10 +11041,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11825,10 +11078,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -11865,10 +11115,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -11923,10 +11170,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Request_count"
-                            }
+                            "$ref": "#/definitions/models.Request_count"
                         }
                     },
                     "500": {
@@ -11958,10 +11202,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Request_count"
-                            }
+                            "$ref": "#/definitions/models.Request_count"
                         }
                     },
                     "500": {
@@ -11998,10 +11239,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12038,10 +11276,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -12078,10 +11313,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12142,10 +11374,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.RequestType_count"
-                            }
+                            "$ref": "#/definitions/models.RequestType_count"
                         }
                     },
                     "500": {
@@ -12177,10 +11406,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.RequestType_count"
-                            }
+                            "$ref": "#/definitions/models.RequestType_count"
                         }
                     },
                     "500": {
@@ -12217,10 +11443,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12257,10 +11480,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -12297,10 +11517,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12355,10 +11572,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Result_count"
-                            }
+                            "$ref": "#/definitions/models.Result_count"
                         }
                     },
                     "500": {
@@ -12390,10 +11604,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Result_count"
-                            }
+                            "$ref": "#/definitions/models.Result_count"
                         }
                     },
                     "500": {
@@ -12430,10 +11641,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12470,10 +11678,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -12510,10 +11715,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12574,10 +11776,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Rp_count"
-                            }
+                            "$ref": "#/definitions/models.Rp_count"
                         }
                     },
                     "500": {
@@ -12609,10 +11808,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Rp_count"
-                            }
+                            "$ref": "#/definitions/models.Rp_count"
                         }
                     },
                     "500": {
@@ -12649,10 +11845,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12689,10 +11882,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -12729,10 +11919,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12787,10 +11974,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SealColour_count"
-                            }
+                            "$ref": "#/definitions/models.SealColour_count"
                         }
                     },
                     "500": {
@@ -12822,10 +12006,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SealColour_count"
-                            }
+                            "$ref": "#/definitions/models.SealColour_count"
                         }
                     },
                     "500": {
@@ -12862,10 +12043,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -12902,10 +12080,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -12942,10 +12117,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13000,10 +12172,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Seal_count"
-                            }
+                            "$ref": "#/definitions/models.Seal_count"
                         }
                     },
                     "500": {
@@ -13035,10 +12204,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Seal_count"
-                            }
+                            "$ref": "#/definitions/models.Seal_count"
                         }
                     },
                     "500": {
@@ -13075,10 +12241,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13115,10 +12278,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -13155,10 +12315,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13213,10 +12370,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SealStatus_count"
-                            }
+                            "$ref": "#/definitions/models.SealStatus_count"
                         }
                     },
                     "500": {
@@ -13248,10 +12402,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SealStatus_count"
-                            }
+                            "$ref": "#/definitions/models.SealStatus_count"
                         }
                     },
                     "500": {
@@ -13288,10 +12439,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13328,10 +12476,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -13368,10 +12513,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13426,10 +12568,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SealType_count"
-                            }
+                            "$ref": "#/definitions/models.SealType_count"
                         }
                     },
                     "500": {
@@ -13461,10 +12600,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SealType_count"
-                            }
+                            "$ref": "#/definitions/models.SealType_count"
                         }
                     },
                     "500": {
@@ -13501,10 +12637,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13541,10 +12674,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -13581,10 +12711,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13639,10 +12766,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Sector_count"
-                            }
+                            "$ref": "#/definitions/models.Sector_count"
                         }
                     },
                     "500": {
@@ -13674,10 +12798,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Sector_count"
-                            }
+                            "$ref": "#/definitions/models.Sector_count"
                         }
                     },
                     "500": {
@@ -13714,10 +12835,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13754,10 +12872,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -13794,10 +12909,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13852,10 +12964,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ServiceType_count"
-                            }
+                            "$ref": "#/definitions/models.ServiceType_count"
                         }
                     },
                     "500": {
@@ -13887,10 +12996,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ServiceType_count"
-                            }
+                            "$ref": "#/definitions/models.ServiceType_count"
                         }
                     },
                     "500": {
@@ -13927,10 +13033,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -13967,10 +13070,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -14007,10 +13107,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14065,10 +13162,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ShutdownType_count"
-                            }
+                            "$ref": "#/definitions/models.ShutdownType_count"
                         }
                     },
                     "500": {
@@ -14100,10 +13194,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ShutdownType_count"
-                            }
+                            "$ref": "#/definitions/models.ShutdownType_count"
                         }
                     },
                     "500": {
@@ -14140,10 +13231,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14180,10 +13268,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -14220,10 +13305,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14278,10 +13360,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Staff_count"
-                            }
+                            "$ref": "#/definitions/models.Staff_count"
                         }
                     },
                     "500": {
@@ -14313,10 +13392,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Staff_count"
-                            }
+                            "$ref": "#/definitions/models.Staff_count"
                         }
                     },
                     "500": {
@@ -14353,10 +13429,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14393,10 +13466,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -14433,10 +13503,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14497,10 +13564,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Street_count"
-                            }
+                            "$ref": "#/definitions/models.Street_count"
                         }
                     },
                     "500": {
@@ -14532,10 +13596,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Street_count"
-                            }
+                            "$ref": "#/definitions/models.Street_count"
                         }
                     },
                     "500": {
@@ -14572,10 +13633,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14612,10 +13670,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -14652,10 +13707,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14722,10 +13774,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SubBank_count"
-                            }
+                            "$ref": "#/definitions/models.SubBank_count"
                         }
                     },
                     "500": {
@@ -14757,10 +13806,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SubBank_count"
-                            }
+                            "$ref": "#/definitions/models.SubBank_count"
                         }
                     },
                     "500": {
@@ -14797,10 +13843,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14837,10 +13880,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -14872,10 +13912,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14912,10 +13949,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -14976,10 +14010,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SubType_count"
-                            }
+                            "$ref": "#/definitions/models.SubType_count"
                         }
                     },
                     "500": {
@@ -15011,10 +14042,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SubType_count"
-                            }
+                            "$ref": "#/definitions/models.SubType_count"
                         }
                     },
                     "500": {
@@ -15051,10 +14079,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15091,10 +14116,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -15131,10 +14153,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15201,10 +14220,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Subject_count"
-                            }
+                            "$ref": "#/definitions/models.Subject_count"
                         }
                     },
                     "500": {
@@ -15236,10 +14252,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Subject_count"
-                            }
+                            "$ref": "#/definitions/models.Subject_count"
                         }
                     },
                     "500": {
@@ -15276,10 +14289,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15316,10 +14326,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15351,10 +14358,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -15391,10 +14395,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15450,10 +14451,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Pu_count"
-                            }
+                            "$ref": "#/definitions/models.Pu_count"
                         }
                     },
                     "500": {
@@ -15485,10 +14483,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.SubPu_count"
-                            }
+                            "$ref": "#/definitions/models.SubPu_count"
                         }
                     },
                     "500": {
@@ -15525,10 +14520,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15565,10 +14557,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -15631,10 +14620,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Pu_count"
-                            }
+                            "$ref": "#/definitions/models.Pu_count"
                         }
                     },
                     "500": {
@@ -15671,10 +14657,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15729,10 +14712,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TariffGroup_count"
-                            }
+                            "$ref": "#/definitions/models.TariffGroup_count"
                         }
                     },
                     "500": {
@@ -15764,10 +14744,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TariffGroup_count"
-                            }
+                            "$ref": "#/definitions/models.TariffGroup_count"
                         }
                     },
                     "500": {
@@ -15804,10 +14781,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15844,10 +14818,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -15884,10 +14855,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -15942,10 +14910,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Tariff_count"
-                            }
+                            "$ref": "#/definitions/models.Tariff_count"
                         }
                     },
                     "500": {
@@ -15977,10 +14942,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Tariff_count"
-                            }
+                            "$ref": "#/definitions/models.Tariff_count"
                         }
                     },
                     "500": {
@@ -16017,10 +14979,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16057,10 +15016,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -16097,10 +15053,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16161,10 +15114,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Tgu_count"
-                            }
+                            "$ref": "#/definitions/models.Tgu_count"
                         }
                     },
                     "500": {
@@ -16196,10 +15146,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Tgu_count"
-                            }
+                            "$ref": "#/definitions/models.Tgu_count"
                         }
                     },
                     "500": {
@@ -16236,10 +15183,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16276,10 +15220,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -16316,10 +15257,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16374,10 +15312,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Tp_count"
-                            }
+                            "$ref": "#/definitions/models.Tp_count"
                         }
                     },
                     "500": {
@@ -16409,10 +15344,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Tp_count"
-                            }
+                            "$ref": "#/definitions/models.Tp_count"
                         }
                     },
                     "500": {
@@ -16449,10 +15381,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16489,10 +15418,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -16529,10 +15455,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16587,10 +15510,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransCurr_count"
-                            }
+                            "$ref": "#/definitions/models.TransCurr_count"
                         }
                     },
                     "500": {
@@ -16622,10 +15542,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransCurr_count"
-                            }
+                            "$ref": "#/definitions/models.TransCurr_count"
                         }
                     },
                     "500": {
@@ -16662,10 +15579,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16702,10 +15616,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -16742,10 +15653,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16800,10 +15708,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransPwr_count"
-                            }
+                            "$ref": "#/definitions/models.TransPwr_count"
                         }
                     },
                     "500": {
@@ -16835,10 +15740,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransPwr_count"
-                            }
+                            "$ref": "#/definitions/models.TransPwr_count"
                         }
                     },
                     "500": {
@@ -16875,10 +15777,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -16915,10 +15814,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -16955,10 +15851,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17013,10 +15906,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransPwrType_count"
-                            }
+                            "$ref": "#/definitions/models.TransPwrType_count"
                         }
                     },
                     "500": {
@@ -17048,10 +15938,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransPwrType_count"
-                            }
+                            "$ref": "#/definitions/models.TransPwrType_count"
                         }
                     },
                     "500": {
@@ -17088,10 +15975,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17128,10 +16012,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -17168,10 +16049,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17226,10 +16104,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransType_count"
-                            }
+                            "$ref": "#/definitions/models.TransType_count"
                         }
                     },
                     "500": {
@@ -17261,10 +16136,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransType_count"
-                            }
+                            "$ref": "#/definitions/models.TransType_count"
                         }
                     },
                     "500": {
@@ -17301,10 +16173,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17341,10 +16210,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -17381,10 +16247,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17439,10 +16302,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransVolt_count"
-                            }
+                            "$ref": "#/definitions/models.TransVolt_count"
                         }
                     },
                     "500": {
@@ -17474,10 +16334,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.TransVolt_count"
-                            }
+                            "$ref": "#/definitions/models.TransVolt_count"
                         }
                     },
                     "500": {
@@ -17514,10 +16371,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17554,10 +16408,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -17594,10 +16445,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17652,10 +16500,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.User_count"
-                            }
+                            "$ref": "#/definitions/models.User_count"
                         }
                     },
                     "500": {
@@ -17687,10 +16532,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.User_count"
-                            }
+                            "$ref": "#/definitions/models.User_count"
                         }
                     },
                     "500": {
@@ -17727,10 +16569,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17767,10 +16606,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -17807,10 +16643,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17865,10 +16698,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Uzo_count"
-                            }
+                            "$ref": "#/definitions/models.Uzo_count"
                         }
                     },
                     "500": {
@@ -17900,10 +16730,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Uzo_count"
-                            }
+                            "$ref": "#/definitions/models.Uzo_count"
                         }
                     },
                     "500": {
@@ -17940,10 +16767,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -17980,10 +16804,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -18020,10 +16841,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -18078,10 +16896,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Violation_count"
-                            }
+                            "$ref": "#/definitions/models.Violation_count"
                         }
                     },
                     "500": {
@@ -18113,10 +16928,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Violation_count"
-                            }
+                            "$ref": "#/definitions/models.Violation_count"
                         }
                     },
                     "500": {
@@ -18153,10 +16965,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -18193,10 +17002,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -18233,10 +17039,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -18291,10 +17094,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Voltage_count"
-                            }
+                            "$ref": "#/definitions/models.Voltage_count"
                         }
                     },
                     "500": {
@@ -18326,10 +17126,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Voltage_count"
-                            }
+                            "$ref": "#/definitions/models.Voltage_count"
                         }
                     },
                     "500": {
@@ -18366,10 +17163,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -18406,10 +17200,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -18446,10 +17237,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {

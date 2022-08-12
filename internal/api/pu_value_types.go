@@ -25,7 +25,7 @@ import (
 // @Param puvaluetypename query string false "puvaluetypename search pattern"
 // @Param ordering query string false "order by {id|putypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.PuType_count
+// @Success 200 {object} models.PuType_count
 // @Failure 500
 // @Router /puvaluetypes [get]
 func (s *APG) HandlePuValueTypes(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandlePuValueTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddPuValueType true "New puvaluetype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /puvaluetypes_add [post]
 func (s *APG) HandleAddPuValueType(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddPuValueType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.PuValueType true "Update puvaluetype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /puvaluetypes_upd [post]
 func (s *APG) HandleUpdPuValueType(w http.ResponseWriter, r *http.Request) {
@@ -218,7 +218,7 @@ func (s *APG) HandleUpdPuValueType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete puvaluetypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /puvaluetypes_del [post]
 func (s *APG) HandleDelPuValueType(w http.ResponseWriter, r *http.Request) {
@@ -266,7 +266,7 @@ func (s *APG) HandleDelPuValueType(w http.ResponseWriter, r *http.Request) {
 // @Tags puvaluetypes
 // @Produce  json
 // @Param id path int true "PuValueType by id"
-// @Success 200 {array} models.PuValueType_count
+// @Success 200 {object} models.PuValueType_count
 // @Failure 500
 // @Router /puvaluetypes/{id} [get]
 func (s *APG) HandleGetPuValueType(w http.ResponseWriter, r *http.Request) {

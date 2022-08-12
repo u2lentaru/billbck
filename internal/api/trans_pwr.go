@@ -25,7 +25,7 @@ import (
 // @Param transpwrname query string false "transpwrname search pattern"
 // @Param ordering query string false "order by {id|transpwrname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.TransPwr_count
+// @Success 200 {object} models.TransPwr_count
 // @Failure 500
 // @Router /transpwr [get]
 func (s *APG) HandleTransPwr(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTransPwr true "New power transformer. Significant params: TransPwrName, TransPwrType.Id"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transpwr_add [post]
 func (s *APG) HandleAddTransPwr(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +173,7 @@ func (s *APG) HandleAddTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.TransPwr true "Update power transformer. Significant params: Id, TransPwrName, TransPwrType.Id"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transpwr_upd [post]
 func (s *APG) HandleUpdTransPwr(w http.ResponseWriter, r *http.Request) {
@@ -220,7 +220,7 @@ func (s *APG) HandleUpdTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete power transformers"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /transpwr_del [post]
 func (s *APG) HandleDelTransPwr(w http.ResponseWriter, r *http.Request) {
@@ -268,7 +268,7 @@ func (s *APG) HandleDelTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Tags transpwr
 // @Produce  json
 // @Param id path int true "Power transformer by id"
-// @Success 200 {array} models.TransPwr_count
+// @Success 200 {object} models.TransPwr_count
 // @Failure 500
 // @Router /transpwr/{id} [get]
 func (s *APG) HandleGetTransPwr(w http.ResponseWriter, r *http.Request) {

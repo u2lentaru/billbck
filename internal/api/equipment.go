@@ -27,7 +27,7 @@ import (
 // @Param objectname query string false "name search pattern"
 // @Param ordering query string false "order by {id|objectname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Equipment_count
+// @Success 200 {object} models.Equipment_count
 // @Failure 500
 // @Router /equipment [get]
 func (s *APG) HandleEquipment(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +139,7 @@ func (s *APG) HandleEquipment(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddEquipment true "New equipment. Significant params: EquipmentType.Id, Object.Id, Qty, WorkingHours"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /equipment_add [post]
 func (s *APG) HandleAddEquipment(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +185,7 @@ func (s *APG) HandleAddEquipment(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Equipment true "Update equipment. Significant params: Id, EquipmentType.Id, Object.Id, Qty, WorkingHours"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /equipment_upd [post]
 func (s *APG) HandleUpdEquipment(w http.ResponseWriter, r *http.Request) {
@@ -232,7 +232,7 @@ func (s *APG) HandleUpdEquipment(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete equipment"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /equipment_del [post]
 func (s *APG) HandleDelEquipment(w http.ResponseWriter, r *http.Request) {
@@ -281,7 +281,7 @@ func (s *APG) HandleDelEquipment(w http.ResponseWriter, r *http.Request) {
 // @Tags equipment
 // @Produce  json
 // @Param id path int true "Equipment by id"
-// @Success 200 {array} models.Equipment_count
+// @Success 200 {object} models.Equipment_count
 // @Failure 500
 // @Router /equipment/{id} [get]
 func (s *APG) HandleGetEquipment(w http.ResponseWriter, r *http.Request) {
@@ -319,7 +319,7 @@ func (s *APG) HandleGetEquipment(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param al body models.Equipment_count true "Add equipment list. Old equipment delete by first value Object.Id. Significant params: EquipmentType.Id, Object.Id, Qty, WorkingHours"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /equipment_addlist [post]
 func (s *APG) HandleAddEquipmentList(w http.ResponseWriter, r *http.Request) {
@@ -384,7 +384,7 @@ func (s *APG) HandleAddEquipmentList(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete equipment by object id"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /equipment_delobj [post]
 func (s *APG) HandleDelObjEquipment(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ import (
 // @Param connectorname query string false "connectorname search pattern"
 // @Param ordering query string false "order by {id|connectorname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Connector_count
+// @Success 200 {object} models.Connector_count
 // @Failure 500
 // @Router /connectors [get]
 func (s *APG) HandleConnectors(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleConnectors(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddConnector true "New connector"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /connectors_add [post]
 func (s *APG) HandleAddConnector(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddConnector(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Connector true "Update connector"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /connectors_upd [post]
 func (s *APG) HandleUpdConnector(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdConnector(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete connectors"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /connectors_del [post]
 func (s *APG) HandleDelConnector(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelConnector(w http.ResponseWriter, r *http.Request) {
 // @Tags connectors
 // @Produce  json
 // @Param id path int true "Connector by id"
-// @Success 200 {array} models.Connector_count
+// @Success 200 {object} models.Connector_count
 // @Failure 500
 // @Router /connectors/{id} [get]
 func (s *APG) HandleGetConnector(w http.ResponseWriter, r *http.Request) {

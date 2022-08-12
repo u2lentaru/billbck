@@ -26,7 +26,7 @@ import (
 // @Param transcurrname query string false "transcurrname search pattern"
 // @Param ordering query string false "order by {id|objectname|transcurrname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ObjTransCurr_count
+// @Success 200 {object} models.ObjTransCurr_count
 // @Failure 500
 // @Router /objtranscurr [get]
 func (s *APG) HandleObjTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +144,7 @@ func (s *APG) HandleObjTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddObjTransCurr true "New objtranscurr. Significant params: ObjId, ObjTypeId, TransCurr.Id, Startdate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtranscurr_add [post]
 func (s *APG) HandleAddObjTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -189,7 +189,7 @@ func (s *APG) HandleAddObjTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ObjTransCurr true "Update objtranscurr. Significant params: Id, ObjId, ObjTypeId, TransCurr.Id, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtranscurr_upd [post]
 func (s *APG) HandleUpdObjTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -236,7 +236,7 @@ func (s *APG) HandleUpdObjTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete objtranscurrs"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objtranscurr_del [post]
 func (s *APG) HandleDelObjTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -283,7 +283,7 @@ func (s *APG) HandleDelObjTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Tags objtranscurr
 // @Produce  json
 // @Param id path int true "Objtranscurr by id"
-// @Success 200 {array} models.ObjTransCurr_count
+// @Success 200 {object} models.ObjTransCurr_count
 // @Failure 500
 // @Router /objtranscurr/{id} [get]
 func (s *APG) HandleGetObjTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -323,7 +323,7 @@ func (s *APG) HandleGetObjTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param objid query string false "obj&tgu id"
 // @Param tid query string false "obj&tgu type id (obj - type = 0, tgu - type > 0)"
-// @Success 200 {array} models.ObjTransCurr_count
+// @Success 200 {object} models.ObjTransCurr_count
 // @Failure 500
 // @Router /objtranscurr_obj [get]
 func (s *APG) HandleObjTransCurrByObj(w http.ResponseWriter, r *http.Request) {

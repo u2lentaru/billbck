@@ -24,7 +24,7 @@ import (
 // @Param page_size query int false "page size"
 // @Param pid query int true "Balance nodes by pid"
 // @Param tid query int true "Balance node type id"
-// @Success 200 {array} models.Balance
+// @Success 200 {object} models.Balance
 // @Failure 500
 // @Router /balance [get]
 func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
@@ -116,7 +116,7 @@ func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param id path int true "Balance node by id"
 // @Param tid path int true "Balance node type id"
-// @Success 200 {array} models.Balance
+// @Success 200 {object} models.Balance
 // @Failure 500
 // @Router /balance/{id}/{tid} [get]
 func (s *APG) HandleGetBalance(w http.ResponseWriter, r *http.Request) {
@@ -151,7 +151,7 @@ func (s *APG) HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 // @Param tid query int true "Balance node type id"
 // @Param sd query string false "Balance startdate. Default first day of previous month"
 // @Param ed query string false "Balance enddate. Default last day of previous month"
-// @Success 200 {array} models.Json_sum
+// @Success 200 {object} models.Json_sum
 // @Router /balance_sum [get]
 func (s *APG) HandleBalanceSum(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -235,7 +235,7 @@ func (s *APG) HandleBalanceSum(w http.ResponseWriter, r *http.Request) {
 // @Param tid query int true "Main node type id"
 // @Param sd query string false "Balance startdate. Default first day of previous month"
 // @Param ed query string false "Balance enddate. Default last day of previous month"
-// @Success 200 {array} models.Json_sum
+// @Success 200 {object} models.Json_sum
 // @Router /balance_sum1 [get]
 func (s *APG) HandleBalanceSum1(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -309,7 +309,7 @@ func (s *APG) HandleBalanceSum1(w http.ResponseWriter, r *http.Request) {
 // @Param tid query int true "Main node type id"
 // @Param sd query string false "Balance startdate. Default first day of previous month"
 // @Param ed query string false "Balance enddate. Default last day of previous month"
-// @Success 200 {array} models.Json_sum
+// @Success 200 {object} models.Json_sum
 // @Router /balance_sum0 [get]
 func (s *APG) HandleBalanceSum0(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
@@ -385,7 +385,7 @@ func (s *APG) HandleBalanceSum0(w http.ResponseWriter, r *http.Request) {
 // @Param tid query int true "Main node type id"
 // @Param sd query string false "Balance startdate. Default first day of previous month"
 // @Param ed query string false "Balance enddate. Default last day of previous month"
-// @Success 200 {array} models.BalanceTab_sum
+// @Success 200 {object} models.BalanceTab_sum
 // @Router /balance_tab1 [get]
 func (s *APG) HandleBalanceTab1(w http.ResponseWriter, r *http.Request) {
 	gs := models.BalanceTab{}
@@ -519,7 +519,7 @@ func (s *APG) HandleBalanceTab1(w http.ResponseWriter, r *http.Request) {
 // @Param tid query int true "Main node type id"
 // @Param sd query string false "Balance startdate. Default first day of previous month"
 // @Param ed query string false "Balance enddate. Default last day of previous month"
-// @Success 200 {array} models.BalanceTab_sum
+// @Success 200 {object} models.BalanceTab_sum
 // @Router /balance_tab0 [get]
 func (s *APG) HandleBalanceTab0(w http.ResponseWriter, r *http.Request) {
 	gs := models.BalanceTab{}
@@ -647,7 +647,7 @@ func (s *APG) HandleBalanceTab0(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param id query int true "Node id"
 // @Param tid query int true "Node type id"
-// @Success 200 {array} models.BalanceTab_sum
+// @Success 200 {object} models.BalanceTab_sum
 // @Router /balance_branch [get]
 func (s *APG) HandleBalanceBranch(w http.ResponseWriter, r *http.Request) {
 	gs := models.BalanceTab{}

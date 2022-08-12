@@ -25,7 +25,7 @@ import (
 // @Param uzoname query string false "uzoname search pattern"
 // @Param ordering query string false "order by {id|uzoname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Uzo_count
+// @Success 200 {object} models.Uzo_count
 // @Failure 500
 // @Router /uzo [get]
 func (s *APG) HandleUzo(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleUzo(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddUzo true "New uzo"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /uzo_add [post]
 func (s *APG) HandleAddUzo(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddUzo(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Uzo true "Update uzo"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /uzo_upd [post]
 func (s *APG) HandleUpdUzo(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdUzo(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete uzo"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /uzo_del [post]
 func (s *APG) HandleDelUzo(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelUzo(w http.ResponseWriter, r *http.Request) {
 // @Tags uzo
 // @Produce  json
 // @Param id path int true "Uzo by id"
-// @Success 200 {array} models.Uzo_count
+// @Success 200 {object} models.Uzo_count
 // @Failure 500
 // @Router /uzo/{id} [get]
 func (s *APG) HandleGetUzo(w http.ResponseWriter, r *http.Request) {

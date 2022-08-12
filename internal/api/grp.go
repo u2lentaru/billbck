@@ -25,7 +25,7 @@ import (
 // @Param grpname query string false "grpname search pattern"
 // @Param ordering query string false "order by {id|grpname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.GRp_count
+// @Success 200 {object} models.GRp_count
 // @Failure 500
 // @Router /grp [get]
 func (s *APG) HandleGRp(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleGRp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddGRp true "New grp"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /grp_add [post]
 func (s *APG) HandleAddGRp(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddGRp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.GRp true "Update grp"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /grp_upd [post]
 func (s *APG) HandleUpdGRp(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdGRp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete grp"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /grp_del [post]
 func (s *APG) HandleDelGRp(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelGRp(w http.ResponseWriter, r *http.Request) {
 // @Tags grp
 // @Produce  json
 // @Param id path int true "GRp by id"
-// @Success 200 {array} models.GRp_count
+// @Success 200 {object} models.GRp_count
 // @Failure 500
 // @Router /grp/{id} [get]
 func (s *APG) HandleGetGRp(w http.ResponseWriter, r *http.Request) {

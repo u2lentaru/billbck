@@ -28,7 +28,7 @@ import (
 // @Param accnumber query string false "accnumber search pattern"
 // @Param ordering query string false "order by {subname|accnumber}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.SubBank_count
+// @Success 200 {object} models.SubBank_count
 // @Failure 500
 // @Router /sub_banks [get]
 func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +149,7 @@ func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ab body models.AddSubBank true "New subject account. Sets the first account of the subject active. Significant params: Sub.Id, Bank.Id, AccNumber"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_banks_add [post]
 func (s *APG) HandleAddSubBank(w http.ResponseWriter, r *http.Request) {
@@ -195,7 +195,7 @@ func (s *APG) HandleAddSubBank(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ub body models.SubBank true "Update subject account. Significant params: Id, Sub.Id, Bank.Id, AccNumber"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_banks_upd [post]
 func (s *APG) HandleUpdSubBank(w http.ResponseWriter, r *http.Request) {
@@ -243,7 +243,7 @@ func (s *APG) HandleUpdSubBank(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete subject accounts"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sub_banks_del [post]
 func (s *APG) HandleDelSubBank(w http.ResponseWriter, r *http.Request) {
@@ -291,7 +291,7 @@ func (s *APG) HandleDelSubBank(w http.ResponseWriter, r *http.Request) {
 // @Tags subject banks
 // @Produce  json
 // @Param id path int true "Subject account by id"
-// @Success 200 {array} models.SubBank_count
+// @Success 200 {object} models.SubBank_count
 // @Failure 500
 // @Router /sub_banks/{id} [get]
 func (s *APG) HandleGetSubBank(w http.ResponseWriter, r *http.Request) {
@@ -328,7 +328,7 @@ func (s *APG) HandleGetSubBank(w http.ResponseWriter, r *http.Request) {
 // @Tags subject banks
 // @Produce  json
 // @Param id path int true "Sets the active account of the subject by ID, sets inactive all other accounts of the subject."
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_banks_setactive/{id} [post]
 func (s *APG) HandleGetSubBankSetActive(w http.ResponseWriter, r *http.Request) {

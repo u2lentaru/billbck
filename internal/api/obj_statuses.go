@@ -25,7 +25,7 @@ import (
 // @Param objstatusname query string false "objstatusname search pattern"
 // @Param ordering query string false "order by {id|objstatusname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ObjStatus_count
+// @Success 200 {object} models.ObjStatus_count
 // @Failure 500
 // @Router /objstatuses [get]
 func (s *APG) HandleObjStatuses(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleObjStatuses(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddObjStatus true "New objstatus"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objstatuses_add [post]
 func (s *APG) HandleAddObjStatus(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddObjStatus(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ObjStatus true "Update objstatus"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objstatuses_upd [post]
 func (s *APG) HandleUpdObjStatus(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdObjStatus(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete objstatuses"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objstatuses_del [post]
 func (s *APG) HandleDelObjStatus(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelObjStatus(w http.ResponseWriter, r *http.Request) {
 // @Tags objstatuses
 // @Produce  json
 // @Param id path int true "ObjStatus by id"
-// @Success 200 {array} models.ObjStatus_count
+// @Success 200 {object} models.ObjStatus_count
 // @Failure 500
 // @Router /objstatuses/{id} [get]
 func (s *APG) HandleGetObjStatus(w http.ResponseWriter, r *http.Request) {

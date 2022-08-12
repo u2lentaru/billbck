@@ -26,7 +26,7 @@ import (
 // @Param oid query string false "object id"
 // @Param ordering query string false "order by {id|chargedate}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Charge_count
+// @Success 200 {object} models.Charge_count
 // @Failure 500
 // @Router /charges [get]
 func (s *APG) HandleCharges(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +138,7 @@ func (s *APG) HandleCharges(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddCharge true "New charge. Significant params: ChargeDate, Contract.Id, Object.Id, ObjTypeId, Pu.Id, ChargeType.Id, Qty, TransLoss, Lineloss, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /charges_add [post]
 func (s *APG) HandleAddCharge(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +184,7 @@ func (s *APG) HandleAddCharge(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Charge true "Update charge. Significant params: Id, ChargeDate, Contract.Id, Object.Id, ObjTypeId, Pu.Id, ChargeType.Id, Qty, TransLoss, Lineloss, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /charges_upd [post]
 func (s *APG) HandleUpdCharge(w http.ResponseWriter, r *http.Request) {
@@ -231,7 +231,7 @@ func (s *APG) HandleUpdCharge(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete charges"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /charges_del [post]
 func (s *APG) HandleDelCharge(w http.ResponseWriter, r *http.Request) {
@@ -279,7 +279,7 @@ func (s *APG) HandleDelCharge(w http.ResponseWriter, r *http.Request) {
 // @Tags charges
 // @Produce  json
 // @Param id path int true "Charge by id"
-// @Success 200 {array} models.Charge_count
+// @Success 200 {object} models.Charge_count
 // @Failure 500
 // @Router /charges/{id} [get]
 func (s *APG) HandleGetCharge(w http.ResponseWriter, r *http.Request) {
@@ -316,7 +316,7 @@ func (s *APG) HandleGetCharge(w http.ResponseWriter, r *http.Request) {
 // @Tags charges
 // @Produce  json
 // @Param id path int true "Charge run by period id"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /charges_run/{id} [get]
 func (s *APG) HandleChargeRun(w http.ResponseWriter, r *http.Request) {

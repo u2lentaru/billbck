@@ -25,7 +25,7 @@ import (
 // @Param transcurrname query string false "transcurrname search pattern"
 // @Param ordering query string false "order by {id|transcurrname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.TransCurr_count
+// @Success 200 {object} models.TransCurr_count
 // @Failure 500
 // @Router /transcurr [get]
 func (s *APG) HandleTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,7 @@ func (s *APG) HandleTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTransCurr true "New current transformer. Significant params: TransCurrName, TransType.Id, CheckDate(n), NextCheckDate(n), ProdDate(n), Serial1(n), Serial2(n), Serial3(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transcurr_add [post]
 func (s *APG) HandleAddTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -175,7 +175,7 @@ func (s *APG) HandleAddTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.TransCurr true "Update current transformer. Significant params: Id, TransCurrName, TransType.Id, CheckDate(n), NextCheckDate(n), ProdDate(n), Serial1(n), Serial2(n), Serial3(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transcurr_upd [post]
 func (s *APG) HandleUpdTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -222,7 +222,7 @@ func (s *APG) HandleUpdTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete current transformers"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /transcurr_del [post]
 func (s *APG) HandleDelTransCurr(w http.ResponseWriter, r *http.Request) {
@@ -270,7 +270,7 @@ func (s *APG) HandleDelTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Tags transcurr
 // @Produce  json
 // @Param id path int true "Current transformer by id"
-// @Success 200 {array} models.TransCurr_count
+// @Success 200 {object} models.TransCurr_count
 // @Failure 500
 // @Router /transcurr/{id} [get]
 func (s *APG) HandleGetTransCurr(w http.ResponseWriter, r *http.Request) {

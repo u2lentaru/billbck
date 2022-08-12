@@ -25,7 +25,7 @@ import (
 // @Param transpwrtypename query string false "transpwrtypename search pattern"
 // @Param ordering query string false "order by {id|transpwrtypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.TransPwrType_count
+// @Success 200 {object} models.TransPwrType_count
 // @Failure 500
 // @Router /transpwrtypes [get]
 func (s *APG) HandleTransPwrTypes(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleTransPwrTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTransPwrType true "New transpwrtype. Significant params: TransPwrTypeName, ShortCircuitPower, IdlingLossPower, NominalPower"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transpwrtypes_add [post]
 func (s *APG) HandleAddTransPwrType(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddTransPwrType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.TransPwrType true "Update transpwrtype. Significant params: Id, TransPwrTypeName, ShortCircuitPower, IdlingLossPower, NominalPower"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transpwrtypes_upd [post]
 func (s *APG) HandleUpdTransPwrType(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdTransPwrType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete transpwrtypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /transpwrtypes_del [post]
 func (s *APG) HandleDelTransPwrType(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func (s *APG) HandleDelTransPwrType(w http.ResponseWriter, r *http.Request) {
 // @Tags transpwrtypes
 // @Produce  json
 // @Param id path int true "TransPwrType by id"
-// @Success 200 {array} models.TransPwrType_count
+// @Success 200 {object} models.TransPwrType_count
 // @Failure 500
 // @Router /transpwrtypes/{id} [get]
 func (s *APG) HandleGetTransPwrType(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ import (
 // @Param customergroupname query string false "customergroupname search pattern"
 // @Param ordering query string false "order by {id|customergroupname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.CustomerGroup_count
+// @Success 200 {object} models.CustomerGroup_count
 // @Failure 500
 // @Router /customergroups [get]
 func (s *APG) HandleCustomerGroups(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleCustomerGroups(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddCustomerGroup true "New customergroup"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /customergroups_add [post]
 func (s *APG) HandleAddCustomerGroup(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddCustomerGroup(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.CustomerGroup true "Update customergroup"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /customergroups_upd [post]
 func (s *APG) HandleUpdCustomerGroup(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdCustomerGroup(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete customergroups"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /customergroups_del [post]
 func (s *APG) HandleDelCustomerGroup(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelCustomerGroup(w http.ResponseWriter, r *http.Request) {
 // @Tags customergroups
 // @Produce  json
 // @Param id path int true "CustomerGroup by id"
-// @Success 200 {array} models.CustomerGroup_count
+// @Success 200 {object} models.CustomerGroup_count
 // @Failure 500
 // @Router /customergroups/{id} [get]
 func (s *APG) HandleGetCustomerGroup(w http.ResponseWriter, r *http.Request) {

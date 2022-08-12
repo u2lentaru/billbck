@@ -26,7 +26,7 @@ import (
 // @Param cityid query int false "cityid search pattern"
 // @Param ordering query string false "order by {id|streetname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Street_count
+// @Success 200 {object} models.Street_count
 // @Failure 500
 // @Router /streets [get]
 func (s *APG) HandleStreets(w http.ResponseWriter, r *http.Request) {
@@ -137,7 +137,7 @@ func (s *APG) HandleStreets(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddStreet true "New street"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /streets_add [post]
 func (s *APG) HandleAddStreet(w http.ResponseWriter, r *http.Request) {
@@ -182,7 +182,7 @@ func (s *APG) HandleAddStreet(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Street true "Update street"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /streets_upd [post]
 func (s *APG) HandleUpdStreet(w http.ResponseWriter, r *http.Request) {
@@ -227,7 +227,7 @@ func (s *APG) HandleUpdStreet(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.StreetClose true "Delete street"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /streets_del [post]
 func (s *APG) HandleDelStreet(w http.ResponseWriter, r *http.Request) {
@@ -271,7 +271,7 @@ func (s *APG) HandleDelStreet(w http.ResponseWriter, r *http.Request) {
 // @Tags streets
 // @Produce  json
 // @Param id path int true "Street by id"
-// @Success 200 {array} models.Street_count
+// @Success 200 {object} models.Street_count
 // @Failure 500
 // @Router /streets/{id} [get]
 func (s *APG) HandleGetStreet(w http.ResponseWriter, r *http.Request) {

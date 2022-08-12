@@ -25,7 +25,7 @@ import (
 // @Param violationname query string false "violationname search pattern"
 // @Param ordering query string false "order by {id|violationname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Violation_count
+// @Success 200 {object} models.Violation_count
 // @Failure 500
 // @Router /violations [get]
 func (s *APG) HandleViolations(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleViolations(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddViolation true "New violation"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /violations_add [post]
 func (s *APG) HandleAddViolation(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddViolation(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Violation true "Update violation"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /violations_upd [post]
 func (s *APG) HandleUpdViolation(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdViolation(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete violations"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /violations_del [post]
 func (s *APG) HandleDelViolation(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelViolation(w http.ResponseWriter, r *http.Request) {
 // @Tags violations
 // @Produce  json
 // @Param id path int true "Violation by id"
-// @Success 200 {array} models.Violation_count
+// @Success 200 {object} models.Violation_count
 // @Failure 500
 // @Router /violations/{id} [get]
 func (s *APG) HandleGetViolation(w http.ResponseWriter, r *http.Request) {

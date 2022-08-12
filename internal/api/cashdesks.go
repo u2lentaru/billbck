@@ -25,7 +25,7 @@ import (
 // @Param cashdeskname query string false "cashdeskname search pattern"
 // @Param ordering query string false "order by {id|cashdeskname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Cashdesk_count
+// @Success 200 {object} models.Cashdesk_count
 // @Failure 500
 // @Router /cashdesks [get]
 func (s *APG) HandleCashdesks(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleCashdesks(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddCashdesk true "New cashdesk"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /cashdesks_add [post]
 func (s *APG) HandleAddCashdesk(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddCashdesk(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Cashdesk true "Update cashdesk"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /cashdesks_upd [post]
 func (s *APG) HandleUpdCashdesk(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdCashdesk(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete cashdesks"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /cashdesks_del [post]
 func (s *APG) HandleDelCashdesk(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelCashdesk(w http.ResponseWriter, r *http.Request) {
 // @Tags cashdesks
 // @Produce  json
 // @Param id path int true "Cashdesk by id"
-// @Success 200 {array} models.Cashdesk_count
+// @Success 200 {object} models.Cashdesk_count
 // @Failure 500
 // @Router /cashdesks/{id} [get]
 func (s *APG) HandleGetCashdesk(w http.ResponseWriter, r *http.Request) {

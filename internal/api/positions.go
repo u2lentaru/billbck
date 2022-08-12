@@ -25,7 +25,7 @@ import (
 // @Param positionname query string false "positionname search pattern"
 // @Param ordering query string false "order by {id|positionname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Position_count
+// @Success 200 {object} models.Position_count
 // @Failure 500
 // @Router /positions [get]
 func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +128,7 @@ func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ap body models.AddPosition true "New Position"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /positions_add [post]
 func (s *APG) HandleAddPosition(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +174,7 @@ func (s *APG) HandleAddPosition(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param up body models.Position true "Update position"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /positions_upd [post]
 func (s *APG) HandleUpdPosition(w http.ResponseWriter, r *http.Request) {
@@ -221,7 +221,7 @@ func (s *APG) HandleUpdPosition(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param dp body models.Json_ids true "Delete positions"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /positions_del [post]
 func (s *APG) HandleDelPosition(w http.ResponseWriter, r *http.Request) {
@@ -273,7 +273,7 @@ func (s *APG) HandleDelPosition(w http.ResponseWriter, r *http.Request) {
 // @Tags positions
 // @Produce  json
 // @Param id path int true "Position by id"
-// @Success 200 {array} models.Position_count
+// @Success 200 {object} models.Position_count
 // @Failure 500
 // @Router /positions/{id} [get]
 func (s *APG) HandleGetPosition(w http.ResponseWriter, r *http.Request) {

@@ -26,7 +26,7 @@ import (
 // @Param cableresistancename query string false "cableresistancename search pattern"
 // @Param ordering query string false "order by {id|cableresistancename|objectname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ObjLine_count
+// @Success 200 {object} models.ObjLine_count
 // @Failure 500
 // @Router /objlines [get]
 func (s *APG) HandleObjLines(w http.ResponseWriter, r *http.Request) {
@@ -145,7 +145,7 @@ func (s *APG) HandleObjLines(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddObjLine true "New objtranscurr. Significant params: ObjId, ObjTypeId, CableResistance.Id, LineLength, Startdate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objlines_add [post]
 func (s *APG) HandleAddObjLine(w http.ResponseWriter, r *http.Request) {
@@ -190,7 +190,7 @@ func (s *APG) HandleAddObjLine(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ObjLine true "Update objtranscurr. Significant params: Id, ObjId, ObjTypeId, CableResistance.Id, LineLength, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objlines_upd [post]
 func (s *APG) HandleUpdObjLine(w http.ResponseWriter, r *http.Request) {
@@ -236,7 +236,7 @@ func (s *APG) HandleUpdObjLine(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete objlines"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objlines_del [post]
 func (s *APG) HandleDelObjLine(w http.ResponseWriter, r *http.Request) {
@@ -283,7 +283,7 @@ func (s *APG) HandleDelObjLine(w http.ResponseWriter, r *http.Request) {
 // @Tags objlines
 // @Produce  json
 // @Param id path int true "Objline by id"
-// @Success 200 {array} models.ObjLine_count
+// @Success 200 {object} models.ObjLine_count
 // @Failure 500
 // @Router /objlines/{id} [get]
 func (s *APG) HandleGetObjLine(w http.ResponseWriter, r *http.Request) {
@@ -322,7 +322,7 @@ func (s *APG) HandleGetObjLine(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param objid query string false "obj&tgu id"
 // @Param tid query string false "obj&tgu type id (obj - type = 0, tgu - type > 0)"
-// @Success 200 {array} models.ObjLine_count
+// @Success 200 {object} models.ObjLine_count
 // @Failure 500
 // @Router /objlines_obj [get]
 func (s *APG) HandleObjLinesByObj(w http.ResponseWriter, r *http.Request) {

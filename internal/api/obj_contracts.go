@@ -30,7 +30,7 @@ import (
 // @Param active query boolean false "enddate is null"
 // @Param ordering query string false "order by {object|contract|startdate}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ObjContract_count
+// @Success 200 {object} models.ObjContract_count
 // @Failure 500
 // @Router /objcontracts [get]
 func (s *APG) HandleObjContracts(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +174,7 @@ func (s *APG) HandleObjContracts(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddObjContract true "New objcontract. Old objcontract of the object will be closed. Significant params: Contract.Id, Object.Id, ObjTypeId, Startdate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objcontracts_add [post]
 func (s *APG) HandleAddObjContract(w http.ResponseWriter, r *http.Request) {
@@ -220,7 +220,7 @@ func (s *APG) HandleAddObjContract(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ObjContract true "Update objcontract. Significant params: Contract.Id, Object.Id, ObjTypeId, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objcontracts_upd [post]
 func (s *APG) HandleUpdObjContract(w http.ResponseWriter, r *http.Request) {
@@ -266,7 +266,7 @@ func (s *APG) HandleUpdObjContract(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.IdClose true "Close objcontract. Significant params: Id, CloseDate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objcontracts_del [post]
 func (s *APG) HandleDelObjContract(w http.ResponseWriter, r *http.Request) {
@@ -319,7 +319,7 @@ func (s *APG) HandleDelObjContract(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param id path int true "ObjContract by id"
 // @Param actualdate query string false "actual date"
-// @Success 200 {array} models.ObjContract_count
+// @Success 200 {object} models.ObjContract_count
 // @Failure 500
 // @Router /objcontracts/{id} [get]
 func (s *APG) HandleGetObjContract(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ import (
 // @Param servicetypename query string false "servicetypename search pattern"
 // @Param ordering query string false "order by {id|servicetypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ServiceType_count
+// @Success 200 {object} models.ServiceType_count
 // @Failure 500
 // @Router /servicetypes [get]
 func (s *APG) HandleServiceTypes(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleServiceTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddServiceType true "New servicetype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /servicetypes_add [post]
 func (s *APG) HandleAddServiceType(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddServiceType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ServiceType true "Update servicetype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /servicetypes_upd [post]
 func (s *APG) HandleUpdServiceType(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdServiceType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete servicetypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /servicetypes_del [post]
 func (s *APG) HandleDelServiceType(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func (s *APG) HandleDelServiceType(w http.ResponseWriter, r *http.Request) {
 // @Tags servicetypes
 // @Produce  json
 // @Param id path int true "ServiceType by id"
-// @Success 200 {array} models.ServiceType_count
+// @Success 200 {object} models.ServiceType_count
 // @Failure 500
 // @Router /servicetypes/{id} [get]
 func (s *APG) HandleGetServiceType(w http.ResponseWriter, r *http.Request) {

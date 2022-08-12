@@ -25,7 +25,7 @@ import (
 // @Param reliabilityname query string false "reliabilityname search pattern"
 // @Param ordering query string false "order by {id|reliabilityname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Reliability_count
+// @Success 200 {object} models.Reliability_count
 // @Failure 500
 // @Router /reliabilities [get]
 func (s *APG) HandleReliabilities(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleReliabilities(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddReliability true "New reliability"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /reliabilities_add [post]
 func (s *APG) HandleAddReliability(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddReliability(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Reliability true "Update reliability"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /reliabilities_upd [post]
 func (s *APG) HandleUpdReliability(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdReliability(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete reliabilities"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /reliabilities_del [post]
 func (s *APG) HandleDelReliability(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelReliability(w http.ResponseWriter, r *http.Request) {
 // @Tags reliabilities
 // @Produce  json
 // @Param id path int true "Reliability by id"
-// @Success 200 {array} models.Reliability_count
+// @Success 200 {object} models.Reliability_count
 // @Failure 500
 // @Router /reliabilities/{id} [get]
 func (s *APG) HandleGetReliability(w http.ResponseWriter, r *http.Request) {

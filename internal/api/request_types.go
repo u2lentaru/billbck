@@ -24,7 +24,7 @@ import (
 // @Param rkid query string false "request kind id search pattern"
 // @Param ordering query string false "order by {id|requesttypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.RequestType_count
+// @Success 200 {object} models.RequestType_count
 // @Failure 500
 // @Router /requesttypes [get]
 func (s *APG) HandleRequestTypes(w http.ResponseWriter, r *http.Request) {
@@ -140,7 +140,7 @@ func (s *APG) HandleRequestTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddRequestType true "New requesttype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requesttypes_add [post]
 func (s *APG) HandleAddRequestType(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +185,7 @@ func (s *APG) HandleAddRequestType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.RequestType true "Update requesttype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requesttypes_upd [post]
 func (s *APG) HandleUpdRequestType(w http.ResponseWriter, r *http.Request) {
@@ -230,7 +230,7 @@ func (s *APG) HandleUpdRequestType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete requesttypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /requesttypes_del [post]
 func (s *APG) HandleDelRequestType(w http.ResponseWriter, r *http.Request) {
@@ -278,7 +278,7 @@ func (s *APG) HandleDelRequestType(w http.ResponseWriter, r *http.Request) {
 // @Tags requesttypes
 // @Produce  json
 // @Param id path int true "RequestType by id"
-// @Success 200 {array} models.RequestType_count
+// @Success 200 {object} models.RequestType_count
 // @Failure 500
 // @Router /requesttypes/{id} [get]
 func (s *APG) HandleGetRequestType(w http.ResponseWriter, r *http.Request) {

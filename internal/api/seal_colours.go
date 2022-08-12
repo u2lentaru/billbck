@@ -25,7 +25,7 @@ import (
 // @Param sealcolourname query string false "sealcolourname search pattern"
 // @Param ordering query string false "order by {id|sealcolourname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.SealColour_count
+// @Success 200 {object} models.SealColour_count
 // @Failure 500
 // @Router /sealcolours [get]
 func (s *APG) HandleSealColours(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleSealColours(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddSealColour true "New sealcolour"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sealcolours_add [post]
 func (s *APG) HandleAddSealColour(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddSealColour(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.SealColour true "Update sealcolour"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sealcolours_upd [post]
 func (s *APG) HandleUpdSealColour(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdSealColour(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete sealcolours"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sealcolours_del [post]
 func (s *APG) HandleDelSealColour(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func (s *APG) HandleDelSealColour(w http.ResponseWriter, r *http.Request) {
 // @Tags sealcolours
 // @Produce  json
 // @Param id path int true "SealColour by id"
-// @Success 200 {array} models.SealColour_count
+// @Success 200 {object} models.SealColour_count
 // @Failure 500
 // @Router /sealcolours/{id} [get]
 func (s *APG) HandleGetSealColour(w http.ResponseWriter, r *http.Request) {

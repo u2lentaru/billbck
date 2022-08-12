@@ -26,7 +26,7 @@ import (
 // @Param oid query string false "object id"
 // @Param ordering query string false "order by {id|paymentdate}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Payment_count
+// @Success 200 {object} models.Payment_count
 // @Failure 500
 // @Router /payments [get]
 func (s *APG) HandlePayments(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +139,7 @@ func (s *APG) HandlePayments(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddPayment true "New payment. Significant params: PaymentDate, Contract.Id, Object.Id, PaymentType.Id, ChargeType.Id, Cashdesk.Id, BundleNumber, Amount"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /payments_add [post]
 func (s *APG) HandleAddPayment(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +184,7 @@ func (s *APG) HandleAddPayment(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Payment true "Update payment. Significant params: Id, PaymentDate, Contract.Id, Object.Id, PaymentType.Id, ChargeType.Id, Cashdesk.Id, BundleNumber, Amount"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /payments_upd [post]
 func (s *APG) HandleUpdPayment(w http.ResponseWriter, r *http.Request) {
@@ -230,7 +230,7 @@ func (s *APG) HandleUpdPayment(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete payments"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /payments_del [post]
 func (s *APG) HandleDelPayment(w http.ResponseWriter, r *http.Request) {
@@ -278,7 +278,7 @@ func (s *APG) HandleDelPayment(w http.ResponseWriter, r *http.Request) {
 // @Tags payments
 // @Produce  json
 // @Param id path int true "Payment by id"
-// @Success 200 {array} models.Payment_count
+// @Success 200 {object} models.Payment_count
 // @Failure 500
 // @Router /payments/{id} [get]
 func (s *APG) HandleGetPayment(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ import (
 // @Param claimtypename query string false "claimtypename search pattern"
 // @Param ordering query string false "order by {id|claimtypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ClaimType_count
+// @Success 200 {object} models.ClaimType_count
 // @Failure 500
 // @Router /claimtypes [get]
 func (s *APG) HandleClaimTypes(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleClaimTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddClaimType true "New claimtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /claimtypes_add [post]
 func (s *APG) HandleAddClaimType(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddClaimType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ClaimType true "Update claimtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /claimtypes_upd [post]
 func (s *APG) HandleUpdClaimType(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdClaimType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete claimtypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /claimtypes_del [post]
 func (s *APG) HandleDelClaimType(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func (s *APG) HandleDelClaimType(w http.ResponseWriter, r *http.Request) {
 // @Tags claimtypes
 // @Produce  json
 // @Param id path int true "ClaimType by id"
-// @Success 200 {array} models.ClaimType_count
+// @Success 200 {object} models.ClaimType_count
 // @Failure 500
 // @Router /claimtypes/{id} [get]
 func (s *APG) HandleGetClaimType(w http.ResponseWriter, r *http.Request) {

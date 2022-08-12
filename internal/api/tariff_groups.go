@@ -25,7 +25,7 @@ import (
 // @Param tariffgroupname query string false "tariffgroupname search pattern"
 // @Param ordering query string false "order by {id|tariffgroupname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.TariffGroup_count
+// @Success 200 {object} models.TariffGroup_count
 // @Failure 500
 // @Router /tariffgroups [get]
 func (s *APG) HandleTariffGroups(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleTariffGroups(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTariffGroup true "New tariffgroup"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tariffgroups_add [post]
 func (s *APG) HandleAddTariffGroup(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddTariffGroup(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.TariffGroup true "Update tariffgroup"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tariffgroups_upd [post]
 func (s *APG) HandleUpdTariffGroup(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdTariffGroup(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete tariffgroups"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /tariffgroups_del [post]
 func (s *APG) HandleDelTariffGroup(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelTariffGroup(w http.ResponseWriter, r *http.Request) {
 // @Tags tariffgroups
 // @Produce  json
 // @Param id path int true "TariffGroup by id"
-// @Success 200 {array} models.TariffGroup_count
+// @Success 200 {object} models.TariffGroup_count
 // @Failure 500
 // @Router /tariffgroups/{id} [get]
 func (s *APG) HandleGetTariffGroup(w http.ResponseWriter, r *http.Request) {

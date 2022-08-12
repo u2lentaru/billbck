@@ -25,7 +25,7 @@ import (
 // @Param subtypedescr query string false "subtypedescr search pattern"
 // @Param ordering query string false "order by {subtypename|subtypedescr}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.SubType_count
+// @Success 200 {object} models.SubType_count
 // @Failure 500
 // @Router /sub_types [get]
 func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
@@ -137,7 +137,7 @@ func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ast body models.AddSubType true "New subType"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_types_add [post]
 func (s *APG) HandleAddSubType(w http.ResponseWriter, r *http.Request) {
@@ -183,7 +183,7 @@ func (s *APG) HandleAddSubType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ust body models.SubType true "Update subtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_types_upd [post]
 func (s *APG) HandleUpdSubType(w http.ResponseWriter, r *http.Request) {
@@ -230,7 +230,7 @@ func (s *APG) HandleUpdSubType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param dst body models.Json_ids true "Delete subtypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sub_types_del [post]
 func (s *APG) HandleDelSubType(w http.ResponseWriter, r *http.Request) {
@@ -283,7 +283,7 @@ func (s *APG) HandleDelSubType(w http.ResponseWriter, r *http.Request) {
 // @Tags sub types
 // @Produce  json
 // @Param id path int true "Subjects type by id"
-// @Success 200 {array} models.SubType_count
+// @Success 200 {object} models.SubType_count
 // @Failure 500
 // @Router /sub_types/{id} [get]
 func (s *APG) HandleGetSubType(w http.ResponseWriter, r *http.Request) {

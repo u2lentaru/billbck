@@ -28,7 +28,7 @@ import (
 // @Param objectid query int false "objectid search pattern"
 // @Param ordering query string false "order by {actnumber|objectname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Act_count
+// @Success 200 {object} models.Act_count
 // @Failure 500
 // @Router /acts [get]
 func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
@@ -160,7 +160,7 @@ func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddAct true "New act. Significant params: ActType.Id, ActNumber, ActDate, Object.Id, Staff.Id, Notes"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acts_add [post]
 func (s *APG) HandleAddAct(w http.ResponseWriter, r *http.Request) {
@@ -206,7 +206,7 @@ func (s *APG) HandleAddAct(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Act true "Update act. Significant params: Id, ActType.Id, ActNumber, ActDate, Object.Id, Staff.Id, Notes"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acts_upd [post]
 func (s *APG) HandleUpdAct(w http.ResponseWriter, r *http.Request) {
@@ -252,7 +252,7 @@ func (s *APG) HandleUpdAct(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete acts"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /acts_del [post]
 func (s *APG) HandleDelAct(w http.ResponseWriter, r *http.Request) {
@@ -299,7 +299,7 @@ func (s *APG) HandleDelAct(w http.ResponseWriter, r *http.Request) {
 // @Tags acts
 // @Produce  json
 // @Param id path int true "Act by id"
-// @Success 200 {array} models.Act_count
+// @Success 200 {object} models.Act_count
 // @Failure 500
 // @Router /acts/{id} [get]
 func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
@@ -340,7 +340,7 @@ func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param actid query int true "actid"
 // @Param activationdate query string true "activation date"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acts_activate [get]
 func (s *APG) HandleActActivate(w http.ResponseWriter, r *http.Request) {

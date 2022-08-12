@@ -25,7 +25,7 @@ import (
 // @Param packetnumber query string false "packetnumber search pattern"
 // @Param ordering query string false "order by {id|packetnumber}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Seal_count
+// @Success 200 {object} models.Seal_count
 // @Failure 500
 // @Router /seals [get]
 func (s *APG) HandleSeals(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +128,7 @@ func (s *APG) HandleSeals(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddSeal true "New seal. Significant params: PacketNumber, Area.Id, Staff.Id, SealType.Id, SealColour.Id, SealStatus.Id, IssueDate, ReportDate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /seals_add [post]
 func (s *APG) HandleAddSeal(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +174,7 @@ func (s *APG) HandleAddSeal(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Seal true "Update seal. Significant params: Id, PacketNumber, Area.Id, Staff.Id, SealType.Id, SealColour.Id, SealStatus.Id, IssueDate, ReportDate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /seals_upd [post]
 func (s *APG) HandleUpdSeal(w http.ResponseWriter, r *http.Request) {
@@ -221,7 +221,7 @@ func (s *APG) HandleUpdSeal(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete seals"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /seals_del [post]
 func (s *APG) HandleDelSeal(w http.ResponseWriter, r *http.Request) {
@@ -269,7 +269,7 @@ func (s *APG) HandleDelSeal(w http.ResponseWriter, r *http.Request) {
 // @Tags seals
 // @Produce  json
 // @Param id path int true "Seal by id"
-// @Success 200 {array} models.Seal_count
+// @Success 200 {object} models.Seal_count
 // @Failure 500
 // @Router /seals/{id} [get]
 func (s *APG) HandleGetSeal(w http.ResponseWriter, r *http.Request) {

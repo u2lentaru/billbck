@@ -25,7 +25,7 @@ import (
 // @Param buildingtypename query string false "buildingtypename search pattern"
 // @Param ordering query string false "order by {id|buildingtypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.BuildingType_count
+// @Success 200 {object} models.BuildingType_count
 // @Failure 500
 // @Router /building_types [get]
 func (s *APG) HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +128,7 @@ func (s *APG) HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddBuildingType true "New building type"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /building_types_add [post]
 func (s *APG) HandleAddBuildingType(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +173,7 @@ func (s *APG) HandleAddBuildingType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.BuildingType true "Update building type"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /building_types_upd [post]
 func (s *APG) HandleUpdBuildingType(w http.ResponseWriter, r *http.Request) {
@@ -219,7 +219,7 @@ func (s *APG) HandleUpdBuildingType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete building types"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /building_types_del [post]
 func (s *APG) HandleDelBuildingType(w http.ResponseWriter, r *http.Request) {
@@ -266,7 +266,7 @@ func (s *APG) HandleDelBuildingType(w http.ResponseWriter, r *http.Request) {
 // @Tags building types
 // @Produce  json
 // @Param id path int true "Building type by id"
-// @Success 200 {array} models.BuildingType_count
+// @Success 200 {object} models.BuildingType_count
 // @Failure 500
 // @Router /building_types/{id} [get]
 func (s *APG) HandleGetBuildingType(w http.ResponseWriter, r *http.Request) {

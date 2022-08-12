@@ -25,7 +25,7 @@ import (
 // @Param paymenttypename query string false "paymenttypename search pattern"
 // @Param ordering query string false "order by {id|paymenttypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.PaymentType_count
+// @Success 200 {object} models.PaymentType_count
 // @Failure 500
 // @Router /paymenttypes [get]
 func (s *APG) HandlePaymentTypes(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandlePaymentTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddPaymentType true "New paymenttype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /paymenttypes_add [post]
 func (s *APG) HandleAddPaymentType(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddPaymentType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.PaymentType true "Update paymenttype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /paymenttypes_upd [post]
 func (s *APG) HandleUpdPaymentType(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdPaymentType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete paymenttypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /paymenttypes_del [post]
 func (s *APG) HandleDelPaymentType(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelPaymentType(w http.ResponseWriter, r *http.Request) {
 // @Tags paymenttypes
 // @Produce  json
 // @Param id path int true "PaymentType by id"
-// @Success 200 {array} models.PaymentType_count
+// @Success 200 {object} models.PaymentType_count
 // @Failure 500
 // @Router /paymenttypes/{id} [get]
 func (s *APG) HandleGetPaymentType(w http.ResponseWriter, r *http.Request) {

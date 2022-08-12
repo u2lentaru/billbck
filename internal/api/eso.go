@@ -25,7 +25,7 @@ import (
 // @Param esoname query string false "esoname search pattern"
 // @Param ordering query string false "order by {id|esoname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Eso_count
+// @Success 200 {object} models.Eso_count
 // @Failure 500
 // @Router /eso [get]
 func (s *APG) HandleEso(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleEso(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddEso true "New eso"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /eso_add [post]
 func (s *APG) HandleAddEso(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddEso(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Eso true "Update eso"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /eso_upd [post]
 func (s *APG) HandleUpdEso(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdEso(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete eso"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /eso_del [post]
 func (s *APG) HandleDelEso(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelEso(w http.ResponseWriter, r *http.Request) {
 // @Tags eso
 // @Produce  json
 // @Param id path int true "Eso by id"
-// @Success 200 {array} models.Eso_count
+// @Success 200 {object} models.Eso_count
 // @Failure 500
 // @Router /eso/{id} [get]
 func (s *APG) HandleGetEso(w http.ResponseWriter, r *http.Request) {

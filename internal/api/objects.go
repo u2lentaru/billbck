@@ -28,7 +28,7 @@ import (
 // @Param active query boolean false "active contract"
 // @Param ordering query string false "order by {id|objectname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Object_count
+// @Success 200 {object} models.Object_count
 // @Failure 500
 // @Router /objects [get]
 func (s *APG) HandleObjects(w http.ResponseWriter, r *http.Request) {
@@ -166,7 +166,7 @@ func (s *APG) HandleObjects(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddObject true "New object. Significant params: ObjectName, House.Id, FlatNumber(n), ObjType.Id, RegQty, Uzo.Id, TariffGroup.Id, CalculationType.Id, ObjStatus.Id, Notes(n), MffId(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objects_add [post]
 func (s *APG) HandleAddObject(w http.ResponseWriter, r *http.Request) {
@@ -212,7 +212,7 @@ func (s *APG) HandleAddObject(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Object true "Update object. Significant params: Id, ObjectName, House.Id, FlatNumber(n), ObjType.Id, RegQty, Uzo.Id, TariffGroup.Id, CalculationType.Id, ObjStatus.Id, Notes(n), MffId(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objects_upd [post]
 func (s *APG) HandleUpdObject(w http.ResponseWriter, r *http.Request) {
@@ -259,7 +259,7 @@ func (s *APG) HandleUpdObject(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete objects"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objects_del [post]
 func (s *APG) HandleDelObject(w http.ResponseWriter, r *http.Request) {
@@ -307,7 +307,7 @@ func (s *APG) HandleDelObject(w http.ResponseWriter, r *http.Request) {
 // @Tags objects
 // @Produce  json
 // @Param id path int true "Object by id"
-// @Success 200 {array} models.Object_count
+// @Success 200 {object} models.Object_count
 // @Failure 500
 // @Router /objects/{id} [get]
 func (s *APG) HandleGetObject(w http.ResponseWriter, r *http.Request) {
@@ -352,7 +352,7 @@ func (s *APG) HandleGetObject(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param id path int true "Object by id"
 // @Param active query boolean false "active contracts"
-// @Success 200 {array} models.ObjContract
+// @Success 200 {object} models.ObjContract
 // @Failure 500
 // @Router /objects_getcontract/{id} [get]
 func (s *APG) HandleGetObjectContract(w http.ResponseWriter, r *http.Request) {
@@ -422,7 +422,7 @@ func (s *APG) HandleGetObjectContract(w http.ResponseWriter, r *http.Request) {
 // @Tags objects
 // @Produce  json
 // @Param hid path int true "House id"
-// @Success 200 {array} models.Object_count
+// @Success 200 {object} models.Object_count
 // @Failure 500
 // @Router /objects_mff/{hid} [get]
 func (s *APG) HandleGetObjectMff(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ import (
 // @Param calculationtypename query string false "calculationtypename search pattern"
 // @Param ordering query string false "order by {id|calculationtypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.CalculationType_count
+// @Success 200 {object} models.CalculationType_count
 // @Failure 500
 // @Router /calculationtypes [get]
 func (s *APG) HandleCalculationTypes(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleCalculationTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddCalculationType true "New calculationtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /calculationtypes_add [post]
 func (s *APG) HandleAddCalculationType(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddCalculationType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.CalculationType true "Update calculationtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /calculationtypes_upd [post]
 func (s *APG) HandleUpdCalculationType(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdCalculationType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete calculationtypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /calculationtypes_del [post]
 func (s *APG) HandleDelCalculationType(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelCalculationType(w http.ResponseWriter, r *http.Request) {
 // @Tags calculationtypes
 // @Produce  json
 // @Param id path int true "CalculationType by id"
-// @Success 200 {array} models.CalculationType_count
+// @Success 200 {object} models.CalculationType_count
 // @Failure 500
 // @Router /calculationtypes/{id} [get]
 func (s *APG) HandleGetCalculationType(w http.ResponseWriter, r *http.Request) {

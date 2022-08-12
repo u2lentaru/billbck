@@ -26,7 +26,7 @@ import (
 // @Param formtypedescr query string false "formtypedescr search pattern"
 // @Param ordering query string false "order by {formtypename|formtypedescr}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.FormType_count
+// @Success 200 {object} models.FormType_count
 // @Failure 400,404
 // @Failure 500
 // @Router /form_types [get]
@@ -162,7 +162,7 @@ func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Param ft body models.FormType true "New FormType"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 400,404
 // @Failure 500
 // @Router /form_types_add [post]
@@ -220,7 +220,7 @@ func (s *APG) HandleAddFormType(w http.ResponseWriter, r *http.Request) {
 // @Accept  json
 // @Produce  json
 // @Param ft body models.FormType true "Update formtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /form_types_upd [post]
 func (s *APG) HandleUpdFormType(w http.ResponseWriter, r *http.Request) {
@@ -280,7 +280,7 @@ func (s *APG) HandleUpdFormType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ft body models.Json_ids true "Delete formtype"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /form_types_del [post]
 func (s *APG) HandleDelFormType(w http.ResponseWriter, r *http.Request) {
@@ -341,7 +341,7 @@ func (s *APG) HandleDelFormType(w http.ResponseWriter, r *http.Request) {
 // @Tags form types
 // @Produce  json
 // @Param id path int true "Form type by id"
-// @Success 200 {array} models.FormType_count
+// @Success 200 {object} models.FormType_count
 // @Failure 500
 // @Router /form_types/{id} [get]
 func (s *APG) HandleGetFormType(w http.ResponseWriter, r *http.Request) {

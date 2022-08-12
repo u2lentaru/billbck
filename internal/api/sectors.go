@@ -25,7 +25,7 @@ import (
 // @Param sectorname query string false "sectorname search pattern"
 // @Param ordering query string false "order by {id|sectorname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Sector_count
+// @Success 200 {object} models.Sector_count
 // @Failure 500
 // @Router /sectors [get]
 func (s *APG) HandleSectors(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleSectors(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddSector true "New sector"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sectors_add [post]
 func (s *APG) HandleAddSector(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddSector(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Sector true "Update sector"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sectors_upd [post]
 func (s *APG) HandleUpdSector(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdSector(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete sectors"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sectors_del [post]
 func (s *APG) HandleDelSector(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelSector(w http.ResponseWriter, r *http.Request) {
 // @Tags sectors
 // @Produce  json
 // @Param id path int true "Sector by id"
-// @Success 200 {array} models.Sector_count
+// @Success 200 {object} models.Sector_count
 // @Failure 500
 // @Router /sectors/{id} [get]
 func (s *APG) HandleGetSector(w http.ResponseWriter, r *http.Request) {

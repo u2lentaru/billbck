@@ -37,7 +37,7 @@ func NullableString(s string) sql.NullString {
 // @Param active query boolean false "active pu"
 // @Param ordering query string false "order by {objectname|streetname|startdate}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Pu_count
+// @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /pu [get]
 func (s *APG) HandlePu(w http.ResponseWriter, r *http.Request) {
@@ -206,7 +206,7 @@ func (s *APG) HandlePu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddPu true "New pu. Significant params: Object.Id, PuObjectType, PuType.Id, PuNumber, InstallDate, CheckInterval, InitialValue, DevStopped, Startdate, Pid"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /pu_add [post]
 func (s *APG) HandleAddPu(w http.ResponseWriter, r *http.Request) {
@@ -253,7 +253,7 @@ func (s *APG) HandleAddPu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Pu true "Update pu. Significant params: Id, Object.Id, PuObjectType, PuType.Id, PuNumber, InstallDate, CheckInterval, InitialValue, DevStopped, Startdate, Enddate, Pid"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /pu_upd [post]
 func (s *APG) HandleUpdPu(w http.ResponseWriter, r *http.Request) {
@@ -299,7 +299,7 @@ func (s *APG) HandleUpdPu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete pu list"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /pu_del [post]
 func (s *APG) HandleDelPu(w http.ResponseWriter, r *http.Request) {
@@ -346,7 +346,7 @@ func (s *APG) HandleDelPu(w http.ResponseWriter, r *http.Request) {
 // @Tags pu
 // @Produce  json
 // @Param id path int true "Pu by id"
-// @Success 200 {array} models.Pu_count
+// @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /pu/{id} [get]
 func (s *APG) HandleGetPu(w http.ResponseWriter, r *http.Request) {
@@ -387,7 +387,7 @@ func (s *APG) HandleGetPu(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param objid query string false "obj&tgu id"
 // @Param tid query string false "obj&tgu type id (obj - type = 0, tgu - type > 0)"
-// @Success 200 {array} models.Pu_count
+// @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /pu_obj [get]
 func (s *APG) HandlePuObj(w http.ResponseWriter, r *http.Request) {

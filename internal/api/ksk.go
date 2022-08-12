@@ -26,7 +26,7 @@ import (
 // @Param kskaddress query string false "kskaddress search pattern"
 // @Param ordering query string false "order by {kskname|kskaddress}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Ksk_count
+// @Success 200 {object} models.Ksk_count
 // @Failure 500
 // @Router /ksk [get]
 func (s *APG) HandleKsk(w http.ResponseWriter, r *http.Request) {
@@ -139,7 +139,7 @@ func (s *APG) HandleKsk(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddKsk true "New ksk"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /ksk_add [post]
 func (s *APG) HandleAddKsk(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +184,7 @@ func (s *APG) HandleAddKsk(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Ksk true "Update ksk"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /ksk_upd [post]
 func (s *APG) HandleUpdKsk(w http.ResponseWriter, r *http.Request) {
@@ -229,7 +229,7 @@ func (s *APG) HandleUpdKsk(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete ksk"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /ksk_del [post]
 func (s *APG) HandleDelKsk(w http.ResponseWriter, r *http.Request) {
@@ -276,7 +276,7 @@ func (s *APG) HandleDelKsk(w http.ResponseWriter, r *http.Request) {
 // @Tags ksk
 // @Produce  json
 // @Param id path int true "Ksk by id"
-// @Success 200 {array} models.Ksk_count
+// @Success 200 {object} models.Ksk_count
 // @Failure 500
 // @Router /ksk/{id} [get]
 func (s *APG) HandleGetKsk(w http.ResponseWriter, r *http.Request) {

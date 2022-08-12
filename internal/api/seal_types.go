@@ -25,7 +25,7 @@ import (
 // @Param sealtypename query string false "sealtypename search pattern"
 // @Param ordering query string false "order by {id|sealtypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.SealType_count
+// @Success 200 {object} models.SealType_count
 // @Failure 500
 // @Router /sealtypes [get]
 func (s *APG) HandleSealTypes(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleSealTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddSealType true "New sealtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sealtypes_add [post]
 func (s *APG) HandleAddSealType(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddSealType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.SealType true "Update sealtype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sealtypes_upd [post]
 func (s *APG) HandleUpdSealType(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdSealType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete sealtypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sealtypes_del [post]
 func (s *APG) HandleDelSealType(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func (s *APG) HandleDelSealType(w http.ResponseWriter, r *http.Request) {
 // @Tags sealtypes
 // @Produce  json
 // @Param id path int true "SealType by id"
-// @Success 200 {array} models.SealType_count
+// @Success 200 {object} models.SealType_count
 // @Failure 500
 // @Router /sealtypes/{id} [get]
 func (s *APG) HandleGetSealType(w http.ResponseWriter, r *http.Request) {

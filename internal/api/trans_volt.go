@@ -25,7 +25,7 @@ import (
 // @Param transvoltname query string false "transvoltname search pattern"
 // @Param ordering query string false "order by {id|transvoltname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.TransVolt_count
+// @Success 200 {object} models.TransVolt_count
 // @Failure 500
 // @Router /transvolt [get]
 func (s *APG) HandleTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,7 @@ func (s *APG) HandleTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTransVolt true "New voltage transformer. Significant params: TransVoltName, TransType.Id, CheckDate(n), NextCheckDate(n), ProdDate(n), Serial1(n), Serial2(n), Serial3(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transvolt_add [post]
 func (s *APG) HandleAddTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -175,7 +175,7 @@ func (s *APG) HandleAddTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.TransVolt true "Update voltage transformer. Significant params: Id, TransVoltName, TransType.Id, CheckDate(n), NextCheckDate(n), ProdDate(n), Serial1(n), Serial2(n), Serial3(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transvolt_upd [post]
 func (s *APG) HandleUpdTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -222,7 +222,7 @@ func (s *APG) HandleUpdTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete voltage transformers"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /transvolt_del [post]
 func (s *APG) HandleDelTransVolt(w http.ResponseWriter, r *http.Request) {
@@ -269,7 +269,7 @@ func (s *APG) HandleDelTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Tags transvolt
 // @Produce  json
 // @Param id path int true "Voltage transformer by id"
-// @Success 200 {array} models.TransVolt_count
+// @Success 200 {object} models.TransVolt_count
 // @Failure 500
 // @Router /transvolt/{id} [get]
 func (s *APG) HandleGetTransVolt(w http.ResponseWriter, r *http.Request) {

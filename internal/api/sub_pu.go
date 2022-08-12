@@ -23,7 +23,7 @@ import (
 // @Param parid query int true "Subpu parid"
 // @Param ordering query string false "order by {id|punamber}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Pu_count
+// @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /subpu [get]
 func (s *APG) HandleSubPu(w http.ResponseWriter, r *http.Request) {
@@ -130,7 +130,7 @@ func (s *APG) HandleSubPu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddSubPu true "New subpu. Significant params: ParId, SubId"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subpu_add [post]
 func (s *APG) HandleAddSubPu(w http.ResponseWriter, r *http.Request) {
@@ -175,7 +175,7 @@ func (s *APG) HandleAddSubPu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.SubPu true "Update subpu. Significant params: Id, ParId, SubId"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subpu_upd [post]
 func (s *APG) HandleUpdSubPu(w http.ResponseWriter, r *http.Request) {
@@ -220,7 +220,7 @@ func (s *APG) HandleUpdSubPu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete subpu list"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /subpu_del [post]
 func (s *APG) HandleDelSubPu(w http.ResponseWriter, r *http.Request) {
@@ -267,7 +267,7 @@ func (s *APG) HandleDelSubPu(w http.ResponseWriter, r *http.Request) {
 // @Tags subpu
 // @Produce  json
 // @Param id path int true "SubPu by id"
-// @Success 200 {array} models.SubPu_count
+// @Success 200 {object} models.SubPu_count
 // @Failure 500
 // @Router /subpu/{id} [get]
 func (s *APG) HandleGetSubPu(w http.ResponseWriter, r *http.Request) {
@@ -308,7 +308,7 @@ func (s *APG) HandleGetSubPu(w http.ResponseWriter, r *http.Request) {
 // @Param subpuid query int true "Subpu id"
 // @Param ordering query string false "order by {id|punamber}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Pu_count
+// @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /subpu_prl [get]
 func (s *APG) HandlePrlSubPu(w http.ResponseWriter, r *http.Request) {

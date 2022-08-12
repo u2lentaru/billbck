@@ -26,7 +26,7 @@ import (
 // @Param contractmotnamekz query string false "contractmotnamekz search pattern"
 // @Param ordering query string false "order by {id|contractmotnameru|contractmotnamekz}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ContractMot_count
+// @Success 200 {object} models.ContractMot_count
 // @Failure 500
 // @Router /contractmots [get]
 func (s *APG) HandleContractMots(w http.ResponseWriter, r *http.Request) {
@@ -140,7 +140,7 @@ func (s *APG) HandleContractMots(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddContractMot true "New contracts motive of termination"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /contractmots_add [post]
 func (s *APG) HandleAddContractMot(w http.ResponseWriter, r *http.Request) {
@@ -185,7 +185,7 @@ func (s *APG) HandleAddContractMot(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ContractMot true "Update contracts motive of termination"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /contractmots_upd [post]
 func (s *APG) HandleUpdContractMot(w http.ResponseWriter, r *http.Request) {
@@ -231,7 +231,7 @@ func (s *APG) HandleUpdContractMot(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete contracts motives of termination"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /contractmots_del [post]
 func (s *APG) HandleDelContractMot(w http.ResponseWriter, r *http.Request) {
@@ -279,7 +279,7 @@ func (s *APG) HandleDelContractMot(w http.ResponseWriter, r *http.Request) {
 // @Tags contract_mots
 // @Produce  json
 // @Param id path int true "Contracts motive of termination by id"
-// @Success 200 {array} models.ContractMot_count
+// @Success 200 {object} models.ContractMot_count
 // @Failure 500
 // @Router /contractmots/{id} [get]
 func (s *APG) HandleGetContractMot(w http.ResponseWriter, r *http.Request) {

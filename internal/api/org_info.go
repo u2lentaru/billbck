@@ -26,7 +26,7 @@ import (
 // @Param oifname query string false "oifname search pattern"
 // @Param ordering query string false "order by {oiname|oifname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.OrgInfo_count
+// @Success 200 {object} models.OrgInfo_count
 // @Failure 500
 // @Router /org_info [get]
 func (s *APG) HandleOrgInfos(w http.ResponseWriter, r *http.Request) {
@@ -137,7 +137,7 @@ func (s *APG) HandleOrgInfos(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ab body models.AddOrgInfo true "New org_info"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /org_info_add [post]
 func (s *APG) HandleAddOrgInfo(w http.ResponseWriter, r *http.Request) {
@@ -182,7 +182,7 @@ func (s *APG) HandleAddOrgInfo(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ub body models.OrgInfo true "Update org_info"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /org_info_upd [post]
 func (s *APG) HandleUpdOrgInfo(w http.ResponseWriter, r *http.Request) {
@@ -228,7 +228,7 @@ func (s *APG) HandleUpdOrgInfo(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param db body models.Json_ids true "Delete org_info"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /org_info_del [post]
 func (s *APG) HandleDelOrgInfo(w http.ResponseWriter, r *http.Request) {
@@ -280,7 +280,7 @@ func (s *APG) HandleDelOrgInfo(w http.ResponseWriter, r *http.Request) {
 // @Tags org_info
 // @Produce  json
 // @Param id path int true "OrgInfo by id"
-// @Success 200 {array} models.OrgInfo_count
+// @Success 200 {object} models.OrgInfo_count
 // @Failure 500
 // @Router /org_info/{id} [get]
 func (s *APG) HandleGetOrgInfo(w http.ResponseWriter, r *http.Request) {

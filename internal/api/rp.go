@@ -26,7 +26,7 @@ import (
 // @Param invnumber query string false "invnumber search pattern"
 // @Param ordering query string false "order by {rpname|invnumber}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Rp_count
+// @Success 200 {object} models.Rp_count
 // @Failure 500
 // @Router /rp [get]
 func (s *APG) HandleRp(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +142,7 @@ func (s *APG) HandleRp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddRp true "New rp"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /rp_add [post]
 func (s *APG) HandleAddRp(w http.ResponseWriter, r *http.Request) {
@@ -188,7 +188,7 @@ func (s *APG) HandleAddRp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Rp true "Update rp"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /rp_upd [post]
 func (s *APG) HandleUpdRp(w http.ResponseWriter, r *http.Request) {
@@ -234,7 +234,7 @@ func (s *APG) HandleUpdRp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete rp"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /rp_del [post]
 func (s *APG) HandleDelRp(w http.ResponseWriter, r *http.Request) {
@@ -281,7 +281,7 @@ func (s *APG) HandleDelRp(w http.ResponseWriter, r *http.Request) {
 // @Tags rp
 // @Produce  json
 // @Param id path int true "Rp by id"
-// @Success 200 {array} models.Rp_count
+// @Success 200 {object} models.Rp_count
 // @Failure 500
 // @Router /rp/{id} [get]
 func (s *APG) HandleGetRp(w http.ResponseWriter, r *http.Request) {

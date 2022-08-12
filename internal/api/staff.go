@@ -25,7 +25,7 @@ import (
 // @Param staffname query string false "staffname search pattern"
 // @Param ordering query string false "order by {id|staffname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Staff_count
+// @Success 200 {object} models.Staff_count
 // @Failure 500
 // @Router /staff [get]
 func (s *APG) HandleStaff(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleStaff(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddStaff true "New staff"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /staff_add [post]
 func (s *APG) HandleAddStaff(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddStaff(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Staff true "Update staff"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /staff_upd [post]
 func (s *APG) HandleUpdStaff(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdStaff(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete staff"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /staff_del [post]
 func (s *APG) HandleDelStaff(w http.ResponseWriter, r *http.Request) {
@@ -264,7 +264,7 @@ func (s *APG) HandleDelStaff(w http.ResponseWriter, r *http.Request) {
 // @Tags staff
 // @Produce  json
 // @Param id path int true "Staff by id"
-// @Success 200 {array} models.Staff_count
+// @Success 200 {object} models.Staff_count
 // @Failure 500
 // @Router /staff/{id} [get]
 func (s *APG) HandleGetStaff(w http.ResponseWriter, r *http.Request) {

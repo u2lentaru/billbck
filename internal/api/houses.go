@@ -27,7 +27,7 @@ import (
 // @Param streetid query int false "streetid search pattern"
 // @Param ordering query string false "order by {housenumber|streetname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.House_count
+// @Success 200 {object} models.House_count
 // @Failure 500
 // @Router /houses [get]
 func (s *APG) HandleHouses(w http.ResponseWriter, r *http.Request) {
@@ -153,7 +153,7 @@ func (s *APG) HandleHouses(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddHouse true "New house"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /houses_add [post]
 func (s *APG) HandleAddHouse(w http.ResponseWriter, r *http.Request) {
@@ -200,7 +200,7 @@ func (s *APG) HandleAddHouse(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.House true "Update house"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /houses_upd [post]
 func (s *APG) HandleUpdHouse(w http.ResponseWriter, r *http.Request) {
@@ -247,7 +247,7 @@ func (s *APG) HandleUpdHouse(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete houses"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /houses_del [post]
 func (s *APG) HandleDelHouse(w http.ResponseWriter, r *http.Request) {
@@ -294,7 +294,7 @@ func (s *APG) HandleDelHouse(w http.ResponseWriter, r *http.Request) {
 // @Tags houses
 // @Produce  json
 // @Param id path int true "House by id"
-// @Success 200 {array} models.House_count
+// @Success 200 {object} models.House_count
 // @Failure 500
 // @Router /houses/{id} [get]
 func (s *APG) HandleGetHouse(w http.ResponseWriter, r *http.Request) {

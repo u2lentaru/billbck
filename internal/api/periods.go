@@ -26,7 +26,7 @@ import (
 // @Param periodname query string false "periodname search pattern"
 // @Param ordering query string false "order by {id|periodname|startdate}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Period_count
+// @Success 200 {object} models.Period_count
 // @Failure 500
 // @Router /periods [get]
 func (s *APG) HandlePeriods(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,7 @@ func (s *APG) HandlePeriods(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddPeriod true "New period. Significant params: PeriodName, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /periods_add [post]
 func (s *APG) HandleAddPeriod(w http.ResponseWriter, r *http.Request) {
@@ -174,7 +174,7 @@ func (s *APG) HandleAddPeriod(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Period true "Update period. Significant params: Id, PeriodName, Startdate, Enddate"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /periods_upd [post]
 func (s *APG) HandleUpdPeriod(w http.ResponseWriter, r *http.Request) {
@@ -219,7 +219,7 @@ func (s *APG) HandleUpdPeriod(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete periods"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /periods_del [post]
 func (s *APG) HandleDelPeriod(w http.ResponseWriter, r *http.Request) {
@@ -267,7 +267,7 @@ func (s *APG) HandleDelPeriod(w http.ResponseWriter, r *http.Request) {
 // @Tags periods
 // @Produce  json
 // @Param id path int true "Period by id"
-// @Success 200 {array} models.Period_count
+// @Success 200 {object} models.Period_count
 // @Failure 500
 // @Router /periods/{id} [get]
 func (s *APG) HandleGetPeriod(w http.ResponseWriter, r *http.Request) {

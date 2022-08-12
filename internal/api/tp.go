@@ -25,7 +25,7 @@ import (
 // @Param tpname query string false "tpname search pattern"
 // @Param ordering query string false "order by {id|tpname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Tp_count
+// @Success 200 {object} models.Tp_count
 // @Failure 500
 // @Router /tp [get]
 func (s *APG) HandleTp(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleTp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTp true "New tp"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tp_add [post]
 func (s *APG) HandleAddTp(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddTp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Tp true "Update tp"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tp_upd [post]
 func (s *APG) HandleUpdTp(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdTp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete tp"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /tp_del [post]
 func (s *APG) HandleDelTp(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelTp(w http.ResponseWriter, r *http.Request) {
 // @Tags tp
 // @Produce  json
 // @Param id path int true "Tp by id"
-// @Success 200 {array} models.Tp_count
+// @Success 200 {object} models.Tp_count
 // @Failure 500
 // @Router /tp/{id} [get]
 func (s *APG) HandleGetTp(w http.ResponseWriter, r *http.Request) {

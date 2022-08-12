@@ -26,7 +26,7 @@ import (
 // @Param bankdescr query string false "bankdescr search pattern"
 // @Param ordering query string false "order by {bankname|bankdescr}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Bank_count
+// @Success 200 {object} models.Bank_count
 // @Failure 500
 // @Router /banks [get]
 func (s *APG) HandleBanks(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +138,7 @@ func (s *APG) HandleBanks(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ab body models.AddBank true "New bank"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /banks_add [post]
 func (s *APG) HandleAddBank(w http.ResponseWriter, r *http.Request) {
@@ -184,7 +184,7 @@ func (s *APG) HandleAddBank(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param ub body models.Bank true "Update bank"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /banks_upd [post]
 func (s *APG) HandleUpdBank(w http.ResponseWriter, r *http.Request) {
@@ -230,7 +230,7 @@ func (s *APG) HandleUpdBank(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param db body models.Json_ids true "Delete banks"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /banks_del [post]
 func (s *APG) HandleDelBank(w http.ResponseWriter, r *http.Request) {
@@ -282,7 +282,7 @@ func (s *APG) HandleDelBank(w http.ResponseWriter, r *http.Request) {
 // @Tags banks
 // @Produce  json
 // @Param id path int true "Bank by id"
-// @Success 200 {array} models.Bank_count
+// @Success 200 {object} models.Bank_count
 // @Failure 500
 // @Router /banks/{id} [get]
 func (s *APG) HandleGetBank(w http.ResponseWriter, r *http.Request) {

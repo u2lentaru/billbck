@@ -25,7 +25,7 @@ import (
 // @Param tariffname query string false "tariffname search pattern"
 // @Param ordering query string false "order by {id|tariffname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Tariff_count
+// @Success 200 {object} models.Tariff_count
 // @Failure 500
 // @Router /tariffs [get]
 func (s *APG) HandleTariffs(w http.ResponseWriter, r *http.Request) {
@@ -133,7 +133,7 @@ func (s *APG) HandleTariffs(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTariff true "New tariff"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tariffs_add [post]
 func (s *APG) HandleAddTariff(w http.ResponseWriter, r *http.Request) {
@@ -178,7 +178,7 @@ func (s *APG) HandleAddTariff(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Tariff true "Update tariff"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tariffs_upd [post]
 func (s *APG) HandleUpdTariff(w http.ResponseWriter, r *http.Request) {
@@ -227,7 +227,7 @@ func (s *APG) HandleUpdTariff(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete tariffs"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /tariffs_del [post]
 func (s *APG) HandleDelTariff(w http.ResponseWriter, r *http.Request) {
@@ -275,7 +275,7 @@ func (s *APG) HandleDelTariff(w http.ResponseWriter, r *http.Request) {
 // @Tags tariffs
 // @Produce  json
 // @Param id path int true "Tariff by id"
-// @Success 200 {array} models.Tariff_count
+// @Success 200 {object} models.Tariff_count
 // @Failure 500
 // @Router /tariffs/{id} [get]
 func (s *APG) HandleGetTariff(w http.ResponseWriter, r *http.Request) {

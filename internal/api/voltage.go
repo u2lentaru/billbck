@@ -30,7 +30,7 @@ type APG struct {
 // @Param voltagename query string false "voltagename search pattern"
 // @Param ordering query string false "order by {id|voltagename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Voltage_count
+// @Success 200 {object} models.Voltage_count
 // @Failure 500
 // @Router /voltages [get]
 func (s *APG) HandleVoltages(w http.ResponseWriter, r *http.Request) {
@@ -132,7 +132,7 @@ func (s *APG) HandleVoltages(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddVoltage true "New voltage"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /voltages_add [post]
 func (s *APG) HandleAddVoltage(w http.ResponseWriter, r *http.Request) {
@@ -177,7 +177,7 @@ func (s *APG) HandleAddVoltage(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Voltage true "Update voltage"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /voltages_upd [post]
 func (s *APG) HandleUpdVoltage(w http.ResponseWriter, r *http.Request) {
@@ -223,7 +223,7 @@ func (s *APG) HandleUpdVoltage(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete voltages"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /voltages_del [post]
 func (s *APG) HandleDelVoltage(w http.ResponseWriter, r *http.Request) {
@@ -271,7 +271,7 @@ func (s *APG) HandleDelVoltage(w http.ResponseWriter, r *http.Request) {
 // @Tags voltages
 // @Produce  json
 // @Param id path int true "Voltage by id"
-// @Success 200 {array} models.Voltage_count
+// @Success 200 {object} models.Voltage_count
 // @Failure 500
 // @Router /voltages/{id} [get]
 func (s *APG) HandleGetVoltage(w http.ResponseWriter, r *http.Request) {

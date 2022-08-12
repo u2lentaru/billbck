@@ -25,7 +25,7 @@ import (
 // @Param askuetypename query string false "askuetypename search pattern"
 // @Param ordering query string false "order by {id|askuetypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.CableResistance_count
+// @Success 200 {object} models.CableResistance_count
 // @Failure 500
 // @Router /askuetypes [get]
 func (s *APG) HandleAskueTypes(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandleAskueTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddAskueType true "New askuetype. Significant params: AskueTypeName, StartLine, PuColumn, ValueColumn, DateColumn, DateColumnArray(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /askuetypes_add [post]
 func (s *APG) HandleAddAskueType(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +173,7 @@ func (s *APG) HandleAddAskueType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.AskueType true "Update askuetype. Significant params: Id, AskueTypeName, StartLine, PuColumn, ValueColumn, DateColumn, DateColumnArray(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /askuetypes_upd [post]
 func (s *APG) HandleUpdAskueType(w http.ResponseWriter, r *http.Request) {
@@ -220,7 +220,7 @@ func (s *APG) HandleUpdAskueType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete askuetypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /askuetypes_del [post]
 func (s *APG) HandleDelAskueType(w http.ResponseWriter, r *http.Request) {
@@ -268,7 +268,7 @@ func (s *APG) HandleDelAskueType(w http.ResponseWriter, r *http.Request) {
 // @Tags askuetypes
 // @Produce  json
 // @Param id path int true "AskueType by id"
-// @Success 200 {array} models.AskueType_count
+// @Success 200 {object} models.AskueType_count
 // @Failure 500
 // @Router /askuetypes/{id} [get]
 func (s *APG) HandleGetAskueType(w http.ResponseWriter, r *http.Request) {

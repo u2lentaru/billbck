@@ -28,7 +28,7 @@ import (
 // @Param ttid query string false "tgu type id"
 // @Param ordering query string false "order by {id|tguname}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Tgu_count
+// @Success 200 {object} models.Tgu_count
 // @Failure 500
 // @Router /tgu [get]
 func (s *APG) HandleTgu(w http.ResponseWriter, r *http.Request) {
@@ -167,7 +167,7 @@ func (s *APG) HandleTgu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTgu true "New tgu"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tgu_add [post]
 func (s *APG) HandleAddTgu(w http.ResponseWriter, r *http.Request) {
@@ -212,7 +212,7 @@ func (s *APG) HandleAddTgu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Tgu true "Update tgu"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tgu_upd [post]
 func (s *APG) HandleUpdTgu(w http.ResponseWriter, r *http.Request) {
@@ -262,7 +262,7 @@ func (s *APG) HandleUpdTgu(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete tgu"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /tgu_del [post]
 func (s *APG) HandleDelTgu(w http.ResponseWriter, r *http.Request) {
@@ -309,7 +309,7 @@ func (s *APG) HandleDelTgu(w http.ResponseWriter, r *http.Request) {
 // @Tags tgu
 // @Produce  json
 // @Param id path int true "Tgu by id"
-// @Success 200 {array} models.Tgu_count
+// @Success 200 {object} models.Tgu_count
 // @Failure 500
 // @Router /tgu/{id} [get]
 func (s *APG) HandleGetTgu(w http.ResponseWriter, r *http.Request) {

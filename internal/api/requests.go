@@ -27,7 +27,7 @@ import (
 // @Param requestnumber query string false "requestnumber search pattern"
 // @Param ordering query string false "order by {id|requestnumber}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Request_count
+// @Success 200 {object} models.Request_count
 // @Failure 500
 // @Router /requests [get]
 func (s *APG) HandleRequests(w http.ResponseWriter, r *http.Request) {
@@ -144,7 +144,7 @@ func (s *APG) HandleRequests(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddRequest true "New request. Significant params: RequestNumber, RequestDate, Contract.Id(n), ServiceType.Id, RequestType.Id, RequestKind.Id, ClaimType.Id(n), TermDate, Executive, Accept, Notes(n), Result.Id, Act.Id(n), Object.Id(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requests_add [post]
 func (s *APG) HandleAddRequest(w http.ResponseWriter, r *http.Request) {
@@ -194,7 +194,7 @@ func (s *APG) HandleAddRequest(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Request true "Update request. Significant params: Id, RequestNumber, RequestDate, Contract.Id(n), ServiceType.Id, RequestType.Id, RequestKind.Id, ClaimType.Id(n), TermDate, Executive, Accept, Notes(n), Result.Id, Act.Id(n), Object.Id(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requests_upd [post]
 func (s *APG) HandleUpdRequest(w http.ResponseWriter, r *http.Request) {
@@ -242,7 +242,7 @@ func (s *APG) HandleUpdRequest(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete requests"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /requests_del [post]
 func (s *APG) HandleDelRequest(w http.ResponseWriter, r *http.Request) {
@@ -290,7 +290,7 @@ func (s *APG) HandleDelRequest(w http.ResponseWriter, r *http.Request) {
 // @Tags requests
 // @Produce  json
 // @Param id path int true "Request by id"
-// @Success 200 {array} models.Request_count
+// @Success 200 {object} models.Request_count
 // @Failure 500
 // @Router /requests/{id} [get]
 func (s *APG) HandleGetRequest(w http.ResponseWriter, r *http.Request) {

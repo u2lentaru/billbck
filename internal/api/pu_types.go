@@ -25,7 +25,7 @@ import (
 // @Param putypename query string false "putypename search pattern"
 // @Param ordering query string false "order by {id|putypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.PuType_count
+// @Success 200 {object} models.PuType_count
 // @Failure 500
 // @Router /putypes [get]
 func (s *APG) HandlePuTypes(w http.ResponseWriter, r *http.Request) {
@@ -127,7 +127,7 @@ func (s *APG) HandlePuTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddPuType true "New putype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /putypes_add [post]
 func (s *APG) HandleAddPuType(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddPuType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.PuType true "Update putype"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /putypes_upd [post]
 func (s *APG) HandleUpdPuType(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +217,7 @@ func (s *APG) HandleUpdPuType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete putypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /putypes_del [post]
 func (s *APG) HandleDelPuType(w http.ResponseWriter, r *http.Request) {
@@ -265,7 +265,7 @@ func (s *APG) HandleDelPuType(w http.ResponseWriter, r *http.Request) {
 // @Tags putypes
 // @Produce  json
 // @Param id path int true "PuType by id"
-// @Success 200 {array} models.PuType_count
+// @Success 200 {object} models.PuType_count
 // @Failure 500
 // @Router /putypes/{id} [get]
 func (s *APG) HandleGetPuType(w http.ResponseWriter, r *http.Request) {

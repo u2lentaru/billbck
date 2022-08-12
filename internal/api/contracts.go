@@ -41,7 +41,7 @@ import (
 // @Param motkz query string false "motive of termination kz search pattern"
 // @Param ordering query string false "order by {contractnumber|personalaccount|startdate|custname|esoname|enddate}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.Contract_count
+// @Success 200 {object} models.Contract_count
 // @Failure 500
 // @Router /contracts [get]
 func (s *APG) HandleContracts(w http.ResponseWriter, r *http.Request) {
@@ -307,7 +307,7 @@ func (s *APG) HandleContracts(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddContract true "New contract. Significant params: PersonalAccount, BarCode, ContractNumber, Startdate, Customer.SubId, Consignee.SubId, EsoContractNumber, Eso.Id, Area.Id, CustomerGroup.Id, Notes(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /contracts_add [post]
 func (s *APG) HandleAddContract(w http.ResponseWriter, r *http.Request) {
@@ -354,7 +354,7 @@ func (s *APG) HandleAddContract(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.Contract true "Update contract. Significant params: Id, ContractNumber, Startdate, Enddate(n), Customer.SubId, Consignee.SubId, EsoContractNumber, Eso.Id, Area.Id, CustomerGroup.Id, ContractMot.Id(n), Notes(n), MotNotes(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /contracts_upd [post]
 func (s *APG) HandleUpdContract(w http.ResponseWriter, r *http.Request) {
@@ -401,7 +401,7 @@ func (s *APG) HandleUpdContract(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.IdClose true "Close contract. Significant params: Id, Enddate, ContractMot.Id, MotNotes(n)"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /contracts_del [post]
 func (s *APG) HandleDelContract(w http.ResponseWriter, r *http.Request) {
@@ -466,7 +466,7 @@ func (s *APG) HandleDelContract(w http.ResponseWriter, r *http.Request) {
 // @Tags contracts
 // @Produce  json
 // @Param id path int true "Contract by id"
-// @Success 200 {array} models.Contract_count
+// @Success 200 {object} models.Contract_count
 // @Failure 500
 // @Router /contracts/{id} [get]
 func (s *APG) HandleGetContract(w http.ResponseWriter, r *http.Request) {
@@ -535,7 +535,7 @@ func (s *APG) HandleGetContract(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param id path int true "Contract by id"
 // @Param active query boolean false "active objects"
-// @Success 200 {array} models.ObjContract
+// @Success 200 {object} models.ObjContract
 // @Failure 500
 // @Router /contracts_getobject/{id} [get]
 func (s *APG) HandleGetContractObject(w http.ResponseWriter, r *http.Request) {
@@ -604,7 +604,7 @@ func (s *APG) HandleGetContractObject(w http.ResponseWriter, r *http.Request) {
 // @Tags contracts
 // @Produce  json
 // @Param id path int true "Contract history by id"
-// @Success 200 {array} string
+// @Success 200 {object} string
 // @Failure 500
 // @Router /contracts_hist/{id} [get]
 func (s *APG) HandleGetContractHist(w http.ResponseWriter, r *http.Request) {

@@ -25,7 +25,7 @@ import (
 // @Param inputtypename query string false "inputtypename search pattern"
 // @Param ordering query string false "order by {id|inputtypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.InputType_count
+// @Success 200 {object} models.InputType_count
 // @Failure 500
 // @Router /input_types [get]
 func (s *APG) HandleInputTypes(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleInputTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddInputType true "New input type"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /input_types_add [post]
 func (s *APG) HandleAddInputType(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +171,7 @@ func (s *APG) HandleAddInputType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.InputType true "Update input type"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /input_types_upd [post]
 func (s *APG) HandleUpdInputType(w http.ResponseWriter, r *http.Request) {
@@ -216,7 +216,7 @@ func (s *APG) HandleUpdInputType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete input types"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /input_types_del [post]
 func (s *APG) HandleDelInputType(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +263,7 @@ func (s *APG) HandleDelInputType(w http.ResponseWriter, r *http.Request) {
 // @Tags input types
 // @Produce  json
 // @Param id path int true "Input type by id"
-// @Success 200 {array} models.InputType_count
+// @Success 200 {object} models.InputType_count
 // @Failure 500
 // @Router /input_types/{id} [get]
 func (s *APG) HandleGetInputType(w http.ResponseWriter, r *http.Request) {

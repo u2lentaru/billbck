@@ -25,7 +25,7 @@ import (
 // @Param transtypename query string false "transtypename search pattern"
 // @Param ordering query string false "order by {id|transtypename}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.TransType_count
+// @Success 200 {object} models.TransType_count
 // @Failure 500
 // @Router /transtypes [get]
 func (s *APG) HandleTransTypes(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (s *APG) HandleTransTypes(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddTransType true "New transtype. Significant params: TransTypeName, Ratio, Class, MaxCurr, NomCurr"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transtypes_add [post]
 func (s *APG) HandleAddTransType(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +172,7 @@ func (s *APG) HandleAddTransType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.TransType true "Update transtype. Significant params: Id, TransTypeName, Ratio, Class, MaxCurr, NomCurr"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transtypes_upd [post]
 func (s *APG) HandleUpdTransType(w http.ResponseWriter, r *http.Request) {
@@ -218,7 +218,7 @@ func (s *APG) HandleUpdTransType(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete transtypes"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /transtypes_del [post]
 func (s *APG) HandleDelTransType(w http.ResponseWriter, r *http.Request) {
@@ -266,7 +266,7 @@ func (s *APG) HandleDelTransType(w http.ResponseWriter, r *http.Request) {
 // @Tags transtypes
 // @Produce  json
 // @Param id path int true "TransType by id"
-// @Success 200 {array} models.TransType_count
+// @Success 200 {object} models.TransType_count
 // @Failure 500
 // @Router /transtypes/{id} [get]
 func (s *APG) HandleGetTransType(w http.ResponseWriter, r *http.Request) {

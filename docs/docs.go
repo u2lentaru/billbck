@@ -67,10 +67,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ActDetail_count"
-                            }
+                            "$ref": "#/definitions/models.ActDetail_count"
                         }
                     },
                     "500": {
@@ -102,10 +99,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.ActDetail_count"
-                            }
+                            "$ref": "#/definitions/models.ActDetail_count"
                         }
                     },
                     "500": {
@@ -142,10 +136,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {
@@ -182,10 +173,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_ids"
-                            }
+                            "$ref": "#/definitions/models.Json_ids"
                         }
                     },
                     "500": {
@@ -222,10 +210,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Json_id"
-                            }
+                            "$ref": "#/definitions/models.Json_id"
                         }
                     },
                     "500": {

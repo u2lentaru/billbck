@@ -24,7 +24,7 @@ import (
 // @Param actid query int false "actid search pattern"
 // @Param ordering query string false "order by {punumber|installdate}"
 // @Param desc query boolean false "descending order {true|false}"
-// @Success 200 {array} models.ActDetail_count
+// @Success 200 {object} models.ActDetail_count
 // @Failure 500
 // @Router /actdetails [get]
 func (s *APG) HandleActDetails(w http.ResponseWriter, r *http.Request) {
@@ -161,7 +161,7 @@ func (s *APG) HandleActDetails(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param a body models.AddActDetail true "New act detail. Significant params: Act.Id, PuId, SealNumber, AdPuValue, ActDetailDate, PuNumber, InstallDate, CheckInterval, InitialValue, DevStopped, Startdate, Enddate, Pid, Seal.Id, SealDate, Notes, PuType.Id, Conclusion.Id, ConclusionNumber, ShutdownType.Id, CustomerPhone, CustomerPos, Reason.Id, Violation.Id, Customer"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /actdetails_add [post]
 func (s *APG) HandleAddActDetail(w http.ResponseWriter, r *http.Request) {
@@ -210,7 +210,7 @@ func (s *APG) HandleAddActDetail(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param u body models.ActDetail true "Update act detail. Significant params: Id, Act.Id, PuId, SealNumber, AdPuValue, ActDetailDate, PuNumber, InstallDate, CheckInterval, InitialValue, DevStopped, Startdate, Enddate, Pid, Seal.Id, SealDate, Notes, PuType.Id, Conclusion.Id, ConclusionNumber, ShutdownType.Id, CustomerPhone, CustomerPos, Reason.Id, Violation.Id, Customer"
-// @Success 200 {array} models.Json_id
+// @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /actdetails_upd [post]
 func (s *APG) HandleUpdActDetail(w http.ResponseWriter, r *http.Request) {
@@ -260,7 +260,7 @@ func (s *APG) HandleUpdActDetail(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Param d body models.Json_ids true "Delete act details"
-// @Success 200 {array} models.Json_ids
+// @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /actdetails_del [post]
 func (s *APG) HandleDelActDetail(w http.ResponseWriter, r *http.Request) {
@@ -307,7 +307,7 @@ func (s *APG) HandleDelActDetail(w http.ResponseWriter, r *http.Request) {
 // @Tags actdetails
 // @Produce  json
 // @Param id path int true "Act detail by id"
-// @Success 200 {array} models.ActDetail_count
+// @Success 200 {object} models.ActDetail_count
 // @Failure 500
 // @Router /actdetails/{id} [get]
 func (s *APG) HandleGetActDetail(w http.ResponseWriter, r *http.Request) {

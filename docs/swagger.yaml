@@ -3001,9 +3001,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.ActDetail_count'
-            type: array
+            $ref: '#/definitions/models.ActDetail_count'
         "500":
           description: ""
       summary: List act details
@@ -3024,9 +3022,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.ActDetail_count'
-            type: array
+            $ref: '#/definitions/models.ActDetail_count'
         "500":
           description: ""
       summary: Get act detail
@@ -3054,9 +3050,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Json_id'
-            type: array
+            $ref: '#/definitions/models.Json_id'
         "500":
           description: ""
       summary: Add act detail
@@ -3080,9 +3074,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Json_ids'
-            type: array
+            $ref: '#/definitions/models.Json_ids'
         "500":
           description: ""
       summary: Delete act details
@@ -3110,9 +3102,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Json_id'
-            type: array
+            $ref: '#/definitions/models.Json_id'
         "500":
           description: ""
       summary: Update act detail

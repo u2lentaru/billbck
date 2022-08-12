@@ -2,6 +2,6 @@ http://localhost:8080/form_types?page=1&page_size=5&formtypename=a&formtypedescr
 http://posterc.kz:44475/form_types?page=1&page_size=100&formtypename=&formtypedescr=о&ordering="id"&desc=0
 http://localhost:8080/sub_types?page=1&page_size=5&subtypename=&subtypedescr=&ordering="id"&desc=1
 
+go test -v
 swag init -d .\cmd\billbck\,.\internal\api\,.\internal\models\
-
 docker build . --tag u2lru/u2lru:20220812

@@ -30,7 +30,6 @@ import (
 func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
 	gs := models.Balance{}
 	ctx := context.Background()
-	out_arr := []models.Balance{}
 
 	query := r.URL.Query()
 
@@ -73,6 +72,23 @@ func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	gsc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_cnt($1,$2);", gs1, gs2).Scan(&gsc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.Balance, 0,
+		func() int {
+			if gsc < pgs {
+				return gsc
+			} else {
+				return pgs
+			}
+		}())
+
 	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_balance_get($1,$2,$3,$4);", pg, pgs, gs1, gs2)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -88,14 +104,6 @@ func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, gs)
-	}
-
-	gsc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	out_count, err := json.Marshal(models.Balance_count{Values: out_arr, Count: gsc})

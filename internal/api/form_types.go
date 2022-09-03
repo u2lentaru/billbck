@@ -46,7 +46,6 @@ func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 
 	ft := models.FormType{}
 	ctx := context.Background()
-	out_arr := []models.FormType{}
 
 	query := r.URL.Query()
 
@@ -90,6 +89,25 @@ func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 		ftd = string(re.ReplaceAll([]byte(ftd), []byte("''")))
 	}
 
+	ftc := 0
+	// err = s.dbpool.QueryRow(ctx, "SELECT count(*) from st_form_types;").Scan(&ftc)
+	// err = s.dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2,$3,$4,$5,$6);", pg, pgs, ftn, ftd, ord, dsc).Scan(&ftc)
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2);", ftn, ftd).Scan(&ftc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.FormType, 0,
+		func() int {
+			if ftc < pgs {
+				return ftc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -132,16 +150,6 @@ func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 	// w.Write(output)
-
-	ftc := 0
-	// err = s.dbpool.QueryRow(ctx, "SELECT count(*) from st_form_types;").Scan(&ftc)
-	// err = s.dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2,$3,$4,$5,$6);", pg, pgs, ftn, ftd, ord, dsc).Scan(&ftc)
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2);", ftn, ftd).Scan(&ftc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	out_count, err := json.Marshal(models.FormType_count{Values: out_arr, Count: ftc, Auth: auth})

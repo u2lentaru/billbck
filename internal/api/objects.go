@@ -60,8 +60,6 @@ func (s *APG) HandleObjects(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	out_arr := make([]models.Object, 0, pgs)
-
 	gs1 := ""
 	gs1s, ok := query["objectname"]
 	if ok && len(gs1s) > 0 {
@@ -93,6 +91,23 @@ func (s *APG) HandleObjects(w http.ResponseWriter, r *http.Request) {
 	} else {
 		gs3f = false
 	}
+
+	gsc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_objects_cnt($1,$2,$3);", gs1, NullableString(gs2), utils.NullableBool(gs3, gs3f)).Scan(&gsc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.Object, 0,
+		func() int {
+			if gsc < pgs {
+				return gsc
+			} else {
+				return pgs
+			}
+		}())
 
 	ord := 1
 	ords, ok := query["ordering"]
@@ -134,14 +149,6 @@ func (s *APG) HandleObjects(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, gs)
-	}
-
-	gsc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_objects_cnt($1,$2,$3);", gs1, NullableString(gs2), utils.NullableBool(gs3, gs3f)).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

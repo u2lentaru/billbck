@@ -31,7 +31,6 @@ import (
 func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
 	p := models.Position{}
 	ctx := context.Background()
-	out_arr := []models.Position{}
 
 	query := r.URL.Query()
 
@@ -66,6 +65,23 @@ func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
 		pn = string(re.ReplaceAll([]byte(pn), []byte("''")))
 	}
 
+	pc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_positions_cnt($1);", pn).Scan(&pc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.Position, 0,
+		func() int {
+			if pc < pgs {
+				return pc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -99,14 +115,6 @@ func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, p)
-	}
-
-	pc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_positions_cnt($1);", pn).Scan(&pc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

@@ -32,7 +32,6 @@ import (
 func (s *APG) HandleObjTransCurr(w http.ResponseWriter, r *http.Request) {
 	gs := models.ObjTransCurr{}
 	ctx := context.Background()
-	out_arr := []models.ObjTransCurr{}
 
 	query := r.URL.Query()
 
@@ -77,6 +76,23 @@ func (s *APG) HandleObjTransCurr(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
+	gsc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_curr_cnt($1,$2);", gs1, gs2).Scan(&gsc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.ObjTransCurr, 0,
+		func() int {
+			if gsc < pgs {
+				return gsc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -114,14 +130,6 @@ func (s *APG) HandleObjTransCurr(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, gs)
-	}
-
-	gsc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_curr_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

@@ -32,7 +32,6 @@ import (
 func (s *APG) HandleOrgInfos(w http.ResponseWriter, r *http.Request) {
 	oi := models.OrgInfo{}
 	ctx := context.Background()
-	out_arr := []models.OrgInfo{}
 
 	query := r.URL.Query()
 
@@ -75,6 +74,23 @@ func (s *APG) HandleOrgInfos(w http.ResponseWriter, r *http.Request) {
 		oifn = string(re.ReplaceAll([]byte(oifn), []byte("''")))
 	}
 
+	oic := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_orgs_info_cnt($1,$2);", oin, oifn).Scan(&oic)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.OrgInfo, 0,
+		func() int {
+			if oic < pgs {
+				return oic
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -108,14 +124,6 @@ func (s *APG) HandleOrgInfos(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, oi)
-	}
-
-	oic := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_orgs_info_cnt($1,$2);", oin, oifn).Scan(&oic)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

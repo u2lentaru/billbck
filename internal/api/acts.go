@@ -34,7 +34,6 @@ import (
 func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 	gs := models.Act{}
 	ctx := context.Background()
-	out_arr := []models.Act{}
 
 	query := r.URL.Query()
 
@@ -88,6 +87,23 @@ func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	gsc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_acts_cnt($1,$2,$3);", gs1, gs2, gs3).Scan(&gsc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.Act, 0,
+		func() int {
+			if gsc < pgs {
+				return gsc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -130,14 +146,6 @@ func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, gs)
-	}
-
-	gsc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_acts_cnt($1,$2,$3);", gs1, gs2, gs3).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

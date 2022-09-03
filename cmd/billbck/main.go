@@ -134,11 +134,11 @@ func main() {
 	<-done
 	log.Print("Server Stopped")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer func() {
 		// extra handling here
 		log.Println("Sleep on")
-		time.Sleep(time.Second * 3)
+		time.Sleep(time.Second * 1)
 		log.Println("Sleep off")
 		cancel()
 	}()

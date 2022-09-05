@@ -31,7 +31,6 @@ import (
 func (s *APG) HandleSectors(w http.ResponseWriter, r *http.Request) {
 	gs := models.Sector{}
 	ctx := context.Background()
-	out_arr := []models.Sector{}
 
 	query := r.URL.Query()
 
@@ -66,6 +65,23 @@ func (s *APG) HandleSectors(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
+	gsc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sectors_cnt($1);", gs1).Scan(&gsc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.Sector, 0,
+		func() int {
+			if gsc < pgs {
+				return gsc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -97,14 +113,6 @@ func (s *APG) HandleSectors(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, gs)
-	}
-
-	gsc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_sectors_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

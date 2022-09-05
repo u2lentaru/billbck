@@ -31,7 +31,6 @@ import (
 func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 	st := models.SubType{}
 	ctx := context.Background()
-	out_arr := []models.SubType{}
 
 	query := r.URL.Query()
 
@@ -74,6 +73,23 @@ func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 		std = string(re.ReplaceAll([]byte(std), []byte("''")))
 	}
 
+	stc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_types_cnt($1,$2);", stn, std).Scan(&stc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.SubType, 0,
+		func() int {
+			if stc < pgs {
+				return stc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -107,14 +123,6 @@ func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, st)
-	}
-
-	stc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_types_cnt($1,$2);", stn, std).Scan(&stc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

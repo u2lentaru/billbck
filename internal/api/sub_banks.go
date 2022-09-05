@@ -34,7 +34,6 @@ import (
 func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
 	sb := models.SubBank{}
 	ctx := context.Background()
-	out_arr := []models.SubBank{}
 
 	query := r.URL.Query()
 
@@ -86,6 +85,23 @@ func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
 		an = string(re.ReplaceAll([]byte(an), []byte("''")))
 	}
 
+	sbc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_banks_cnt($1,$2,$3);", sbn, utils.NullableInt(int32(sbi)), an).Scan(&sbc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.SubBank, 0,
+		func() int {
+			if sbc < pgs {
+				return sbc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -119,14 +135,6 @@ func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
 		}
 
 		out_arr = append(out_arr, sb)
-	}
-
-	sbc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_banks_cnt($1,$2,$3);", sbn, utils.NullableInt(int32(sbi)), an).Scan(&sbc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

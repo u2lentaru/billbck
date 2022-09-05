@@ -34,7 +34,6 @@ import (
 func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
 	sj := models.Subject{}
 	ctx := context.Background()
-	out_arr := []models.Subject{}
 
 	query := r.URL.Query()
 
@@ -88,6 +87,23 @@ func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	sjc := 0
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_details_cnt($1,$2,$3);", sjn, sjd, hc).Scan(&sjc)
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_arr := make([]models.Subject, 0,
+		func() int {
+			if sjc < pgs {
+				return sjc
+			} else {
+				return pgs
+			}
+		}())
+
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -131,14 +147,6 @@ func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
 		sj.SubAccPos.PositionName = san.String
 
 		out_arr = append(out_arr, sj)
-	}
-
-	sjc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_details_cnt($1,$2,$3);", sjn, sjd, hc).Scan(&sjc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

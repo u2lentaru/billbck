@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/u2lentaru/billbck/internal/models"
 )
 
@@ -30,9 +31,8 @@ import (
 // @Router /cableresistances [get]
 func (s *APG) HandleCableResistances(w http.ResponseWriter, r *http.Request) {
 	// start := time.Now()
-	gs := models.CableResistance{}
-	ctx := context.Background()
-	// out_arr := []models.CableResistance{}
+	// gs := models.CableResistance{}
+	// ctx := context.Background()
 
 	query := r.URL.Query()
 
@@ -57,8 +57,6 @@ func (s *APG) HandleCableResistances(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// out_arr := make([]models.CableResistance, 0, pgs)
-
 	gs1 := ""
 	gs1s, ok := query["cableresistancename"]
 	if ok && len(gs1s) > 0 {
@@ -69,22 +67,22 @@ func (s *APG) HandleCableResistances(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_cable_resistances_cnt($1);", gs1).Scan(&gsc)
+	// gsc := 0
+	// err := s.Dbpool.QueryRow(ctx, "SELECT * from func_cable_resistances_cnt($1);", gs1).Scan(&gsc)
 
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
+	// if err != nil {
+	// 	http.Error(w, err.Error(), 500)
+	// 	return
+	// }
 
-	out_arr := make([]models.CableResistance, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
+	// out_arr := make([]models.CableResistance, 0,
+	// 	func() int {
+	// 		if gsc < pgs {
+	// 			return gsc
+	// 		} else {
+	// 			return pgs
+	// 		}
+	// 	}())
 
 	ord := 1
 	ords, ok := query["ordering"]
@@ -102,39 +100,48 @@ func (s *APG) HandleCableResistances(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_cable_resistances_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.CableResistanceName, &gs.Resistance, &gs.MaterialType)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	// gsc := 0
-	// err = s.Dbpool.QueryRow(ctx, "SELECT * from func_cable_resistances_cnt($1);", gs1).Scan(&gsc)
-
+	// rows, err := s.Dbpool.Query(ctx, "SELECT * from func_cable_resistances_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
 	// if err != nil {
 	// 	http.Error(w, err.Error(), 500)
 	// 	return
 	// }
 
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.CableResistance_count{Values: out_arr, Count: gsc, Auth: auth})
+	// defer rows.Close()
+
+	// for rows.Next() {
+	// 	err = rows.Scan(&gs.Id, &gs.CableResistanceName, &gs.Resistance, &gs.MaterialType)
+	// 	if err != nil {
+	// 		log.Println("failed to scan row:", err)
+	// 	}
+
+	// 	out_arr = append(out_arr, gs)
+	// }
+
+	// auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	// out_count, err := json.Marshal(models.CableResistance_count{Values: out_arr, Count: gsc, Auth: auth})
+	// if err != nil {
+	// 	http.Error(w, err.Error(), 500)
+	// 	return
+	// }
+
+	type ifCableResistance_count interface {
+		GetCableResistances(*pgxpool.Pool, int, int, string, int, bool) error
+	}
+
+	var out_count ifCableResistance_count
+
+	out_count = models.NewCableResistance_count()
+
+	out_count.GetCableResistances(s.Dbpool, pg, pgs, gs1, ord, dsc)
+
+	w_out_count, err := json.Marshal(out_count)
+
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	w.Write(out_count)
+	w.Write(w_out_count)
 
 	// log.Printf("Work time %s", time.Since(start))
 

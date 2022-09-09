@@ -18,10 +18,10 @@ import (
 
 type ifDistributionZone interface {
 	GetDistributionZones(context.Context, *pgxpool.Pool, int, int, string, int, bool) (models.DistributionZone_count, error)
-	AddDistributionZone(context.Context, *pgxpool.Pool) (int, error)
-	UpdDistributionZone(context.Context, *pgxpool.Pool) (int, error)
-	DelDistributionZone(context.Context, *pgxpool.Pool, []int) ([]int, error)
-	GetDistributionZone(context.Context, *pgxpool.Pool, int) (models.DistributionZone_count, error)
+	// AddDistributionZone(context.Context, *pgxpool.Pool) (int, error)
+	// UpdDistributionZone(context.Context, *pgxpool.Pool) (int, error)
+	// DelDistributionZone(context.Context, *pgxpool.Pool, []int) ([]int, error)
+	// GetDistributionZone(context.Context, *pgxpool.Pool, int) (models.DistributionZone_count, error)
 }
 
 // HandleDistributionZone godoc
@@ -38,7 +38,8 @@ type ifDistributionZone interface {
 // @Failure 500
 // @Router /distributionzones [get]
 func (s *APG) HandleDistributionZones(w http.ResponseWriter, r *http.Request) {
-	gs := models.NewDistributionZone()
+	var gs ifDistributionZone
+	gs = models.NewDistributionZone()
 	ctx := context.Background()
 
 	query := r.URL.Query()

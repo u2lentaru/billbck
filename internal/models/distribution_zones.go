@@ -61,7 +61,7 @@ func (dz *DistributionZone) GetDistributionZones(ctx context.Context, Dbpool *pg
 	for rows.Next() {
 		err = rows.Scan(&(dz.Id), &(dz.DistributionZoneName))
 		if err != nil {
-			log.Println("failed to scan row:", err, pg, pgs, nm, ord, dsc)
+			log.Println("failed to scan row:", err)
 		}
 
 		out_arr = append(out_arr, *dz)

@@ -222,6 +222,10 @@ func (s *APG) HandleUpdDistributionZone(w http.ResponseWriter, r *http.Request) 
 // @Router /distributionzones_del [post]
 func (s *APG) HandleDelDistributionZone(w http.ResponseWriter, r *http.Request) {
 	d := models.Json_ids{}
+	var do ifDelDistributionZone
+	do = models.NewDistributionZone()
+	ctx := context.Background()
+
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -237,15 +241,9 @@ func (s *APG) HandleDelDistributionZone(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_distribution_zones_del: ", err)
-		}
+	res, err := do.DelDistributionZone(ctx, s.Dbpool, d.Ids)
+	if err != nil {
+		log.Println("Failed execute func_distribution_zones_del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})

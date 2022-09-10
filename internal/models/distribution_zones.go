@@ -98,3 +98,18 @@ func (dz *DistributionZone) UpdDistributionZone(ctx context.Context, Dbpool *pgx
 	}
 	return ui, nil
 }
+
+func (dz *DistributionZone) DelDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error) {
+	res := []int{}
+	i := 0
+	for _, id := range d {
+		err := Dbpool.QueryRow(ctx, "SELECT func_distribution_zones_del($1);", id).Scan(&i)
+		res = append(res, i)
+
+		if err != nil {
+			log.Println("Failed execute func_distribution_zones_del: ", err)
+			return []int{}, err
+		}
+	}
+	return res, nil
+}

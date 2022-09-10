@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/u2lentaru/billbck/internal/models"
 )
@@ -266,26 +265,31 @@ func (s *APG) HandleDelDistributionZone(w http.ResponseWriter, r *http.Request) 
 // @Failure 500
 // @Router /distributionzones/{id} [get]
 func (s *APG) HandleGetDistributionZone(w http.ResponseWriter, r *http.Request) {
+	var g ifDistributionZone
+	g = models.NewDistributionZone()
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
 	i := vars["id"]
-	g := models.DistributionZone{}
-	out_arr := []models.DistributionZone{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_distribution_zone_get($1);", i).Scan(&g.Id, &g.DistributionZoneName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_distribution_zone_get: ", err)
+	gi, err := strconv.Atoi(i)
+	if err != nil {
+		log.Println("Incorrect index: ", err)
+		http.Error(w, err.Error(), 500)
+		return
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-
-	out_count, err := json.Marshal(models.DistributionZone_count{Values: out_arr, Count: 1, Auth: auth})
+	out_count, err := g.GetDistributionZone(ctx, s.Dbpool, gi)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(out_count)
+
+	out_json, err := json.Marshal(out_count)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Write(out_json)
 
 	return
 

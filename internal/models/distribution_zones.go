@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -112,4 +113,21 @@ func (dz *DistributionZone) DelDistributionZone(ctx context.Context, Dbpool *pgx
 		}
 	}
 	return res, nil
+}
+
+func (dz *DistributionZone) GetDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool, i int) (DistributionZone_count, error) {
+	out_arr := []DistributionZone{}
+	auth := Auth{Create: true, Read: true, Update: true, Delete: true}
+
+	err := Dbpool.QueryRow(context.Background(), "SELECT * from func_distribution_zone_get($1);", i).Scan(&(dz.Id), &(dz.DistributionZoneName))
+
+	if err != nil && err != pgx.ErrNoRows {
+		log.Println("Failed execute from func_distribution_zone_get: ", err)
+		return DistributionZone_count{Values: []DistributionZone{}, Count: 0, Auth: auth}, err
+	}
+
+	out_arr = append(out_arr, *dz)
+
+	out_count := DistributionZone_count{Values: out_arr, Count: 0, Auth: auth}
+	return out_count, nil
 }

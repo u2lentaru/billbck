@@ -15,21 +15,27 @@ import (
 	"github.com/u2lentaru/billbck/internal/models"
 )
 
+//type ifDistributionZones interface
 type ifDistributionZones interface {
 	GetDistributionZones(context.Context, *pgxpool.Pool, int, int, string, int, bool) (models.DistributionZone_count, error)
 }
 
+//type ifAddDistributionZone interface
 type ifAddDistributionZone interface {
 	AddDistributionZone(context.Context, *pgxpool.Pool) (int, error)
 }
 
+//type ifUpdDistributionZone interface
 type ifUpdDistributionZone interface {
 	UpdDistributionZone(context.Context, *pgxpool.Pool) (int, error)
 }
+
+//type ifDelDistributionZone interface
 type ifDelDistributionZone interface {
 	DelDistributionZone(context.Context, *pgxpool.Pool, []int) ([]int, error)
 }
 
+//type ifDistributionZone interface
 type ifDistributionZone interface {
 	GetDistributionZone(context.Context, *pgxpool.Pool, int) (models.DistributionZone_count, error)
 }

@@ -87,3 +87,14 @@ func (dz *DistributionZone) AddDistributionZone(ctx context.Context, Dbpool *pgx
 
 	return ai, nil
 }
+
+func (dz *DistributionZone) UpdDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
+	ui := 0
+	err := Dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_upd($1,$2);", dz.Id, dz.DistributionZoneName).Scan(&ui)
+
+	if err != nil {
+		log.Println("Failed execute func_distribution_zones_upd: ", err)
+		return 0, err
+	}
+	return ui, nil
+}

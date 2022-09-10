@@ -175,7 +175,10 @@ func (s *APG) HandleAddDistributionZone(w http.ResponseWriter, r *http.Request) 
 // @Failure 500
 // @Router /distributionzones_upd [post]
 func (s *APG) HandleUpdDistributionZone(w http.ResponseWriter, r *http.Request) {
-	u := models.DistributionZone{}
+	var u ifUpdDistributionZone
+	u = models.NewDistributionZone()
+	ctx := context.Background()
+
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -191,9 +194,7 @@ func (s *APG) HandleUpdDistributionZone(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_upd($1,$2);", u.Id, u.DistributionZoneName).Scan(&ui)
-
+	ui, err := u.UpdDistributionZone(ctx, s.Dbpool)
 	if err != nil {
 		log.Println("Failed execute func_distribution_zones_upd: ", err)
 	}

@@ -77,6 +77,7 @@ func (dz *DistributionZone) GetDistributionZones(ctx context.Context, Dbpool *pg
 	return out_count, nil
 }
 
+//func (dz *DistributionZone) AddDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool) (int, error)
 func (dz *DistributionZone) AddDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
 	ai := 0
 	err := Dbpool.QueryRow(ctx, "SELECT func_distribution_zones_add($1);", dz.DistributionZoneName).Scan(&ai)
@@ -89,6 +90,7 @@ func (dz *DistributionZone) AddDistributionZone(ctx context.Context, Dbpool *pgx
 	return ai, nil
 }
 
+//func (dz *DistributionZone) UpdDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool)
 func (dz *DistributionZone) UpdDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
 	ui := 0
 	err := Dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_upd($1,$2);", dz.Id, dz.DistributionZoneName).Scan(&ui)
@@ -100,6 +102,7 @@ func (dz *DistributionZone) UpdDistributionZone(ctx context.Context, Dbpool *pgx
 	return ui, nil
 }
 
+//func (dz *DistributionZone) DelDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error)
 func (dz *DistributionZone) DelDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
@@ -115,6 +118,7 @@ func (dz *DistributionZone) DelDistributionZone(ctx context.Context, Dbpool *pgx
 	return res, nil
 }
 
+//func (dz *DistributionZone) GetDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool, i int) (DistributionZone_count, error)
 func (dz *DistributionZone) GetDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool, i int) (DistributionZone_count, error) {
 	out_arr := []DistributionZone{}
 	auth := Auth{Create: true, Read: true, Update: true, Delete: true}

@@ -49,7 +49,7 @@ type ifDistributionZone interface {
 // @Failure 500
 // @Router /distributionzones [get]
 func (s *APG) HandleDistributionZones(w http.ResponseWriter, r *http.Request) {
-	var gs ifDistributionZone
+	var gs ifDistributionZones
 	gs = models.NewDistributionZone()
 	ctx := context.Background()
 
@@ -130,7 +130,10 @@ func (s *APG) HandleDistributionZones(w http.ResponseWriter, r *http.Request) {
 // @Failure 500
 // @Router /distributionzones_add [post]
 func (s *APG) HandleAddDistributionZone(w http.ResponseWriter, r *http.Request) {
-	a := models.AddDistributionZone{}
+	var a ifAddDistributionZone
+	a = models.NewDistributionZone()
+	ctx := context.Background()
+
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -146,9 +149,7 @@ func (s *APG) HandleAddDistributionZone(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_add($1);", a.DistributionZoneName).Scan(&ai)
-
+	ai, err := a.AddDistributionZone(ctx, s.Dbpool)
 	if err != nil {
 		log.Println("Failed execute func_distribution_zones_add: ", err)
 	}

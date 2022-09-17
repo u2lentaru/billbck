@@ -14,8 +14,7 @@ import (
 	"github.com/u2lentaru/billbck/internal/api"
 	"github.com/u2lentaru/billbck/internal/routes"
 	"github.com/u2lentaru/billbck/internal/utils"
-
-	// "github.com/mfuentesg/go-jwtmiddleware"
+	"github.com/u2lentaru/billbck/pkg/pgclient"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 	_ "github.com/u2lentaru/billbck/docs"
@@ -48,39 +47,8 @@ func main() {
 	url := "postgres://postgres:postgres@" + os.Getenv("DB_HOST") + ":5432/postgres"
 	// url := "postgres://postgres:postgres@" + os.Getenv("DB_HOST") + ":5432/billing"
 
-	//ApiKeyAuth Bearer
-
-	cfg, err := pgxpool.ParseConfig(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	cfg.MaxConns = 8
-	cfg.MinConns = 1
-
-	dbpool, err := pgxpool.ConnectConfig(ctx, cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	dbpool := pgclient.NewClient(ctx, url)
 	defer dbpool.Close()
-
-	rows, err := dbpool.Query(ctx, "SELECT version();")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		v := ""
-		err = rows.Scan(&v)
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		log.Println("version:", v)
-	}
 
 	apg := api.APG{Dbpool: dbpool}
 	route := mux.NewRouter()
@@ -90,10 +58,7 @@ func main() {
 	art := &apg
 	routes.AddRoutes(route, art)
 
-	// n := negroni.New(negroni.HandlerFunc(utils.AuthValidate))
 	n := negroni.New(negroni.HandlerFunc(utils.MWSetupResponse))
-	// n.Use(negroni.HandlerFunc(utils.AuthValidate))
-	// n.UseHandler(route)
 
 	log.Println("Server is listening at http://localhost:8080/")
 
@@ -136,9 +101,8 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer func() {
-		// extra handling here
 		log.Println("Sleep on")
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second * 2)
 		log.Println("Sleep off")
 		cancel()
 	}()

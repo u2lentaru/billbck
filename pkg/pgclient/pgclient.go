@@ -7,7 +7,14 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-func NewClient(ctx context.Context, url string) *pgxpool.Pool {
+var WDB *pgxpool.Pool
+
+func GetDb(ctx context.Context, url string) *pgxpool.Pool {
+	if WDB != nil {
+		// log.Println("dbpool != nil", WDB)
+		return WDB
+	}
+
 	cfg, err := pgxpool.ParseConfig(url)
 	if err != nil {
 		log.Fatal(err)
@@ -16,13 +23,13 @@ func NewClient(ctx context.Context, url string) *pgxpool.Pool {
 	cfg.MaxConns = 8
 	cfg.MinConns = 1
 
-	dbpool, err := pgxpool.ConnectConfig(ctx, cfg)
+	WDB, err = pgxpool.ConnectConfig(ctx, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 	// defer dbpool.Close()
 
-	rows, err := dbpool.Query(ctx, "SELECT version();")
+	rows, err := WDB.Query(ctx, "SELECT version();")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,5 +47,5 @@ func NewClient(ctx context.Context, url string) *pgxpool.Pool {
 		log.Println("version:", v)
 	}
 
-	return dbpool
+	return WDB
 }

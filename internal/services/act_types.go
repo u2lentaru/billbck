@@ -5,33 +5,35 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/u2lentaru/billbck/internal/adapters/db/pg"
+	pgsql "github.com/u2lentaru/billbck/internal/adapters/db/pg"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/pkg/pgclient"
 )
 
 type ActTypeService struct {
-	storage pg.ActTypeStorage
+	storage pgsql.ActTypeStorage
 }
 
-type ActTypeStorage interface {
-	GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
-	Add(ctx context.Context, Dbpool *pgxpool.Pool, ea models.ActType) (int, error)
-	Upd(ctx context.Context, Dbpool *pgxpool.Pool, eu models.ActType) (int, error)
-	Del(ctx context.Context, Dbpool *pgxpool.Pool, ed []int) ([]int, error)
-	GetOne(ctx context.Context, Dbpool *pgxpool.Pool, i int) (models.ActType_count, error)
+type ifActTypeStorage interface {
+	GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
+	Add(ctx context.Context, ea models.ActType) (int, error)
+	Upd(ctx context.Context, eu models.ActType) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.ActType_count, error)
 }
 
 //NewActTypeService(storage pg.ActTypeStorage) *ActTypeService
-func NewActTypeService(storage pg.ActTypeStorage) *ActTypeService {
+func NewActTypeService(storage pgsql.ActTypeStorage) *ActTypeService {
 	return &ActTypeService{storage}
 }
 
 //func (esv ActTypeService) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
 func (esv ActTypeService) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
-	var est ActTypeStorage
+	var est ifActTypeStorage
+	est = pgsql.NewActTypeStorage(pgclient.WDB)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
-	out_count, err := est.GetList(ctx, Dbpool, pg, pgs, nm, ord, dsc)
+	out_count, err := est.GetList(ctx, pg, pgs, nm, ord, dsc)
 
 	if err != nil {
 		log.Println("ActTypeStorage.GetList", err)

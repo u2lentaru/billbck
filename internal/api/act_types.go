@@ -11,10 +11,273 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 )
 
+type ifActTypeService interface {
+	GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
+	Add(ctx context.Context, ea models.ActType) (int, error)
+	Upd(ctx context.Context, eu models.ActType) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.ActType_count, error)
+}
+
+// HandleActTypes godoc
+// @Summary List acttypes
+// @Description get acttype list
+// @Tags acttypes
+// @Produce  json
+// @Param page query int false "page number"
+// @Param page_size query int false "page size"
+// @Param acttypename query string false "acttypename search pattern"
+// @Param ordering query string false "order by {id|acttypename}"
+// @Param desc query boolean false "descending order {true|false}"
+// @Success 200 {object} models.ActType_count
+// @Failure 500
+// @Router /acttypes [get]
+func (s *APG) HandleActTypes(w http.ResponseWriter, r *http.Request) {
+	var gs ifActTypeService
+	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
+	ctx := context.Background()
+
+	query := r.URL.Query()
+
+	pg := 1
+	spg, ok := query["page"]
+
+	if ok && len(spg) > 0 {
+		if pgt, err := strconv.Atoi(spg[0]); err != nil {
+			pg = 1
+		} else {
+			pg = pgt
+		}
+	}
+
+	pgs := 20
+	spgs, ok := query["page_size"]
+	if ok && len(spgs) > 0 {
+		if pgst, err := strconv.Atoi(spgs[0]); err != nil {
+			pgs = 20
+		} else {
+			pgs = pgst
+		}
+	}
+
+	gs1 := ""
+	gs1s, ok := query["acttypename"]
+	if ok && len(gs1s) > 0 {
+		//case insensitive
+		gs1 = strings.ToUpper(gs1s[0])
+		//quotes
+		re := regexp.MustCompile(`'`)
+		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
+	}
+
+	ord := 1
+	ords, ok := query["ordering"]
+	if !ok || len(ords) == 0 {
+		ord = 1
+	} else if ords[0] == "acttypename" {
+		ord = 2
+	}
+
+	dsc := false
+	dscs, ok := query["desc"]
+	if ok && len(dscs) > 0 {
+		if !(dscs[0] == "0") {
+			dsc = true
+		}
+	}
+
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	out_count, err := json.Marshal(out_arr)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	w.Write(out_count)
+
+	return
+
+}
+
+// HandleAddActType godoc
+// @Summary Add acttype
+// @Description add acttype
+// @Tags acttypes
+// @Accept json
+// @Produce  json
+// @Param a body models.AddActType true "New acttype"
+// @Success 200 {object} models.Json_id
+// @Failure 500
+// @Router /acttypes_add [post]
+func (s *APG) HandleAddActType(w http.ResponseWriter, r *http.Request) {
+	var gs ifActTypeService
+	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
+	ctx := context.Background()
+
+	a := models.ActType{}
+	body, err := ioutil.ReadAll(r.Body)
+
+	defer r.Body.Close()
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	err = json.Unmarshal(body, &a)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	ai, err := gs.Add(ctx, a)
+
+	output, err := json.Marshal(models.Json_id{Id: ai})
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Write(output)
+
+	return
+
+}
+
+// HandleUpdActType godoc
+// @Summary Update acttype
+// @Description update acttype
+// @Tags acttypes
+// @Accept json
+// @Produce  json
+// @Param u body models.ActType true "Update acttype"
+// @Success 200 {object} models.Json_id
+// @Failure 500
+// @Router /acttypes_upd [post]
+func (s *APG) HandleUpdActType(w http.ResponseWriter, r *http.Request) {
+	var gs ifActTypeService
+	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
+	ctx := context.Background()
+
+	u := models.ActType{}
+	body, err := ioutil.ReadAll(r.Body)
+
+	defer r.Body.Close()
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	err = json.Unmarshal(body, &u)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	ui, err := gs.Upd(ctx, u)
+
+	if err != nil {
+		log.Println("Failed execute func_act_types_upd: ", err)
+	}
+
+	output, err := json.Marshal(models.Json_id{Id: ui})
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Write(output)
+
+	return
+}
+
+// HandleDelActType godoc
+// @Summary Delete acttypes
+// @Description delete acttypes
+// @Tags acttypes
+// @Accept json
+// @Produce  json
+// @Param d body models.Json_ids true "Delete acttypes"
+// @Success 200 {object} models.Json_ids
+// @Failure 500
+// @Router /acttypes_del [post]
+func (s *APG) HandleDelActType(w http.ResponseWriter, r *http.Request) {
+	var gs ifActTypeService
+	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
+	ctx := context.Background()
+
+	d := models.Json_ids{}
+	body, err := ioutil.ReadAll(r.Body)
+
+	defer r.Body.Close()
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	err = json.Unmarshal(body, &d)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	res, err := gs.Del(ctx, d.Ids)
+
+	output, err := json.Marshal(models.Json_ids{Ids: res})
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Write(output)
+
+	return
+
+}
+
+// HandleGetActType godoc
+// @Summary Get acttype
+// @Description get acttype
+// @Tags acttypes
+// @Produce  json
+// @Param id path int true "ActType by id"
+// @Success 200 {object} models.ActType_count
+// @Failure 500
+// @Router /acttypes/{id} [get]
+func (s *APG) HandleGetActType(w http.ResponseWriter, r *http.Request) {
+	var gs ifActTypeService
+	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
+	ctx := context.Background()
+
+	vars := mux.Vars(r)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
+	}
+
+	out_arr, err := gs.GetOne(ctx, i)
+
+	out_count, err := json.Marshal(out_arr)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	w.Write(out_count)
+
+	return
+}
+
+/*
 // HandleActTypes godoc
 // @Summary List acttypes
 // @Description get acttype list
@@ -304,3 +567,4 @@ func (s *APG) HandleGetActType(w http.ResponseWriter, r *http.Request) {
 
 	return
 }
+*/

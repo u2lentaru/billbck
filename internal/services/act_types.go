@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
 )
@@ -26,8 +25,8 @@ func NewActTypeService(storage pgsql.ActTypeStorage) *ActTypeService {
 	return &ActTypeService{storage}
 }
 
-//func (esv ActTypeService) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
-func (esv ActTypeService) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
+//func (esv *ActTypeService) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
+func (esv *ActTypeService) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
 	var est ifActTypeStorage
 	est = pgsql.NewActTypeStorage(nil)
 	// est = pgsql.NewActTypeStorage(pgclient.WDB)
@@ -43,8 +42,8 @@ func (esv ActTypeService) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg,
 	return out_count, nil
 }
 
-//func (esv ActTypeService) Add(ctx context.Context, ea models.ActType) (int, error)
-func (esv ActTypeService) Add(ctx context.Context, ea models.ActType) (int, error) {
+//func (esv *ActTypeService) Add(ctx context.Context, ea models.ActType) (int, error)
+func (esv *ActTypeService) Add(ctx context.Context, ea models.ActType) (int, error) {
 	var est ifActTypeStorage
 	est = pgsql.NewActTypeStorage(nil)
 
@@ -58,8 +57,8 @@ func (esv ActTypeService) Add(ctx context.Context, ea models.ActType) (int, erro
 	return ai, nil
 }
 
-//func (esv ActTypeService) Upd(ctx context.Context, eu models.ActType)
-func (esv ActTypeService) Upd(ctx context.Context, eu models.ActType) (int, error) {
+//func (esv *ActTypeService) Upd(ctx context.Context, eu models.ActType)
+func (esv *ActTypeService) Upd(ctx context.Context, eu models.ActType) (int, error) {
 	var est ifActTypeStorage
 	est = pgsql.NewActTypeStorage(nil)
 
@@ -73,8 +72,8 @@ func (esv ActTypeService) Upd(ctx context.Context, eu models.ActType) (int, erro
 	return ui, nil
 }
 
-//func (esv ActTypeService) Del(ctx context.Context, ed []int) ([]int, error)
-func (esv ActTypeService) Del(ctx context.Context, ed []int) ([]int, error) {
+//func (esv *ActTypeService) Del(ctx context.Context, ed []int) ([]int, error)
+func (esv *ActTypeService) Del(ctx context.Context, ed []int) ([]int, error) {
 	var est ifActTypeStorage
 	est = pgsql.NewActTypeStorage(nil)
 
@@ -88,8 +87,8 @@ func (esv ActTypeService) Del(ctx context.Context, ed []int) ([]int, error) {
 	return res, nil
 }
 
-//func (esv ActTypeService) GetOne(ctx context.Context, i int) (models.ActType_count, error)
-func (esv ActTypeService) GetOne(ctx context.Context, i int) (models.ActType_count, error) {
+//func (esv *ActTypeService) GetOne(ctx context.Context, i int) (models.ActType_count, error)
+func (esv *ActTypeService) GetOne(ctx context.Context, i int) (models.ActType_count, error) {
 	var est ifActTypeStorage
 	est = pgsql.NewActTypeStorage(nil)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

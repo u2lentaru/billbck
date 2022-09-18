@@ -80,7 +80,7 @@ func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool, ea mod
 	return ai, nil
 }
 
-//func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool)
+//func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool) (int, error)
 func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool, eu models.ActType) (int, error) {
 	ui := 0
 

@@ -1,21 +1,28 @@
 package services
 
 import (
+	"context"
+
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pg"
 	"github.com/u2lentaru/billbck/internal/models"
 )
 
-//type srvActType models.ActType
-type srvActType models.ActType
+type ActTypeService struct {
+	storage pg.ActTypeStorage
+}
 
-//type srvAddActType models.AddActType
-type srvAddActType models.AddActType
+type ActTypeStorage interface {
+	GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
+	Add(ctx context.Context, Dbpool *pgxpool.Pool, ea models.ActType) (int, error)
+	Upd(ctx context.Context, Dbpool *pgxpool.Pool, eu models.ActType) (int, error)
+	Del(ctx context.Context, Dbpool *pgxpool.Pool, ed []int) ([]int, error)
+	GetOne(ctx context.Context, Dbpool *pgxpool.Pool, i int) (models.ActType_count, error)
+}
 
-//type srvActType_count models.ActType_count
-type srvActType_count models.ActType_count
-
-//NewActType() *ActType
-func NewActType() *srvActType {
-	return &srvActType{}
+//NewActTypeService(storage pg.ActTypeStorage) *ActTypeService
+func NewActTypeService(storage pg.ActTypeStorage) *ActTypeService {
+	return &ActTypeService{storage}
 }
 
 /*

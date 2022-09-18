@@ -19,8 +19,8 @@ func NewActTypeStorage(db *pgxpool.Pool) *ActTypeStorage {
 	return &ActTypeStorage{db: db}
 }
 
-//func (est *ActTypeStorage) GetActType(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
-func (est *ActTypeStorage) GetActType(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
+//func (est *ActTypeStorage) GetAll(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
+func (est *ActTypeStorage) GetAll(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
 	gsc := 0
 	err := Dbpool.QueryRow(ctx, "SELECT * from func_act_types_cnt($1);", nm).Scan(&gsc)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
@@ -66,8 +66,8 @@ func (est *ActTypeStorage) GetActType(ctx context.Context, Dbpool *pgxpool.Pool,
 	return out_count, nil
 }
 
-//func (est *ActTypeStorage) AddActType(ctx context.Context, Dbpool *pgxpool.Pool) (int, error)
-func (est *ActTypeStorage) AddActType(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
+//func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool) (int, error)
+func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
 	ai := 0
 	e := models.ActType{}
 
@@ -81,8 +81,8 @@ func (est *ActTypeStorage) AddActType(ctx context.Context, Dbpool *pgxpool.Pool)
 	return ai, nil
 }
 
-//func (est *ActTypeStorage) UpdActType(ctx context.Context, Dbpool *pgxpool.Pool)
-func (est *ActTypeStorage) UpdActType(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
+//func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool)
+func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
 	ui := 0
 	e := models.ActType{}
 
@@ -95,8 +95,8 @@ func (est *ActTypeStorage) UpdActType(ctx context.Context, Dbpool *pgxpool.Pool)
 	return ui, nil
 }
 
-//func (est *ActTypeStorage) DelActType(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error)
-func (est *ActTypeStorage) DelActType(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error) {
+//func (est *ActTypeStorage) Del(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error)
+func (est *ActTypeStorage) Del(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
@@ -111,8 +111,8 @@ func (est *ActTypeStorage) DelActType(ctx context.Context, Dbpool *pgxpool.Pool,
 	return res, nil
 }
 
-//func (est *ActTypeStorage) GetActType(ctx context.Context, Dbpool *pgxpool.Pool, i int) (models.ActType_count, error)
-func (est *ActTypeStorage) GetDistributionZone(ctx context.Context, Dbpool *pgxpool.Pool, i int) (models.ActType_count, error) {
+//func (est *ActTypeStorage) GetOne(ctx context.Context, Dbpool *pgxpool.Pool, i int) (models.ActType_count, error)
+func (est *ActTypeStorage) GetOne(ctx context.Context, Dbpool *pgxpool.Pool, i int) (models.ActType_count, error) {
 	out_arr := []models.ActType{}
 	e := models.ActType{}
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

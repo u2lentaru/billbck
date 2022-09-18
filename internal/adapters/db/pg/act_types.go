@@ -19,8 +19,8 @@ func NewActTypeStorage(db *pgxpool.Pool) *ActTypeStorage {
 	return &ActTypeStorage{db: db}
 }
 
-//func (est *ActTypeStorage) GetAll(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
-func (est *ActTypeStorage) GetAll(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
+//func (est *ActTypeStorage) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
+func (est *ActTypeStorage) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
 	gsc := 0
 	err := Dbpool.QueryRow(ctx, "SELECT * from func_act_types_cnt($1);", nm).Scan(&gsc)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
@@ -66,12 +66,11 @@ func (est *ActTypeStorage) GetAll(ctx context.Context, Dbpool *pgxpool.Pool, pg,
 	return out_count, nil
 }
 
-//func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool) (int, error)
-func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
+//func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool, ea models.ActType) (int, error)
+func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool, ea models.ActType) (int, error) {
 	ai := 0
-	e := models.ActType{}
 
-	err := Dbpool.QueryRow(ctx, "SELECT func_act_types_add($1);", e.ActTypeName).Scan(&ai)
+	err := Dbpool.QueryRow(ctx, "SELECT func_act_types_add($1);", ea.ActTypeName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_act_types_add: ", err)
@@ -82,11 +81,10 @@ func (est *ActTypeStorage) Add(ctx context.Context, Dbpool *pgxpool.Pool) (int, 
 }
 
 //func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool)
-func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
+func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool, eu models.ActType) (int, error) {
 	ui := 0
-	e := models.ActType{}
 
-	err := Dbpool.QueryRow(context.Background(), "SELECT func_act_types_upd($1,$2);", e.Id, e.ActTypeName).Scan(&ui)
+	err := Dbpool.QueryRow(context.Background(), "SELECT func_act_types_upd($1,$2);", eu.Id, eu.ActTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_act_types_upd: ", err)
@@ -95,11 +93,11 @@ func (est *ActTypeStorage) Upd(ctx context.Context, Dbpool *pgxpool.Pool) (int, 
 	return ui, nil
 }
 
-//func (est *ActTypeStorage) Del(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error)
-func (est *ActTypeStorage) Del(ctx context.Context, Dbpool *pgxpool.Pool, d []int) ([]int, error) {
+//func (est *ActTypeStorage) Del(ctx context.Context, Dbpool *pgxpool.Pool, ed []int) ([]int, error)
+func (est *ActTypeStorage) Del(ctx context.Context, Dbpool *pgxpool.Pool, ed []int) ([]int, error) {
 	res := []int{}
 	i := 0
-	for _, id := range d {
+	for _, id := range ed {
 		err := Dbpool.QueryRow(ctx, "SELECT func_act_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 

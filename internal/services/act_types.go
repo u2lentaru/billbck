@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/u2lentaru/billbck/internal/adapters/db/pg"
@@ -25,53 +26,22 @@ func NewActTypeService(storage pg.ActTypeStorage) *ActTypeService {
 	return &ActTypeService{storage}
 }
 
-/*
-//(dz *srvActType) GetActTypes(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (srvActType_count, error)
-func (dz srvActType) GetDistributionZones(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (srvActType_count, error) {
-	gsc := 0
-	err := Dbpool.QueryRow(ctx, "SELECT * from func_distribution_zones_cnt($1);", nm).Scan(&gsc)
+//func (esv ActTypeService) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
+func (esv ActTypeService) GetList(ctx context.Context, Dbpool *pgxpool.Pool, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
+	var est ActTypeStorage
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
+	out_count, err := est.GetList(ctx, Dbpool, pg, pgs, nm, ord, dsc)
+
 	if err != nil {
-		log.Println(err.Error(), "func_distribution_zones_cnt")
-		return srvActType_count{Values: []models.ActType{}, Count: gsc, Auth: auth}, err
-	}
-
-	out_arr := make([]srvActType, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
-	rows, err := Dbpool.Query(ctx, "SELECT * from func_distribution_zones_get($1,$2,$3,$4,$5);", pg, pgs, nm, ord, dsc)
-	if err != nil {
-		log.Println(err.Error())
-		return srvActType_count{Values: []models.ActType{}, Count: gsc, Auth: auth}, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&(dz.Id), &(dz.ActTypeName))
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, *dz)
-	}
-
-	out_count := models.ActType_count{Values: out_arr, Count: gsc, Auth: auth}
-	if err != nil {
-		log.Println(err.Error())
-		return models.ActType_count{}, err
+		log.Println("ActTypeStorage.GetList", err)
+		return models.ActType_count{Values: []models.ActType{}, Count: 0, Auth: auth}, err
 	}
 
 	return out_count, nil
 }
 
+/*
 //func (dz *srvActType) AddActType(ctx context.Context, Dbpool *pgxpool.Pool) (int, error)
 func (dz *srvActType) AddActType(ctx context.Context, Dbpool *pgxpool.Pool) (int, error) {
 	ai := 0

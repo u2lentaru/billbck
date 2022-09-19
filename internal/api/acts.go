@@ -11,10 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifActService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, gs3, ord int, dsc bool) (models.Act_count, error)
+	Add(ctx context.Context, ea models.Act) (int, error)
+	Upd(ctx context.Context, eu models.Act) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Act_count, error)
+}
 
 // HandleActs godoc
 // @Summary List acts
@@ -31,8 +40,9 @@ import (
 // @Success 200 {object} models.Act_count
 // @Failure 500
 // @Router /acts [get]
-func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
-	gs := models.Act{}
+func HandleActs(w http.ResponseWriter, r *http.Request) {
+	var gs ifActService
+	gs = services.NewActService(pgsql.ActStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -87,23 +97,6 @@ func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_acts_cnt($1,$2,$3);", gs1, gs2, gs3).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Act, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -122,34 +115,13 @@ func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_acts_get($1,$2,$3,$4,$5,$6,$7);", pg, pgs, gs1, gs2, gs3, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, gs3, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		// err = rows.Scan(&gs.Id, &gs.ActType.Id, &gs.ActNumber, &gs.ActDate, &gs.Object.Id, &gs.Staff.Id, &gs.Customer, &gs.Notes,
-		// 	&gs.ActType.ActTypeName, &gs.Object.ObjectName, &gs.Object.FlatNumber, &gs.Object.RegQty, &gs.Object.House.Street.StreetName,
-		// 	&gs.Object.House.Street.City.CityName, &gs.Object.House.HouseNumber, &gs.Object.House.BuildingNumber,
-		// 	&gs.Object.TariffGroup.TariffGroupName, &gs.Staff.StaffName)
-
-		err = rows.Scan(&gs.Id, &gs.ActType.Id, &gs.ActNumber, &gs.ActDate, &gs.Object.Id, &gs.Staff.Id, &gs.Notes, &gs.Activated,
-			&gs.ActType.ActTypeName, &gs.Object.ObjectName, &gs.Object.FlatNumber, &gs.Object.RegQty, &gs.Object.House.Street.StreetName,
-			&gs.Object.House.Street.City.CityName, &gs.Object.House.HouseNumber, &gs.Object.House.BuildingNumber,
-			&gs.Object.TariffGroup.TariffGroupName, &gs.Staff.StaffName)
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Act_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -158,7 +130,6 @@ func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 	w.Write(out_count)
 
 	return
-
 }
 
 // HandleAddAct godoc
@@ -171,8 +142,12 @@ func (s *APG) HandleActs(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acts_add [post]
-func (s *APG) HandleAddAct(w http.ResponseWriter, r *http.Request) {
-	a := models.AddAct{}
+func HandleAddAct(w http.ResponseWriter, r *http.Request) {
+	var gs ifActService
+	gs = services.NewActService(pgsql.ActStorage{})
+	ctx := context.Background()
+
+	a := models.Act{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -188,12 +163,10 @@ func (s *APG) HandleAddAct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_acts_add($1,$2,$3,$4,$5,$6);",
-		a.ActType.Id, a.ActNumber, a.ActDate, a.Object.Id, a.Staff.Id, a.Notes).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_acts_add: ", err)
+		log.Println("Failed execute ifActService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -217,7 +190,11 @@ func (s *APG) HandleAddAct(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acts_upd [post]
-func (s *APG) HandleUpdAct(w http.ResponseWriter, r *http.Request) {
+func HandleUpdAct(w http.ResponseWriter, r *http.Request) {
+	var gs ifActService
+	gs = services.NewActService(pgsql.ActStorage{})
+	ctx := context.Background()
+
 	u := models.Act{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -234,12 +211,10 @@ func (s *APG) HandleUpdAct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_acts_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.ActType.Id, u.ActNumber,
-		u.ActDate, u.Object.Id, u.Staff.Id, u.Notes).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_acts_upd: ", err)
+		log.Println("Failed execute ifActService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -263,7 +238,11 @@ func (s *APG) HandleUpdAct(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /acts_del [post]
-func (s *APG) HandleDelAct(w http.ResponseWriter, r *http.Request) {
+func HandleDelAct(w http.ResponseWriter, r *http.Request) {
+	var gs ifActService
+	gs = services.NewActService(pgsql.ActStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -280,15 +259,9 @@ func (s *APG) HandleDelAct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_acts_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_acts_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifActService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -311,26 +284,22 @@ func (s *APG) HandleDelAct(w http.ResponseWriter, r *http.Request) {
 // @Failure 500
 // @Router /acts/{id} [get]
 func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
+	var gs ifActTypeService
+	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Act{}
-
-	out_arr := []models.Act{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_act_get($1);", i).Scan(&g.Id, &g.ActType.Id, &g.ActNumber,
-		&g.ActDate, &g.Object.Id, &g.Staff.Id, &g.Notes, &g.Activated, &g.ActType.ActTypeName, &g.Object.ObjectName,
-		&g.Object.FlatNumber, &g.Object.RegQty, &g.Object.House.Street.StreetName, &g.Object.House.Street.City.CityName,
-		&g.Object.House.HouseNumber, &g.Object.House.BuildingNumber, &g.Object.TariffGroup.TariffGroupName, &g.Staff.StaffName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_act_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifActService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Act_count{Values: out_arr, Count: 1, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

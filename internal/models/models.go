@@ -487,24 +487,6 @@ type PuType_count struct {
 	Auth   Auth     `json:"auth"`
 }
 
-// //ActType struct
-// type ActType struct {
-// 	Id          int    `json:"id"`
-// 	ActTypeName string `json:"acttypename"`
-// }
-
-// //AddActType struct
-// type AddActType struct {
-// 	ActTypeName string `json:"acttypename"`
-// }
-
-// //ActType_count  struct
-// type ActType_count struct {
-// 	Values []ActType `json:"values"`
-// 	Count  int       `json:"count"`
-// 	Auth   Auth      `json:"auth"`
-// }
-
 //Cashdesk struct
 type Cashdesk struct {
 	Id           int    `json:"id"`
@@ -904,102 +886,6 @@ type IdClose struct {
 	CloseDate   string      `json:"closedate"`
 	ContractMot ContractMot `json:"contractmot"`
 	MotNotes    string      `json:"motnotes"`
-}
-
-//Act struct
-type Act struct {
-	Id        int     `json:"id"`
-	ActType   ActType `json:"acttype"`
-	ActNumber string  `json:"actnumber"`
-	ActDate   string  `json:"actdate"`
-	Object    Object  `json:"object"`
-	Staff     Staff   `json:"staff"`
-	Notes     *string `json:"notes"`
-	Activated *string `json:"activated"`
-}
-
-//AddAct struct
-type AddAct struct {
-	ActType   ActType `json:"acttype"`
-	ActNumber string  `json:"actnumber"`
-	ActDate   string  `json:"actdate"`
-	Object    Object  `json:"object"`
-	Staff     Staff   `json:"staff"`
-	Notes     *string `json:"notes"`
-	Activated *string `json:"activated"`
-}
-
-//Act_count  struct
-type Act_count struct {
-	Values []Act `json:"values"`
-	Count  int   `json:"count"`
-	Auth   Auth  `json:"auth"`
-}
-
-//ActDetail struct
-type ActDetail struct {
-	Id               int          `json:"id"`
-	Act              Act          `json:"act"`
-	ActDetailDate    string       `json:"actdetaildate"`
-	PuId             *int         `json:"puid"`
-	PuType           PuType       `json:"putype"`
-	PuNumber         *string      `json:"punumber"`
-	InstallDate      *string      `json:"installdate"`
-	InitialValue     *int         `json:"initialvalue"`
-	CheckInterval    *int         `json:"checkinterval"`
-	DevStopped       *bool        `json:"devstopped"`
-	Startdate        *string      `json:"startdate"`
-	Enddate          *string      `json:"enddate"`
-	Pid              *int         `json:"pid"`
-	Seal             Seal         `json:"seal"`
-	SealNumber       *string      `json:"sealnumber"`
-	SealDate         *string      `json:"sealdate"`
-	AdPuValue        *float32     `json:"adpuvalue"`
-	Conclusion       Conclusion   `json:"conclusion"`
-	ConclusionNumber *string      `json:"conclusionnumber"`
-	ShutdownType     ShutdownType `json:"shutdowntype"`
-	Reason           Reason       `json:"reason"`
-	Violation        Violation    `json:"violation"`
-	Customer         *string      `json:"customer"`
-	CustomerPhone    *string      `json:"customerphone"`
-	CustomerPos      *string      `json:"customerpos"`
-	Notes            *string      `json:"notes"`
-}
-
-//AddActDetail struct
-type AddActDetail struct {
-	Act              Act          `json:"act"`
-	ActDetailDate    string       `json:"actdetaildate"`
-	PuId             *int         `json:"puid"`
-	PuType           PuType       `json:"putype"`
-	PuNumber         *string      `json:"punumber"`
-	InstallDate      *string      `json:"installdate"`
-	InitialValue     *int         `json:"initialvalue"`
-	CheckInterval    *int         `json:"checkinterval"`
-	DevStopped       *bool        `json:"devstopped"`
-	Startdate        *string      `json:"startdate"`
-	Enddate          *string      `json:"enddate"`
-	Pid              *int         `json:"pid"`
-	Seal             Seal         `json:"seal"`
-	SealNumber       *string      `json:"sealnumber"`
-	SealDate         *string      `json:"sealdate"`
-	AdPuValue        *float32     `json:"adpuvalue"`
-	Conclusion       Conclusion   `json:"conclusion"`
-	ConclusionNumber *string      `json:"conclusionnumber"`
-	ShutdownType     ShutdownType `json:"shutdowntype"`
-	Reason           Reason       `json:"reason"`
-	Violation        Violation    `json:"violation"`
-	Customer         *string      `json:"customer"`
-	CustomerPhone    *string      `json:"customerphone"`
-	CustomerPos      *string      `json:"customerpos"`
-	Notes            *string      `json:"notes"`
-}
-
-//ActDetail_count  struct
-type ActDetail_count struct {
-	Values []ActDetail `json:"values"`
-	Count  int         `json:"count"`
-	Auth   Auth        `json:"auth"`
 }
 
 //Pu struct

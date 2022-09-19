@@ -23,10 +23,11 @@ func NewActTypeStorage(db *pgxpool.Pool) *ActTypeStorage {
 //func (est *ActTypeStorage) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
 func (est *ActTypeStorage) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
 	dbpool := pgclient.WDB
-	gsc := 0
-	err := dbpool.QueryRow(ctx, "SELECT * from func_act_types_cnt($1);", nm).Scan(&gsc)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	e := models.ActType{}
+
+	gsc := 0
+	err := dbpool.QueryRow(ctx, "SELECT * from func_act_types_cnt($1);", nm).Scan(&gsc)
 
 	if err != nil {
 		log.Println(err.Error(), "func_act_types_cnt")
@@ -114,7 +115,7 @@ func (est *ActTypeStorage) Del(ctx context.Context, ed []int) ([]int, error) {
 	return res, nil
 }
 
-//func (est *ActTypeStorage) GetOne(ctx context.Context, Dbpool *pgxpool.Pool, i int) (models.ActType_count, error)
+//func (est *ActTypeStorage) GetOne(ctx context.Context, i int) (models.ActType_count, error)
 func (est *ActTypeStorage) GetOne(ctx context.Context, i int) (models.ActType_count, error) {
 	dbpool := pgclient.WDB
 	out_arr := []models.ActType{}

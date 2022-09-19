@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/utils"
 	"github.com/u2lentaru/billbck/pkg/pgclient"
 )
 
@@ -139,4 +140,18 @@ func (est *ActStorage) GetOne(ctx context.Context, i int) (models.Act_count, err
 
 	out_count := models.Act_count{Values: out_arr, Count: 0, Auth: auth}
 	return out_count, nil
+}
+
+//func (est *ActStorage) Activate(ctx context.Context, i int, d string) (int, error)
+func (est *ActStorage) Activate(ctx context.Context, i int, d string) (int, error) {
+	dbpool := pgclient.WDB
+	ai := 0
+
+	err := dbpool.QueryRow(ctx, "SELECT * from func_acts_activate($1,$2);", utils.NullableInt(int32(i)), utils.NullableString(d)).Scan(&ai)
+
+	if err != nil {
+		log.Println("Failed execute func_acts_activate: ", err)
+		return 0, err
+	}
+	return ai, nil
 }

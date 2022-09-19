@@ -14,7 +14,6 @@ import (
 	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
 	"github.com/u2lentaru/billbck/internal/services"
-	"github.com/u2lentaru/billbck/internal/utils"
 )
 
 type ifActService interface {
@@ -23,6 +22,7 @@ type ifActService interface {
 	Upd(ctx context.Context, eu models.Act) (int, error)
 	Del(ctx context.Context, ed []int) ([]int, error)
 	GetOne(ctx context.Context, i int) (models.Act_count, error)
+	Activate(ctx context.Context, i int, d string) (int, error)
 }
 
 // HandleActs godoc
@@ -284,8 +284,8 @@ func HandleDelAct(w http.ResponseWriter, r *http.Request) {
 // @Failure 500
 // @Router /acts/{id} [get]
 func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
-	var gs ifActTypeService
-	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
+	var gs ifActService
+	gs = services.NewActService(pgsql.ActStorage{})
 	ctx := context.Background()
 
 	vars := mux.Vars(r)
@@ -320,7 +320,9 @@ func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acts_activate [get]
-func (s *APG) HandleActActivate(w http.ResponseWriter, r *http.Request) {
+func HandleActActivate(w http.ResponseWriter, r *http.Request) {
+	var gs ifActService
+	gs = services.NewActService(pgsql.ActStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -345,16 +347,13 @@ func (s *APG) HandleActActivate(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_acts_activate($1,$2);", utils.NullableInt(int32(gs1)), utils.NullableString(gs2)).Scan(&gsc)
+	ai, err := gs.Activate(ctx, gs1, gs2)
 
 	if err != nil {
-		// w.Write([]byte(err.Error()))
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifActService.Activate: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: gsc})
+	output, err := json.Marshal(models.Json_id{Id: ai})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)

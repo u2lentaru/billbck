@@ -18,6 +18,7 @@ type ifActStorage interface {
 	Upd(ctx context.Context, eu models.Act) (int, error)
 	Del(ctx context.Context, ed []int) ([]int, error)
 	GetOne(ctx context.Context, i int) (models.Act_count, error)
+	Activate(ctx context.Context, i int, d string) (int, error)
 }
 
 //func NewActService(storage pgsql.ActStorage) *ActService
@@ -102,4 +103,19 @@ func (esv *ActService) GetOne(ctx context.Context, i int) (models.Act_count, err
 
 	return out_count, nil
 
+}
+
+//func (esv *ActService) Activate(ctx context.Context, i int, d string) (int, error)
+func (esv *ActService) Activate(ctx context.Context, i int, d string) (int, error) {
+	var est ifActStorage
+	est = pgsql.NewActStorage(nil)
+
+	ai, err := est.Activate(ctx, i, d)
+
+	if err != nil {
+		log.Println("ActStorage.Activate", err)
+		return 0, err
+	}
+
+	return ai, nil
 }

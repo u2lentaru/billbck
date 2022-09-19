@@ -192,7 +192,7 @@ func AddRoutes(r *mux.Router, apg *api.APG) {
 	r.HandleFunc("/acts_add", api.HandleAddAct).Methods("POST", "OPTIONS")
 	r.HandleFunc("/acts_upd", api.HandleUpdAct).Methods("POST", "OPTIONS")
 	r.HandleFunc("/acts_del", api.HandleDelAct).Methods("POST", "OPTIONS")
-	r.HandleFunc("/acts_activate", apg.HandleActActivate).Methods("GET", "OPTIONS")
+	r.HandleFunc("/acts_activate", api.HandleActActivate).Methods("GET", "OPTIONS")
 	r.HandleFunc("/acts/{id:[0-9]+}", apg.HandleGetAct).Methods("GET", "OPTIONS")
 	r.HandleFunc("/actdetails", api.HandleActDetails).Methods("GET", "OPTIONS")
 	r.HandleFunc("/actdetails_add", api.HandleAddActDetail).Methods("POST", "OPTIONS")

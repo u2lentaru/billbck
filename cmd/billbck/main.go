@@ -47,8 +47,12 @@ func main() {
 	url := "postgres://postgres:postgres@" + os.Getenv("DB_HOST") + ":5432/postgres"
 	// url := "postgres://postgres:postgres@" + os.Getenv("DB_HOST") + ":5432/billing"
 
-	dbpool := pgclient.GetDb(ctx, url)
+	dbpool, err := pgclient.GetDb(ctx, url)
 	defer dbpool.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// log.Println("WDB", pgclient.WDB)
 

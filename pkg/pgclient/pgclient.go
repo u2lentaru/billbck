@@ -9,10 +9,10 @@ import (
 
 var WDB *pgxpool.Pool
 
-func GetDb(ctx context.Context, url string) *pgxpool.Pool {
+func GetDb(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	if WDB != nil {
 		// log.Println("dbpool != nil", WDB)
-		return WDB
+		return WDB, nil
 	}
 
 	cfg, err := pgxpool.ParseConfig(url)
@@ -25,13 +25,13 @@ func GetDb(ctx context.Context, url string) *pgxpool.Pool {
 
 	WDB, err = pgxpool.ConnectConfig(ctx, cfg)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	// defer dbpool.Close()
 
 	rows, err := WDB.Query(ctx, "SELECT version();")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer rows.Close()
@@ -47,5 +47,5 @@ func GetDb(ctx context.Context, url string) *pgxpool.Pool {
 		log.Println("version:", v)
 	}
 
-	return WDB
+	return WDB, nil
 }

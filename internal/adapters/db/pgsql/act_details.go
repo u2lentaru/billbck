@@ -21,8 +21,8 @@ func NewActDetailStorage(db *pgxpool.Pool) *ActDetailStorage {
 	return &ActDetailStorage{db: db}
 }
 
-//func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActDetail_count, error)
-func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActDetail_count, error) {
+//func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error)
+func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error) {
 	dbpool := pgclient.WDB
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.ActDetail{}

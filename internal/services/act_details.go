@@ -13,7 +13,7 @@ type ActDetailService struct {
 }
 
 type ifActDetailStorage interface {
-	GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActDetail_count, error)
+	GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error)
 	Add(ctx context.Context, ea models.ActDetail) (int, error)
 	Upd(ctx context.Context, eu models.ActDetail) (int, error)
 	Del(ctx context.Context, ed []int) ([]int, error)
@@ -25,8 +25,8 @@ func NewActDetailService(storage pgsql.ActDetailStorage) *ActDetailService {
 	return &ActDetailService{storage}
 }
 
-//func (esv *ActDetailService) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActDetail_count, error)
-func (esv *ActDetailService) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActDetail_count, error) {
+//func (esv *ActDetailService) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error)
+func (esv *ActDetailService) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error) {
 	var est ifActDetailStorage
 	est = pgsql.NewActDetailStorage(nil)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}

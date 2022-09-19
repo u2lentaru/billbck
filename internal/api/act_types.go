@@ -142,6 +142,10 @@ func HandleAddActType(w http.ResponseWriter, r *http.Request) {
 
 	ai, err := gs.Add(ctx, a)
 
+	if err != nil {
+		log.Println("Failed execute ifActTypeService.Add: ", err)
+	}
+
 	output, err := json.Marshal(models.Json_id{Id: ai})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -187,7 +191,7 @@ func HandleUpdActType(w http.ResponseWriter, r *http.Request) {
 	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_act_types_upd: ", err)
+		log.Println("Failed execute ifActTypeService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -233,6 +237,9 @@ func HandleDelActType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifActTypeService.Del: ", err)
+	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
 	if err != nil {
@@ -266,6 +273,9 @@ func HandleGetActType(w http.ResponseWriter, r *http.Request) {
 	}
 
 	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifActTypeService.GetOne: ", err)
+	}
 
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {

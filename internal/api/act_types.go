@@ -37,7 +37,7 @@ type ifActTypeService interface {
 // @Success 200 {object} models.ActType_count
 // @Failure 500
 // @Router /acttypes [get]
-func (s *APG) HandleActTypes(w http.ResponseWriter, r *http.Request) {
+func HandleActTypes(w http.ResponseWriter, r *http.Request) {
 	var gs ifActTypeService
 	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
 	ctx := context.Background()
@@ -119,7 +119,7 @@ func (s *APG) HandleActTypes(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acttypes_add [post]
-func (s *APG) HandleAddActType(w http.ResponseWriter, r *http.Request) {
+func HandleAddActType(w http.ResponseWriter, r *http.Request) {
 	var gs ifActTypeService
 	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
 	ctx := context.Background()
@@ -163,7 +163,7 @@ func (s *APG) HandleAddActType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /acttypes_upd [post]
-func (s *APG) HandleUpdActType(w http.ResponseWriter, r *http.Request) {
+func HandleUpdActType(w http.ResponseWriter, r *http.Request) {
 	var gs ifActTypeService
 	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
 	ctx := context.Background()
@@ -211,7 +211,7 @@ func (s *APG) HandleUpdActType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /acttypes_del [post]
-func (s *APG) HandleDelActType(w http.ResponseWriter, r *http.Request) {
+func HandleDelActType(w http.ResponseWriter, r *http.Request) {
 	var gs ifActTypeService
 	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
 	ctx := context.Background()
@@ -254,7 +254,7 @@ func (s *APG) HandleDelActType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ActType_count
 // @Failure 500
 // @Router /acttypes/{id} [get]
-func (s *APG) HandleGetActType(w http.ResponseWriter, r *http.Request) {
+func HandleGetActType(w http.ResponseWriter, r *http.Request) {
 	var gs ifActTypeService
 	gs = services.NewActTypeService(pgsql.ActTypeStorage{})
 	ctx := context.Background()

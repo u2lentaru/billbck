@@ -61,7 +61,7 @@ func (esv *ActDetailService) Upd(ctx context.Context, eu models.ActDetail) (int,
 	var est ifActDetailStorage
 	est = pgsql.NewActDetailStorage(nil)
 
-	ui, err := est.Add(ctx, eu)
+	ui, err := est.Upd(ctx, eu)
 
 	if err != nil {
 		log.Println("ActDetailStorage.Upd", err)
@@ -79,7 +79,7 @@ func (esv *ActDetailService) Del(ctx context.Context, ed []int) ([]int, error) {
 	res, err := est.Del(ctx, ed)
 
 	if err != nil {
-		log.Println("ActDetailStorage.Upd", err)
+		log.Println("ActDetailStorage.Del", err)
 		return []int{}, err
 	}
 

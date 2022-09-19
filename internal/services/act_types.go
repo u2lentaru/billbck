@@ -62,7 +62,7 @@ func (esv *ActTypeService) Upd(ctx context.Context, eu models.ActType) (int, err
 	var est ifActTypeStorage
 	est = pgsql.NewActTypeStorage(nil)
 
-	ui, err := est.Add(ctx, eu)
+	ui, err := est.Upd(ctx, eu)
 
 	if err != nil {
 		log.Println("ActTypeStorage.Upd", err)
@@ -80,7 +80,7 @@ func (esv *ActTypeService) Del(ctx context.Context, ed []int) ([]int, error) {
 	res, err := est.Del(ctx, ed)
 
 	if err != nil {
-		log.Println("ActTypeStorage.Upd", err)
+		log.Println("ActTypeStorage.Del", err)
 		return []int{}, err
 	}
 

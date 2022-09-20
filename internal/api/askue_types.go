@@ -11,9 +11,18 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 )
+
+type ifAskueTypeService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.AskueType_count, error)
+	Add(ctx context.Context, ea models.AskueType) (int, error)
+	Upd(ctx context.Context, eu models.AskueType) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.AskueType_count, error)
+}
 
 // HandleAskueTypes godoc
 // @Summary List askuetypes
@@ -28,8 +37,9 @@ import (
 // @Success 200 {object} models.CableResistance_count
 // @Failure 500
 // @Router /askuetypes [get]
-func (s *APG) HandleAskueTypes(w http.ResponseWriter, r *http.Request) {
-	gs := models.AskueType{}
+func HandleAskueTypes(w http.ResponseWriter, r *http.Request) {
+	var gs ifAskueTypeService
+	gs = services.NewAskueTypeService(pgsql.AskueTypeStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -65,23 +75,6 @@ func (s *APG) HandleAskueTypes(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_askue_types_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.AskueType, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -98,25 +91,13 @@ func (s *APG) HandleAskueTypes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_askue_types_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.AskueTypeName, &gs.StartLine, &gs.PuColumn, &gs.ValueColumn, &gs.DateColumn, &gs.DateColumnArray)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.AskueType_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -137,8 +118,12 @@ func (s *APG) HandleAskueTypes(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /askuetypes_add [post]
-func (s *APG) HandleAddAskueType(w http.ResponseWriter, r *http.Request) {
-	a := models.AddAskueType{}
+func HandleAddAskueType(w http.ResponseWriter, r *http.Request) {
+	var gs ifAskueTypeService
+	gs = services.NewAskueTypeService(pgsql.AskueTypeStorage{})
+	ctx := context.Background()
+
+	a := models.AskueType{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -154,12 +139,10 @@ func (s *APG) HandleAddAskueType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_askue_types_add($1,$2,$3,$4,$5,$6);", a.AskueTypeName, a.StartLine,
-		a.PuColumn, a.ValueColumn, a.DateColumn, a.DateColumnArray).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_askue_types_add: ", err)
+		log.Println("Failed execute ifAskueTypeService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -183,7 +166,11 @@ func (s *APG) HandleAddAskueType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /askuetypes_upd [post]
-func (s *APG) HandleUpdAskueType(w http.ResponseWriter, r *http.Request) {
+func HandleUpdAskueType(w http.ResponseWriter, r *http.Request) {
+	var gs ifAskueTypeService
+	gs = services.NewAskueTypeService(pgsql.AskueTypeStorage{})
+	ctx := context.Background()
+
 	u := models.AskueType{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -200,12 +187,10 @@ func (s *APG) HandleUpdAskueType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_askue_types_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.AskueTypeName,
-		u.StartLine, u.PuColumn, u.ValueColumn, u.DateColumn, u.DateColumnArray).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_askue_types_upd: ", err)
+		log.Println("Failed execute ifAskueTypeService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -230,7 +215,11 @@ func (s *APG) HandleUpdAskueType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /askuetypes_del [post]
-func (s *APG) HandleDelAskueType(w http.ResponseWriter, r *http.Request) {
+func HandleDelAskueType(w http.ResponseWriter, r *http.Request) {
+	var gs ifAskueTypeService
+	gs = services.NewAskueTypeService(pgsql.AskueTypeStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -247,15 +236,9 @@ func (s *APG) HandleDelAskueType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_askue_types_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_askue_types_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifAskueTypeService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -278,24 +261,23 @@ func (s *APG) HandleDelAskueType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.AskueType_count
 // @Failure 500
 // @Router /askuetypes/{id} [get]
-func (s *APG) HandleGetAskueType(w http.ResponseWriter, r *http.Request) {
+func HandleGetAskueType(w http.ResponseWriter, r *http.Request) {
+	var gs ifAskueTypeService
+	gs = services.NewAskueTypeService(pgsql.AskueTypeStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.AskueType{}
-	out_arr := []models.AskueType{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_askue_type_get($1);", i).Scan(&g.Id, &g.AskueTypeName,
-		&g.StartLine, &g.PuColumn, &g.ValueColumn, &g.DateColumn, &g.DateColumnArray)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_askue_type_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifAskueTypeService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.AskueType_count{Values: out_arr, Count: 1, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

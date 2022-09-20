@@ -49,7 +49,7 @@ func (esv *AreaService) Add(ctx context.Context, ea models.Area) (int, error) {
 	ai, err := est.Add(ctx, ea)
 
 	if err != nil {
-		log.Println("Areatorage.Add", err)
+		log.Println("AreaStorage.Add", err)
 		return 0, err
 	}
 

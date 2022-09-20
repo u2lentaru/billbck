@@ -285,7 +285,7 @@ func HandleGetArea(w http.ResponseWriter, r *http.Request) {
 
 	out_arr, err := gs.GetOne(ctx, i)
 	if err != nil {
-		log.Println("Failed execute ifActTypeService.GetOne: ", err)
+		log.Println("Failed execute ifAreaService.GetOne: ", err)
 	}
 
 	out_count, err := json.Marshal(out_arr)

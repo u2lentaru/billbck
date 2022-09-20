@@ -77,7 +77,7 @@ func (est *AreaStorage) Add(ctx context.Context, a models.Area) (int, error) {
 	err := dbpool.QueryRow(context.Background(), "SELECT func_areas_add($1,$2);", a.AreaNumber, a.AreaName).Scan(&ai)
 
 	if err != nil {
-		log.Println("Failed execute func_act_types_add: ", err)
+		log.Println("Failed execute func_areas_add: ", err)
 		return 0, err
 	}
 
@@ -92,7 +92,7 @@ func (est *AreaStorage) Upd(ctx context.Context, u models.Area) (int, error) {
 	err := dbpool.QueryRow(context.Background(), "SELECT func_areas_upd($1,$2,$3);", u.Id, u.AreaNumber, u.AreaName).Scan(&ui)
 
 	if err != nil {
-		log.Println("Failed execute func_act_types_upd: ", err)
+		log.Println("Failed execute func_areas_upd: ", err)
 		return 0, err
 	}
 	return ui, nil

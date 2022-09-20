@@ -28,7 +28,8 @@ func NewActDetailService(storage pgsql.ActDetailStorage) *ActDetailService {
 //func (esv *ActDetailService) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error)
 func (esv *ActDetailService) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error) {
 	var est ifActDetailStorage
-	est = pgsql.NewActDetailStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActDetailStorage(nil)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetList(ctx, pg, pgs, nm, ord, dsc)
@@ -44,7 +45,8 @@ func (esv *ActDetailService) GetList(ctx context.Context, pg, pgs, nm, ord int, 
 //func (esv *ActDetailService) Add(ctx context.Context, ea models.ActDetail) (int, error)
 func (esv *ActDetailService) Add(ctx context.Context, ea models.ActDetail) (int, error) {
 	var est ifActDetailStorage
-	est = pgsql.NewActDetailStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActDetailStorage(nil)
 
 	ai, err := est.Add(ctx, ea)
 
@@ -59,7 +61,8 @@ func (esv *ActDetailService) Add(ctx context.Context, ea models.ActDetail) (int,
 //func (esv *ActDetailService) Upd(ctx context.Context, eu models.ActDetail) (int, error)
 func (esv *ActDetailService) Upd(ctx context.Context, eu models.ActDetail) (int, error) {
 	var est ifActDetailStorage
-	est = pgsql.NewActDetailStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActDetailStorage(nil)
 
 	ui, err := est.Upd(ctx, eu)
 
@@ -74,7 +77,8 @@ func (esv *ActDetailService) Upd(ctx context.Context, eu models.ActDetail) (int,
 //func (esv *ActDetailService) Del(ctx context.Context, ed []int) ([]int, error)
 func (esv *ActDetailService) Del(ctx context.Context, ed []int) ([]int, error) {
 	var est ifActDetailStorage
-	est = pgsql.NewActDetailStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActDetailStorage(nil)
 
 	res, err := est.Del(ctx, ed)
 
@@ -89,7 +93,8 @@ func (esv *ActDetailService) Del(ctx context.Context, ed []int) ([]int, error) {
 //func (esv *ActDetailService) GetOne(ctx context.Context, i int) (models.ActDetail_count, error)
 func (esv *ActDetailService) GetOne(ctx context.Context, i int) (models.ActDetail_count, error) {
 	var est ifActDetailStorage
-	est = pgsql.NewActDetailStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActDetailStorage(nil)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetOne(ctx, i)

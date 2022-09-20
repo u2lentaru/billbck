@@ -28,8 +28,8 @@ func NewActTypeService(storage pgsql.ActTypeStorage) *ActTypeService {
 //func (esv *ActTypeService) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error)
 func (esv *ActTypeService) GetList(ctx context.Context, pg, pgs int, nm string, ord int, dsc bool) (models.ActType_count, error) {
 	var est ifActTypeStorage
-	est = pgsql.NewActTypeStorage(nil)
-	// est = pgsql.NewActTypeStorage(pgclient.WDB)
+	est = &esv.storage
+	// est = pgsql.NewActTypeStorage(nil)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetList(ctx, pg, pgs, nm, ord, dsc)
@@ -45,7 +45,8 @@ func (esv *ActTypeService) GetList(ctx context.Context, pg, pgs int, nm string, 
 //func (esv *ActTypeService) Add(ctx context.Context, ea models.ActType) (int, error)
 func (esv *ActTypeService) Add(ctx context.Context, ea models.ActType) (int, error) {
 	var est ifActTypeStorage
-	est = pgsql.NewActTypeStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActTypeStorage(nil)
 
 	ai, err := est.Add(ctx, ea)
 
@@ -60,7 +61,8 @@ func (esv *ActTypeService) Add(ctx context.Context, ea models.ActType) (int, err
 //func (esv *ActTypeService) Upd(ctx context.Context, eu models.ActType)
 func (esv *ActTypeService) Upd(ctx context.Context, eu models.ActType) (int, error) {
 	var est ifActTypeStorage
-	est = pgsql.NewActTypeStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActTypeStorage(nil)
 
 	ui, err := est.Upd(ctx, eu)
 
@@ -75,7 +77,8 @@ func (esv *ActTypeService) Upd(ctx context.Context, eu models.ActType) (int, err
 //func (esv *ActTypeService) Del(ctx context.Context, ed []int) ([]int, error)
 func (esv *ActTypeService) Del(ctx context.Context, ed []int) ([]int, error) {
 	var est ifActTypeStorage
-	est = pgsql.NewActTypeStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActTypeStorage(nil)
 
 	res, err := est.Del(ctx, ed)
 
@@ -90,7 +93,8 @@ func (esv *ActTypeService) Del(ctx context.Context, ed []int) ([]int, error) {
 //func (esv *ActTypeService) GetOne(ctx context.Context, i int) (models.ActType_count, error)
 func (esv *ActTypeService) GetOne(ctx context.Context, i int) (models.ActType_count, error) {
 	var est ifActTypeStorage
-	est = pgsql.NewActTypeStorage(nil)
+	est = &esv.storage
+	// est = pgsql.NewActTypeStorage(nil)
 	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetOne(ctx, i)

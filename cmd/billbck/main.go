@@ -54,14 +54,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// log.Println("WDB", pgclient.WDB)
-
-	// testdbpool := pgclient.GetDb(ctx, url)
-	// defer testdbpool.Close()
-
-	// log.Println("testdbpool", testdbpool)
-	// log.Println("WDB", pgclient.WDB)
-
 	apg := api.APG{Dbpool: dbpool}
 	route := mux.NewRouter()
 

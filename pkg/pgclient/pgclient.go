@@ -11,7 +11,6 @@ var WDB *pgxpool.Pool
 
 func GetDb(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	if WDB != nil {
-		// log.Println("dbpool != nil", WDB)
 		return WDB, nil
 	}
 

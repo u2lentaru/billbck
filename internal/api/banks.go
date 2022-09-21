@@ -11,9 +11,18 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 )
+
+type ifBankService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Bank_count, error)
+	Add(ctx context.Context, ea models.Bank) (int, error)
+	Upd(ctx context.Context, eu models.Bank) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Bank_count, error)
+}
 
 // HandleBanks godoc
 // @Summary List banks
@@ -29,8 +38,9 @@ import (
 // @Success 200 {object} models.Bank_count
 // @Failure 500
 // @Router /banks [get]
-func (s *APG) HandleBanks(w http.ResponseWriter, r *http.Request) {
-	b := models.Bank{}
+func HandleBanks(w http.ResponseWriter, r *http.Request) {
+	var gs ifBankService
+	gs = services.NewBankService(pgsql.BankStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -74,23 +84,6 @@ func (s *APG) HandleBanks(w http.ResponseWriter, r *http.Request) {
 		bd = string(re.ReplaceAll([]byte(bd), []byte("''")))
 	}
 
-	bc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_banks_cnt($1,$2);", bn, bd).Scan(&bc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Bank, 0,
-		func() int {
-			if bc < pgs {
-				return bc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -109,25 +102,13 @@ func (s *APG) HandleBanks(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_banks_get($1,$2,$3,$4,$5,$6);", pg, pgs, bn, bd, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, bn, bd, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&b.Id, &b.BankName, &b.BankDescr, &b.Mfo)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, b)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Bank_count{Values: out_arr, Count: bc, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -149,8 +130,12 @@ func (s *APG) HandleBanks(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /banks_add [post]
-func (s *APG) HandleAddBank(w http.ResponseWriter, r *http.Request) {
-	ab := models.AddBank{}
+func HandleAddBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifBankService
+	gs = services.NewBankService(pgsql.BankStorage{})
+	ctx := context.Background()
+
+	ab := models.Bank{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -166,15 +151,13 @@ func (s *APG) HandleAddBank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	abi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_banks_add($1,$2,$3);", ab.BankName, ab.BankDescr, ab.Mfo).Scan(&abi)
+	ai, err := gs.Add(ctx, ab)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBankService.Add: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: abi})
+	output, err := json.Marshal(models.Json_id{Id: ai})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -195,8 +178,12 @@ func (s *APG) HandleAddBank(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /banks_upd [post]
-func (s *APG) HandleUpdBank(w http.ResponseWriter, r *http.Request) {
-	ub := models.Bank{}
+func HandleUpdBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifBankService
+	gs = services.NewBankService(pgsql.BankStorage{})
+	ctx := context.Background()
+
+	u := models.Bank{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -206,21 +193,19 @@ func (s *APG) HandleUpdBank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ub)
+	err = json.Unmarshal(body, &u)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	ubi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_banks_upd($1,$2,$3,$4);", ub.Id, ub.BankName, ub.BankDescr, ub.Mfo).Scan(&ubi)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBankService.Upd: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: ubi})
+	output, err := json.Marshal(models.Json_id{Id: ui})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -241,8 +226,12 @@ func (s *APG) HandleUpdBank(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /banks_del [post]
-func (s *APG) HandleDelBank(w http.ResponseWriter, r *http.Request) {
-	db := models.Json_ids{}
+func HandleDelBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifBankService
+	gs = services.NewBankService(pgsql.BankStorage{})
+	ctx := context.Background()
+
+	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -252,27 +241,16 @@ func (s *APG) HandleDelBank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &db)
+	err = json.Unmarshal(body, &d)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	res := []int{}
-	bi := 0
-	for _, id := range db.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_banks_del($1);", id).Scan(&bi)
-		res = append(res, bi)
-
-		if err != nil {
-			log.Println("Failed execute func_banks_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifBankService.Del: ", err)
 	}
-
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
 	if err != nil {
@@ -293,25 +271,23 @@ func (s *APG) HandleDelBank(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Bank_count
 // @Failure 500
 // @Router /banks/{id} [get]
-func (s *APG) HandleGetBank(w http.ResponseWriter, r *http.Request) {
+func HandleGetBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifBankService
+	gs = services.NewBankService(pgsql.BankStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
-	bi := vars["id"]
-	b := models.Bank{}
-	out_arr := []models.Bank{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_bank_get($1);", bi).Scan(&b.Id, &b.BankName, &b.BankDescr, &b.Mfo)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_bank_get: ", err)
-		// http.Error(w, err.Error(), 500)
-		// return
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, b)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifBankService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(b)
-	out_count, err := json.Marshal(models.Bank_count{Values: out_arr, Count: 1, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

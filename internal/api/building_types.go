@@ -11,9 +11,18 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 )
+
+type ifBuildingTypeService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.BuildingType_count, error)
+	Add(ctx context.Context, ea models.BuildingType) (int, error)
+	Upd(ctx context.Context, eu models.BuildingType) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.BuildingType_count, error)
+}
 
 // HandleBuildingTypes godoc
 // @Summary List building types
@@ -28,8 +37,9 @@ import (
 // @Success 200 {object} models.BuildingType_count
 // @Failure 500
 // @Router /building_types [get]
-func (s *APG) HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
-	gs := models.BuildingType{}
+func HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
+	var gs ifBuildingTypeService
+	gs = services.NewBuildingTypeService(pgsql.BuildingTypeStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -65,23 +75,6 @@ func (s *APG) HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
 		gsn = string(re.ReplaceAll([]byte(gsn), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_building_types_cnt($1);", gsn).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.BuildingType, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -100,25 +93,13 @@ func (s *APG) HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_building_types_get($1,$2,$3,$4,$5);", pg, pgs, gsn, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gsn, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.BuildingTypeName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.BuildingType_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -139,8 +120,12 @@ func (s *APG) HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /building_types_add [post]
-func (s *APG) HandleAddBuildingType(w http.ResponseWriter, r *http.Request) {
-	a := models.AddBuildingType{}
+func HandleAddBuildingType(w http.ResponseWriter, r *http.Request) {
+	var gs ifBuildingTypeService
+	gs = services.NewBuildingTypeService(pgsql.BuildingTypeStorage{})
+	ctx := context.Background()
+
+	a := models.BuildingType{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -156,11 +141,10 @@ func (s *APG) HandleAddBuildingType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_building_types_add($1);", a.BuildingTypeName).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_building_types_add: ", err)
+		log.Println("Failed execute ifBuildingTypeService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -184,7 +168,11 @@ func (s *APG) HandleAddBuildingType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /building_types_upd [post]
-func (s *APG) HandleUpdBuildingType(w http.ResponseWriter, r *http.Request) {
+func HandleUpdBuildingType(w http.ResponseWriter, r *http.Request) {
+	var gs ifBuildingTypeService
+	gs = services.NewBuildingTypeService(pgsql.BuildingTypeStorage{})
+	ctx := context.Background()
+
 	u := models.BuildingType{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -201,11 +189,10 @@ func (s *APG) HandleUpdBuildingType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_building_types_upd($1,$2);", u.Id, u.BuildingTypeName).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_building_types_upd: ", err)
+		log.Println("Failed execute ifBuildingTypeService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -230,7 +217,11 @@ func (s *APG) HandleUpdBuildingType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /building_types_del [post]
-func (s *APG) HandleDelBuildingType(w http.ResponseWriter, r *http.Request) {
+func HandleDelBuildingType(w http.ResponseWriter, r *http.Request) {
+	var gs ifBuildingTypeService
+	gs = services.NewBuildingTypeService(pgsql.BuildingTypeStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -247,15 +238,9 @@ func (s *APG) HandleDelBuildingType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_building_types_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_building_types_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifBuildingTypeService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -277,23 +262,23 @@ func (s *APG) HandleDelBuildingType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.BuildingType_count
 // @Failure 500
 // @Router /building_types/{id} [get]
-func (s *APG) HandleGetBuildingType(w http.ResponseWriter, r *http.Request) {
+func HandleGetBuildingType(w http.ResponseWriter, r *http.Request) {
+	var gs ifBuildingTypeService
+	gs = services.NewBuildingTypeService(pgsql.BuildingTypeStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.BuildingType{}
-	out_arr := []models.BuildingType{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_building_type_get($1);", i).Scan(&g.Id, &g.BuildingTypeName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_building_type_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifBuildingTypeService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.BuildingType_count{Values: out_arr, Count: 1, Auth: auth})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

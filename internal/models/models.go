@@ -1,11 +1,7 @@
 package models
 
 import (
-	"context"
 	"database/sql"
-	"log"
-
-	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type NullInt32 sql.NullInt32
@@ -1773,59 +1769,6 @@ type CableResistance_count struct {
 	Count  int               `json:"count"`
 	Auth   Auth              `json:"auth"`
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-func NewCableResistance_count() *CableResistance_count {
-	return &CableResistance_count{}
-}
-
-func (cbr *CableResistance_count) GetCableResistances(Dbpool *pgxpool.Pool, pg, pgs int, cbrnm string, ord int, dsc bool) error {
-	gs := CableResistance{}
-	ctx := context.Background()
-
-	gsc := 0
-	err := Dbpool.QueryRow(ctx, "SELECT * from func_cable_resistances_cnt($1);", cbrnm).Scan(&gsc)
-
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	out_arr := make([]CableResistance, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
-	rows, err := Dbpool.Query(ctx, "SELECT * from func_cable_resistances_get($1,$2,$3,$4,$5);", pg, pgs, cbrnm, ord, dsc)
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.CableResistanceName, &gs.Resistance, &gs.MaterialType)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := Auth{Create: true, Read: true, Update: true, Delete: true}
-	*cbr = CableResistance_count{Values: out_arr, Count: gsc, Auth: auth}
-	if err != nil {
-		log.Println(err.Error())
-	}
-
-	return nil
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //ObjLine struct
 type ObjLine struct {

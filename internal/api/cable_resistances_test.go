@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -10,27 +9,26 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/stretchr/testify/assert"
 	"github.com/u2lentaru/billbck/internal/models"
 )
 
 func TestHandleGetCableResistance(t *testing.T) {
-	url := "postgres://postgres:postgres@localhost:5432/postgres"
+	//url := "postgres://postgres:postgres@localhost:5432/postgres"
 
-	cfg, err := pgxpool.ParseConfig(url)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// cfg, err := pgxpool.ParseConfig(url)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	dbpool, err := pgxpool.ConnectConfig(context.Background(), cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// dbpool, err := pgxpool.ConnectConfig(context.Background(), cfg)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	tst_srv := APG{Dbpool: dbpool}
+	// tst_srv := APG{Dbpool: dbpool}
 	router := mux.NewRouter()
-	router.HandleFunc("/cableresistances/{id:[0-9]+}", tst_srv.HandleGetCableResistance).Methods("GET", "OPTIONS")
+	router.HandleFunc("/cableresistances/{id:[0-9]+}", HandleGetCableResistance).Methods("GET", "OPTIONS")
 
 	req, _ := http.NewRequest("GET", "/cableresistances/7", nil)
 

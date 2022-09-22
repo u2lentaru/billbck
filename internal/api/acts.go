@@ -14,6 +14,7 @@ import (
 	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
 	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
 
 type ifActService interface {
@@ -44,6 +45,7 @@ func HandleActs(w http.ResponseWriter, r *http.Request) {
 	var gs ifActService
 	gs = services.NewActService(pgsql.ActStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -121,6 +123,7 @@ func HandleActs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -287,6 +290,7 @@ func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
 	var gs ifActService
 	gs = services.NewActService(pgsql.ActStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	vars := mux.Vars(r)
 	i, err := strconv.Atoi(vars["id"])
@@ -299,6 +303,7 @@ func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
 		log.Println("Failed execute ifActService.GetOne: ", err)
 	}
 
+	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

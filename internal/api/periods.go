@@ -119,7 +119,7 @@ func (s *APG) HandlePeriods(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Period_count{Values: out_arr, Count: gsc, Auth: utils.GetAuth(r, "periods")})
+	out_count, err := json.Marshal(models.Period_count{Values: out_arr, Count: gsc, Auth: utils.GetAuth(r)})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -296,7 +296,7 @@ func (s *APG) HandleGetPeriod(w http.ResponseWriter, r *http.Request) {
 	// auth := utils.GetAuth(r)
 
 	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Period_count{Values: out_arr, Count: 1, Auth: utils.GetAuth(r, "periods")})
+	out_count, err := json.Marshal(models.Period_count{Values: out_arr, Count: 1, Auth: utils.GetAuth(r)})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

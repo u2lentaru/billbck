@@ -14,6 +14,7 @@ import (
 	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
 	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
 
 type ifBankService interface {
@@ -42,6 +43,7 @@ func HandleBanks(w http.ResponseWriter, r *http.Request) {
 	var gs ifBankService
 	gs = services.NewBankService(pgsql.BankStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -108,6 +110,7 @@ func HandleBanks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -275,6 +278,7 @@ func HandleGetBank(w http.ResponseWriter, r *http.Request) {
 	var gs ifBankService
 	gs = services.NewBankService(pgsql.BankStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	vars := mux.Vars(r)
 	i, err := strconv.Atoi(vars["id"])
@@ -287,6 +291,7 @@ func HandleGetBank(w http.ResponseWriter, r *http.Request) {
 		log.Println("Failed execute ifBankService.GetOne: ", err)
 	}
 
+	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

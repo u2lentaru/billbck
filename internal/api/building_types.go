@@ -14,6 +14,7 @@ import (
 	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
 	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
 
 type ifBuildingTypeService interface {
@@ -41,6 +42,7 @@ func HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
 	var gs ifBuildingTypeService
 	gs = services.NewBuildingTypeService(pgsql.BuildingTypeStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -99,6 +101,7 @@ func HandleBuildingTypes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -266,6 +269,7 @@ func HandleGetBuildingType(w http.ResponseWriter, r *http.Request) {
 	var gs ifBuildingTypeService
 	gs = services.NewBuildingTypeService(pgsql.BuildingTypeStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	vars := mux.Vars(r)
 	i, err := strconv.Atoi(vars["id"])
@@ -278,6 +282,7 @@ func HandleGetBuildingType(w http.ResponseWriter, r *http.Request) {
 		log.Println("Failed execute ifBuildingTypeService.GetOne: ", err)
 	}
 
+	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

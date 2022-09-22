@@ -29,13 +29,12 @@ func NewBuildingTypeService(storage pgsql.BuildingTypeStorage) *BuildingTypeServ
 func (esv *BuildingTypeService) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.BuildingType_count, error) {
 	var est ifBuildingTypeStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetList(ctx, pg, pgs, gs1, ord, dsc)
 
 	if err != nil {
 		log.Println("BuildingTypeStorage.GetList", err)
-		return models.BuildingType_count{Values: []models.BuildingType{}, Count: 0, Auth: auth}, err
+		return models.BuildingType_count{Values: []models.BuildingType{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil
@@ -90,13 +89,12 @@ func (esv *BuildingTypeService) Del(ctx context.Context, ed []int) ([]int, error
 func (esv *BuildingTypeService) GetOne(ctx context.Context, i int) (models.BuildingType_count, error) {
 	var est ifBuildingTypeStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetOne(ctx, i)
 
 	if err != nil {
 		log.Println("BuildingTypeStorage.GetOne", err)
-		return models.BuildingType_count{Values: []models.BuildingType{}, Count: 0, Auth: auth}, err
+		return models.BuildingType_count{Values: []models.BuildingType{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil

@@ -30,13 +30,12 @@ func (esv *ActTypeService) GetList(ctx context.Context, pg, pgs int, nm string, 
 	var est ifActTypeStorage
 	est = &esv.storage
 	// est = pgsql.NewActTypeStorage(nil)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetList(ctx, pg, pgs, nm, ord, dsc)
 
 	if err != nil {
 		log.Println("ActTypeStorage.GetList", err)
-		return models.ActType_count{Values: []models.ActType{}, Count: 0, Auth: auth}, err
+		return models.ActType_count{Values: []models.ActType{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil
@@ -95,13 +94,12 @@ func (esv *ActTypeService) GetOne(ctx context.Context, i int) (models.ActType_co
 	var est ifActTypeStorage
 	est = &esv.storage
 	// est = pgsql.NewActTypeStorage(nil)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetOne(ctx, i)
 
 	if err != nil {
 		log.Println("ActTypeStorage.GetOne", err)
-		return models.ActType_count{Values: []models.ActType{}, Count: 0, Auth: auth}, err
+		return models.ActType_count{Values: []models.ActType{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil

@@ -29,13 +29,12 @@ func NewAreaService(storage pgsql.AreaStorage) *AreaService {
 func (esv *AreaService) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Area_count, error) {
 	var est ifAreaStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 
 	if err != nil {
 		log.Println("AreaStorage.GetList", err)
-		return models.Area_count{Values: []models.Area{}, Count: 0, Auth: auth}, err
+		return models.Area_count{Values: []models.Area{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil
@@ -90,13 +89,12 @@ func (esv *AreaService) Del(ctx context.Context, ed []int) ([]int, error) {
 func (esv *AreaService) GetOne(ctx context.Context, i int) (models.Area_count, error) {
 	var est ifAreaStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetOne(ctx, i)
 
 	if err != nil {
 		log.Println("AreaStorage.GetOne", err)
-		return models.Area_count{Values: []models.Area{}, Count: 0, Auth: auth}, err
+		return models.Area_count{Values: []models.Area{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil

@@ -29,13 +29,12 @@ func NewCableResistanceService(storage pgsql.CableResistanceStorage) *CableResis
 func (esv *CableResistanceService) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.CableResistance_count, error) {
 	var est ifCableResistanceStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetList(ctx, pg, pgs, gs1, ord, dsc)
 
 	if err != nil {
 		log.Println("CableResistanceStorage.GetList", err)
-		return models.CableResistance_count{Values: []models.CableResistance{}, Count: 0, Auth: auth}, err
+		return models.CableResistance_count{Values: []models.CableResistance{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil
@@ -90,13 +89,12 @@ func (esv *CableResistanceService) Del(ctx context.Context, ed []int) ([]int, er
 func (esv *CableResistanceService) GetOne(ctx context.Context, i int) (models.CableResistance_count, error) {
 	var est ifCableResistanceStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetOne(ctx, i)
 
 	if err != nil {
 		log.Println("CableResistanceStorage.GetOne", err)
-		return models.CableResistance_count{Values: []models.CableResistance{}, Count: 0, Auth: auth}, err
+		return models.CableResistance_count{Values: []models.CableResistance{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil

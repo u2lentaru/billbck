@@ -23,7 +23,6 @@ func NewBankStorage(db *pgxpool.Pool) *BankStorage {
 //func (est *BankStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Bank_count, error)
 func (est *BankStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Bank_count, error) {
 	dbpool := pgclient.WDB
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.Bank{}
 
 	gsc := 0
@@ -31,7 +30,7 @@ func (est *BankStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 
 	if err != nil {
 		log.Println(err.Error(), "func_banks_cnt")
-		return models.Bank_count{Values: []models.Bank{}, Count: gsc, Auth: auth}, err
+		return models.Bank_count{Values: []models.Bank{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	out_arr := make([]models.Bank, 0,
@@ -46,7 +45,7 @@ func (est *BankStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 	rows, err := dbpool.Query(ctx, "SELECT * from func_banks_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		log.Println(err.Error())
-		return models.Bank_count{Values: []models.Bank{}, Count: gsc, Auth: auth}, err
+		return models.Bank_count{Values: []models.Bank{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	defer rows.Close()
@@ -60,7 +59,7 @@ func (est *BankStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 		out_arr = append(out_arr, gs)
 	}
 
-	out_count := models.Bank_count{Values: out_arr, Count: gsc, Auth: auth}
+	out_count := models.Bank_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 	if err != nil {
 		log.Println(err.Error())
 		return models.Bank_count{}, err
@@ -119,17 +118,16 @@ func (est *BankStorage) GetOne(ctx context.Context, i int) (models.Bank_count, e
 	dbpool := pgclient.WDB
 	out_arr := []models.Bank{}
 	g := models.Bank{}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	err := dbpool.QueryRow(context.Background(), "SELECT * from func_bank_get($1);", i).Scan(&g.Id, &g.BankName, &g.BankDescr, &g.Mfo)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_bank_get: ", err)
-		return models.Bank_count{Values: []models.Bank{}, Count: 0, Auth: auth}, err
+		return models.Bank_count{Values: []models.Bank{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.Bank_count{Values: out_arr, Count: 0, Auth: auth}
+	out_count := models.Bank_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
 	return out_count, nil
 }

@@ -23,7 +23,6 @@ func NewCableResistanceStorage(db *pgxpool.Pool) *CableResistanceStorage {
 //func (est *CableResistanceStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.CableResistance_count, error)
 func (est *CableResistanceStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.CableResistance_count, error) {
 	dbpool := pgclient.WDB
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.CableResistance{}
 
 	gsc := 0
@@ -31,7 +30,7 @@ func (est *CableResistanceStorage) GetList(ctx context.Context, pg, pgs int, gs1
 
 	if err != nil {
 		log.Println(err.Error(), "func_cable_resistances_cnt")
-		return models.CableResistance_count{Values: []models.CableResistance{}, Count: gsc, Auth: auth}, err
+		return models.CableResistance_count{Values: []models.CableResistance{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	out_arr := make([]models.CableResistance, 0,
@@ -46,7 +45,7 @@ func (est *CableResistanceStorage) GetList(ctx context.Context, pg, pgs int, gs1
 	rows, err := dbpool.Query(ctx, "SELECT * from func_cable_resistances_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		log.Println(err.Error())
-		return models.CableResistance_count{Values: []models.CableResistance{}, Count: gsc, Auth: auth}, err
+		return models.CableResistance_count{Values: []models.CableResistance{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	defer rows.Close()
@@ -60,7 +59,7 @@ func (est *CableResistanceStorage) GetList(ctx context.Context, pg, pgs int, gs1
 		out_arr = append(out_arr, gs)
 	}
 
-	out_count := models.CableResistance_count{Values: out_arr, Count: gsc, Auth: auth}
+	out_count := models.CableResistance_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 	if err != nil {
 		log.Println(err.Error())
 		return models.CableResistance_count{}, err
@@ -121,18 +120,17 @@ func (est *CableResistanceStorage) GetOne(ctx context.Context, i int) (models.Ca
 	dbpool := pgclient.WDB
 	out_arr := []models.CableResistance{}
 	g := models.CableResistance{}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	err := dbpool.QueryRow(context.Background(), "SELECT * from func_cable_resistance_get($1);", i).Scan(&g.Id,
 		&g.CableResistanceName, &g.Resistance, &g.MaterialType)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_cable_resistance_get: ", err)
-		return models.CableResistance_count{Values: []models.CableResistance{}, Count: 0, Auth: auth}, err
+		return models.CableResistance_count{Values: []models.CableResistance{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.CableResistance_count{Values: out_arr, Count: 0, Auth: auth}
+	out_count := models.CableResistance_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
 	return out_count, nil
 }

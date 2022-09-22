@@ -24,7 +24,6 @@ func NewActDetailStorage(db *pgxpool.Pool) *ActDetailStorage {
 //func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error)
 func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, dsc bool) (models.ActDetail_count, error) {
 	dbpool := pgclient.WDB
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.ActDetail{}
 
 	gsc := 0
@@ -32,7 +31,7 @@ func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, 
 
 	if err != nil {
 		log.Println(err.Error(), "func_act_details_cnt")
-		return models.ActDetail_count{Values: []models.ActDetail{}, Count: gsc, Auth: auth}, err
+		return models.ActDetail_count{Values: []models.ActDetail{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	out_arr := make([]models.ActDetail, 0,
@@ -47,7 +46,7 @@ func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, 
 	rows, err := dbpool.Query(ctx, "SELECT * from func_act_details_get($1,$2,$3,$4,$5);", pg, pgs, nm, ord, dsc)
 	if err != nil {
 		log.Println(err.Error(), "func_act_details_get")
-		return models.ActDetail_count{Values: []models.ActDetail{}, Count: gsc, Auth: auth}, err
+		return models.ActDetail_count{Values: []models.ActDetail{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	defer rows.Close()
@@ -85,7 +84,7 @@ func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, 
 		out_arr = append(out_arr, gs)
 	}
 
-	out_count := models.ActDetail_count{Values: out_arr, Count: gsc, Auth: auth}
+	out_count := models.ActDetail_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 
 	if err != nil {
 		log.Println(err.Error())
@@ -154,7 +153,6 @@ func (est *ActDetailStorage) GetOne(ctx context.Context, i int) (models.ActDetai
 	dbpool := pgclient.WDB
 	out_arr := []models.ActDetail{}
 	g := models.ActDetail{}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	var pti, si, ci, sti, ri, vi sql.NullInt32
 	var ccn, ptn, stn, rn, vn sql.NullString
@@ -170,7 +168,7 @@ func (est *ActDetailStorage) GetOne(ctx context.Context, i int) (models.ActDetai
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_act_type_get: ", err)
-		return models.ActDetail_count{Values: []models.ActDetail{}, Count: 0, Auth: auth}, err
+		return models.ActDetail_count{Values: []models.ActDetail{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	g.Reason.Id = int(ri.Int32)
@@ -188,6 +186,6 @@ func (est *ActDetailStorage) GetOne(ctx context.Context, i int) (models.ActDetai
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.ActDetail_count{Values: out_arr, Count: 0, Auth: auth}
+	out_count := models.ActDetail_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
 	return out_count, nil
 }

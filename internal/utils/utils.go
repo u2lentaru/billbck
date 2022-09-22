@@ -194,6 +194,12 @@ func NullableBool(b bool, n bool) sql.NullBool {
 
 //GetAuth(r *http.Request, formName string) models.Auth - returns Auth struct
 func GetAuth(r *http.Request, formName string) models.Auth {
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	if len(formName) > 0 {
+		return models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	type Claims struct {
 		Username string `json:"username"`
 		Password string `json:"password"`

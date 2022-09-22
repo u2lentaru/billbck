@@ -29,13 +29,12 @@ func NewBankService(storage pgsql.BankStorage) *BankService {
 func (esv *BankService) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Bank_count, error) {
 	var est ifBankStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 
 	if err != nil {
 		log.Println("BankStorage.GetList", err)
-		return models.Bank_count{Values: []models.Bank{}, Count: 0, Auth: auth}, err
+		return models.Bank_count{Values: []models.Bank{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil
@@ -90,13 +89,12 @@ func (esv *BankService) Del(ctx context.Context, ed []int) ([]int, error) {
 func (esv *BankService) GetOne(ctx context.Context, i int) (models.Bank_count, error) {
 	var est ifBankStorage
 	est = &esv.storage
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	out_count, err := est.GetOne(ctx, i)
 
 	if err != nil {
 		log.Println("BankStorage.GetOne", err)
-		return models.Bank_count{Values: []models.Bank{}, Count: 0, Auth: auth}, err
+		return models.Bank_count{Values: []models.Bank{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	return out_count, nil

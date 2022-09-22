@@ -24,7 +24,6 @@ func NewActStorage(db *pgxpool.Pool) *ActStorage {
 //func (est *ActStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, gs3, ord int, dsc bool) (models.Act_count, error)
 func (est *ActStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, gs3, ord int, dsc bool) (models.Act_count, error) {
 	dbpool := pgclient.WDB
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.Act{}
 
 	gsc := 0
@@ -32,7 +31,7 @@ func (est *ActStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string
 
 	if err != nil {
 		log.Println(err.Error(), "func_acts_cnt")
-		return models.Act_count{Values: []models.Act{}, Count: gsc, Auth: auth}, err
+		return models.Act_count{Values: []models.Act{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	out_arr := make([]models.Act, 0,
@@ -47,7 +46,7 @@ func (est *ActStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string
 	rows, err := dbpool.Query(ctx, "SELECT * from func_acts_get($1,$2,$3,$4,$5,$6,$7);", pg, pgs, gs1, gs2, gs3, ord, dsc)
 	if err != nil {
 		log.Println(err.Error())
-		return models.Act_count{Values: []models.Act{}, Count: gsc, Auth: auth}, err
+		return models.Act_count{Values: []models.Act{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 	defer rows.Close()
 
@@ -64,7 +63,7 @@ func (est *ActStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string
 		out_arr = append(out_arr, gs)
 	}
 
-	out_count := models.Act_count{Values: out_arr, Count: gsc, Auth: auth}
+	out_count := models.Act_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 	if err != nil {
 		log.Println(err.Error())
 		return models.Act_count{}, err
@@ -125,7 +124,6 @@ func (est *ActStorage) GetOne(ctx context.Context, i int) (models.Act_count, err
 	dbpool := pgclient.WDB
 	out_arr := []models.Act{}
 	g := models.Act{}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	err := dbpool.QueryRow(context.Background(), "SELECT * from func_act_get($1);", i).Scan(&g.Id, &g.ActType.Id, &g.ActNumber,
 		&g.ActDate, &g.Object.Id, &g.Staff.Id, &g.Notes, &g.Activated, &g.ActType.ActTypeName, &g.Object.ObjectName,
@@ -138,7 +136,7 @@ func (est *ActStorage) GetOne(ctx context.Context, i int) (models.Act_count, err
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.Act_count{Values: out_arr, Count: 0, Auth: auth}
+	out_count := models.Act_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
 	return out_count, nil
 }
 

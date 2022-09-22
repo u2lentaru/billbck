@@ -23,7 +23,6 @@ func NewBuildingTypeStorage(db *pgxpool.Pool) *BuildingTypeStorage {
 //func (est *BuildingTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.BuildingType_count, error)
 func (est *BuildingTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.BuildingType_count, error) {
 	dbpool := pgclient.WDB
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.BuildingType{}
 
 	gsc := 0
@@ -31,7 +30,7 @@ func (est *BuildingTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 st
 
 	if err != nil {
 		log.Println(err.Error(), "func_building_types_cnt")
-		return models.BuildingType_count{Values: []models.BuildingType{}, Count: gsc, Auth: auth}, err
+		return models.BuildingType_count{Values: []models.BuildingType{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	out_arr := make([]models.BuildingType, 0,
@@ -46,7 +45,7 @@ func (est *BuildingTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 st
 	rows, err := dbpool.Query(ctx, "SELECT * from func_building_types_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		log.Println(err.Error())
-		return models.BuildingType_count{Values: []models.BuildingType{}, Count: gsc, Auth: auth}, err
+		return models.BuildingType_count{Values: []models.BuildingType{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	defer rows.Close()
@@ -60,7 +59,7 @@ func (est *BuildingTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 st
 		out_arr = append(out_arr, gs)
 	}
 
-	out_count := models.BuildingType_count{Values: out_arr, Count: gsc, Auth: auth}
+	out_count := models.BuildingType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 	if err != nil {
 		log.Println(err.Error())
 		return models.BuildingType_count{}, err
@@ -119,17 +118,16 @@ func (est *BuildingTypeStorage) GetOne(ctx context.Context, i int) (models.Build
 	dbpool := pgclient.WDB
 	out_arr := []models.BuildingType{}
 	g := models.BuildingType{}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	err := dbpool.QueryRow(context.Background(), "SELECT * from func_building_type_get($1);", i).Scan(&g.Id, &g.BuildingTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_building_type_get: ", err)
-		return models.BuildingType_count{Values: []models.BuildingType{}, Count: 0, Auth: auth}, err
+		return models.BuildingType_count{Values: []models.BuildingType{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.BuildingType_count{Values: out_arr, Count: 0, Auth: auth}
+	out_count := models.BuildingType_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
 	return out_count, nil
 }

@@ -23,7 +23,6 @@ func NewAskueTypeStorage(db *pgxpool.Pool) *AskueTypeStorage {
 //func (est *AskueTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.AskueType_count, error)
 func (est *AskueTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.AskueType_count, error) {
 	dbpool := pgclient.WDB
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.AskueType{}
 
 	gsc := 0
@@ -31,7 +30,7 @@ func (est *AskueTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 strin
 
 	if err != nil {
 		log.Println(err.Error(), "func_askue_types_cnt")
-		return models.AskueType_count{Values: []models.AskueType{}, Count: gsc, Auth: auth}, err
+		return models.AskueType_count{Values: []models.AskueType{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	out_arr := make([]models.AskueType, 0,
@@ -46,7 +45,7 @@ func (est *AskueTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 strin
 	rows, err := dbpool.Query(ctx, "SELECT * from func_askue_types_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		log.Println(err.Error())
-		return models.AskueType_count{Values: []models.AskueType{}, Count: gsc, Auth: auth}, err
+		return models.AskueType_count{Values: []models.AskueType{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	defer rows.Close()
@@ -60,7 +59,7 @@ func (est *AskueTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 strin
 		out_arr = append(out_arr, gs)
 	}
 
-	out_count := models.AskueType_count{Values: out_arr, Count: gsc, Auth: auth}
+	out_count := models.AskueType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 	if err != nil {
 		log.Println(err.Error())
 		return models.AskueType_count{}, err
@@ -121,18 +120,17 @@ func (est *AskueTypeStorage) GetOne(ctx context.Context, i int) (models.AskueTyp
 	dbpool := pgclient.WDB
 	out_arr := []models.AskueType{}
 	g := models.AskueType{}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	err := dbpool.QueryRow(context.Background(), "SELECT * from func_askue_type_get($1);", i).Scan(&g.Id, &g.AskueTypeName,
 		&g.StartLine, &g.PuColumn, &g.ValueColumn, &g.DateColumn, &g.DateColumnArray)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_askue_type_get: ", err)
-		return models.AskueType_count{Values: []models.AskueType{}, Count: 0, Auth: auth}, err
+		return models.AskueType_count{Values: []models.AskueType{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.AskueType_count{Values: out_arr, Count: 0, Auth: auth}
+	out_count := models.AskueType_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
 	return out_count, nil
 }

@@ -23,7 +23,6 @@ func NewAreaStorage(db *pgxpool.Pool) *AreaStorage {
 //func (est *AreaStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Area_count, error) {
 func (est *AreaStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Area_count, error) {
 	dbpool := pgclient.WDB
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 	gs := models.Area{}
 
 	gsc := 0
@@ -31,7 +30,7 @@ func (est *AreaStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 
 	if err != nil {
 		log.Println(err.Error(), "func_areas_cnt")
-		return models.Area_count{Values: []models.Area{}, Count: gsc, Auth: auth}, err
+		return models.Area_count{Values: []models.Area{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	out_arr := make([]models.Area, 0,
@@ -46,7 +45,7 @@ func (est *AreaStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 	rows, err := dbpool.Query(ctx, "SELECT * from func_areas_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		log.Println(err.Error())
-		return models.Area_count{Values: []models.Area{}, Count: gsc, Auth: auth}, err
+		return models.Area_count{Values: []models.Area{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
 	defer rows.Close()
@@ -60,7 +59,7 @@ func (est *AreaStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 		out_arr = append(out_arr, gs)
 	}
 
-	out_count := models.Area_count{Values: out_arr, Count: gsc, Auth: auth}
+	out_count := models.Area_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 	if err != nil {
 		log.Println(err.Error())
 		return models.Area_count{}, err
@@ -119,17 +118,16 @@ func (est *AreaStorage) GetOne(ctx context.Context, i int) (models.Area_count, e
 	dbpool := pgclient.WDB
 	out_arr := []models.Area{}
 	g := models.Area{}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
 
 	err := dbpool.QueryRow(context.Background(), "SELECT * from func_area_get($1);", i).Scan(&g.Id, &g.AreaNumber, &g.AreaName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_area_get: ", err)
-		return models.Area_count{Values: []models.Area{}, Count: 0, Auth: auth}, err
+		return models.Area_count{Values: []models.Area{}, Count: 0, Auth: models.Auth{}}, err
 	}
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.Area_count{Values: out_arr, Count: 0, Auth: auth}
+	out_count := models.Area_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
 	return out_count, nil
 }

@@ -135,7 +135,7 @@ func (est *ChargeStorage) GetOne(ctx context.Context, i int) (models.Charge_coun
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.Charge_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
+	out_count := models.Charge_count{Values: out_arr, Count: 1, Auth: models.Auth{}}
 	return out_count, nil
 }
 

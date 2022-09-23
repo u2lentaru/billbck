@@ -98,5 +98,4 @@ func (esv *CashdeskService) GetOne(ctx context.Context, i int) (models.Cashdesk_
 	}
 
 	return out_count, nil
-
 }

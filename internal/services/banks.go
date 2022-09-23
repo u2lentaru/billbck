@@ -98,5 +98,4 @@ func (esv *BankService) GetOne(ctx context.Context, i int) (models.Bank_count, e
 	}
 
 	return out_count, nil
-
 }

@@ -98,5 +98,4 @@ func (esv *AreaService) GetOne(ctx context.Context, i int) (models.Area_count, e
 	}
 
 	return out_count, nil
-
 }

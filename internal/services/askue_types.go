@@ -98,5 +98,4 @@ func (esv *AskueTypeService) GetOne(ctx context.Context, i int) (models.AskueTyp
 	}
 
 	return out_count, nil
-
 }

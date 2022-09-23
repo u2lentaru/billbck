@@ -129,6 +129,6 @@ func (est *ActTypeStorage) GetOne(ctx context.Context, i int) (models.ActType_co
 
 	out_arr = append(out_arr, e)
 
-	out_count := models.ActType_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
+	out_count := models.ActType_count{Values: out_arr, Count: 1, Auth: models.Auth{}}
 	return out_count, nil
 }

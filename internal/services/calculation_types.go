@@ -98,5 +98,4 @@ func (esv *CalculationTypeService) GetOne(ctx context.Context, i int) (models.Ca
 	}
 
 	return out_count, nil
-
 }

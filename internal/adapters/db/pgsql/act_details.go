@@ -186,6 +186,6 @@ func (est *ActDetailStorage) GetOne(ctx context.Context, i int) (models.ActDetai
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.ActDetail_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
+	out_count := models.ActDetail_count{Values: out_arr, Count: 1, Auth: models.Auth{}}
 	return out_count, nil
 }

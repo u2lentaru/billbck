@@ -290,5 +290,4 @@ func HandleGetCalculationType(w http.ResponseWriter, r *http.Request) {
 	w.Write(out_count)
 
 	return
-
 }

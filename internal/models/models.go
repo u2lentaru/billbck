@@ -1247,24 +1247,6 @@ type RequestKind_count struct {
 	Auth   Auth          `json:"auth"`
 }
 
-//ClaimType struct
-type ClaimType struct {
-	Id            int    `json:"id"`
-	ClaimTypeName string `json:"claimtypename"`
-}
-
-//AddClaimType struct
-type AddClaimType struct {
-	ClaimTypeName string `json:"claimtypename"`
-}
-
-//ClaimType_count struct
-type ClaimType_count struct {
-	Values []ClaimType `json:"values"`
-	Count  int         `json:"count"`
-	Auth   Auth        `json:"auth"`
-}
-
 //Request struct
 type Request struct {
 	Id            int         `json:"id"`

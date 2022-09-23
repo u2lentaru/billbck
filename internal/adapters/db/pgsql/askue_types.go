@@ -131,6 +131,6 @@ func (est *AskueTypeStorage) GetOne(ctx context.Context, i int) (models.AskueTyp
 
 	out_arr = append(out_arr, g)
 
-	out_count := models.AskueType_count{Values: out_arr, Count: 0, Auth: models.Auth{}}
+	out_count := models.AskueType_count{Values: out_arr, Count: 1, Auth: models.Auth{}}
 	return out_count, nil
 }

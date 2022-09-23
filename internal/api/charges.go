@@ -11,9 +11,20 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifChargeService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Charge_count, error)
+	Add(ctx context.Context, ea models.Charge) (int, error)
+	Upd(ctx context.Context, eu models.Charge) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Charge_count, error)
+	ChargeRun(ctx context.Context, i int) (int, error)
+}
 
 // HandleCharges godoc
 // @Summary List charges
@@ -29,9 +40,11 @@ import (
 // @Success 200 {object} models.Charge_count
 // @Failure 500
 // @Router /charges [get]
-func (s *APG) HandleCharges(w http.ResponseWriter, r *http.Request) {
-	gs := models.Charge{}
+func HandleCharges(w http.ResponseWriter, r *http.Request) {
+	var gs ifChargeService
+	gs = services.NewChargeService(pgsql.ChargeStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -75,23 +88,6 @@ func (s *APG) HandleCharges(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_charges_cnt($1,$2);", gs1, NullableString(gs2)).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Charge, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -108,27 +104,14 @@ func (s *APG) HandleCharges(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_charges_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, NullableString(gs2), ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.ChargeDate, &gs.Contract.Id, &gs.Object.Id, &gs.ObjTypeId, &gs.Pu.Id, &gs.ChargeType.Id, &gs.Qty,
-			&gs.TransLoss, &gs.Lineloss, &gs.Startdate, &gs.Enddate, &gs.Contract.ContractNumber, &gs.Object.ObjectName,
-			&gs.Pu.PuNumber, &gs.ChargeType.ChargeTypeName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Charge_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -149,8 +132,12 @@ func (s *APG) HandleCharges(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /charges_add [post]
-func (s *APG) HandleAddCharge(w http.ResponseWriter, r *http.Request) {
-	a := models.AddCharge{}
+func HandleAddCharge(w http.ResponseWriter, r *http.Request) {
+	var gs ifChargeService
+	gs = services.NewChargeService(pgsql.ChargeStorage{})
+	ctx := context.Background()
+
+	a := models.Charge{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -166,12 +153,10 @@ func (s *APG) HandleAddCharge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_charges_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);", a.ChargeDate, a.Contract.Id,
-		a.Object.Id, a.ObjTypeId, a.Pu.Id, a.ChargeType.Id, a.Qty, a.TransLoss, a.Lineloss, a.Startdate, a.Enddate).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_charges_add: ", err)
+		log.Println("Failed execute ifChargeService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -195,7 +180,11 @@ func (s *APG) HandleAddCharge(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /charges_upd [post]
-func (s *APG) HandleUpdCharge(w http.ResponseWriter, r *http.Request) {
+func HandleUpdCharge(w http.ResponseWriter, r *http.Request) {
+	var gs ifChargeService
+	gs = services.NewChargeService(pgsql.ChargeStorage{})
+	ctx := context.Background()
+
 	u := models.Charge{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -212,12 +201,10 @@ func (s *APG) HandleUpdCharge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_charges_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);", u.Id, u.ChargeDate,
-		u.Contract.Id, u.Object.Id, u.ObjTypeId, u.Pu.Id, u.ChargeType.Id, u.Qty, u.TransLoss, u.Lineloss, u.Startdate, u.Enddate).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_charges_upd: ", err)
+		log.Println("Failed execute ifChargeService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -242,7 +229,11 @@ func (s *APG) HandleUpdCharge(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /charges_del [post]
-func (s *APG) HandleDelCharge(w http.ResponseWriter, r *http.Request) {
+func HandleDelCharge(w http.ResponseWriter, r *http.Request) {
+	var gs ifChargeService
+	gs = services.NewChargeService(pgsql.ChargeStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -259,15 +250,9 @@ func (s *APG) HandleDelCharge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_charges_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_charges_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifChargeService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -290,25 +275,25 @@ func (s *APG) HandleDelCharge(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Charge_count
 // @Failure 500
 // @Router /charges/{id} [get]
-func (s *APG) HandleGetCharge(w http.ResponseWriter, r *http.Request) {
+func HandleGetCharge(w http.ResponseWriter, r *http.Request) {
+	var gs ifChargeService
+	gs = services.NewChargeService(pgsql.ChargeStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Charge{}
-	out_arr := []models.Charge{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_charge_get($1);", i).Scan(&g.Id, &g.ChargeDate, &g.Contract.Id,
-		&g.Object.Id, &g.ObjTypeId, &g.Pu.Id, &g.ChargeType.Id, &g.Qty, &g.TransLoss, &g.Lineloss, &g.Startdate, &g.Enddate,
-		&g.Contract.ContractNumber, &g.Object.ObjectName, &g.Pu.PuNumber, &g.ChargeType.ChargeTypeName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_charge_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifChargeService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Charge_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -328,18 +313,22 @@ func (s *APG) HandleGetCharge(w http.ResponseWriter, r *http.Request) {
 // @Failure 500
 // @Router /charges_run/{id} [get]
 func (s *APG) HandleChargeRun(w http.ResponseWriter, r *http.Request) {
+	var gs ifChargeService
+	gs = services.NewChargeService(pgsql.ChargeStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-
-	rc := 0
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_charges_run($1);", i).Scan(&rc)
-
+	i, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		log.Println("Failed execute func_charges_run: ", err)
+		i = 0
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: rc})
+	pr, err := gs.ChargeRun(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifChargeService.ChargeRun: ", err)
+	}
 
+	output, err := json.Marshal(models.Json_id{Id: pr})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

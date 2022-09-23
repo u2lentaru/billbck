@@ -98,5 +98,4 @@ func (esv *BuildingTypeService) GetOne(ctx context.Context, i int) (models.Build
 	}
 
 	return out_count, nil
-
 }

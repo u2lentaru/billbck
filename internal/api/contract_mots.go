@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifContractMotService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.ContractMot_count, error)
+	Add(ctx context.Context, ea models.ContractMot) (int, error)
+	Upd(ctx context.Context, eu models.ContractMot) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.ContractMot_count, error)
+}
 
 // HandleContractMots godoc
 // @Summary List contracts motives of termination
@@ -29,9 +39,11 @@ import (
 // @Success 200 {object} models.ContractMot_count
 // @Failure 500
 // @Router /contractmots [get]
-func (s *APG) HandleContractMots(w http.ResponseWriter, r *http.Request) {
-	gs := models.ContractMot{}
+func HandleContractMots(w http.ResponseWriter, r *http.Request) {
+	var gs ifContractMotService
+	gs = services.NewContractMotService(pgsql.ContractMotStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -76,23 +88,6 @@ func (s *APG) HandleContractMots(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_contract_mots_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.ContractMot, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -111,25 +106,14 @@ func (s *APG) HandleContractMots(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_contract_mots_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.ContractMotNameRu, &gs.ContractMotNameKz)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.ContractMot_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -151,8 +135,12 @@ func (s *APG) HandleContractMots(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /contractmots_add [post]
-func (s *APG) HandleAddContractMot(w http.ResponseWriter, r *http.Request) {
-	a := models.AddContractMot{}
+func HandleAddContractMot(w http.ResponseWriter, r *http.Request) {
+	var gs ifContractMotService
+	gs = services.NewContractMotService(pgsql.ContractMotStorage{})
+	ctx := context.Background()
+
+	a := models.ContractMot{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -168,11 +156,10 @@ func (s *APG) HandleAddContractMot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_contract_mots_add($1,$2);", a.ContractMotNameRu, a.ContractMotNameKz).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_contract_mots_add: ", err)
+		log.Println("Failed execute ifContractMotService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -196,7 +183,11 @@ func (s *APG) HandleAddContractMot(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /contractmots_upd [post]
-func (s *APG) HandleUpdContractMot(w http.ResponseWriter, r *http.Request) {
+func HandleUpdContractMot(w http.ResponseWriter, r *http.Request) {
+	var gs ifContractMotService
+	gs = services.NewContractMotService(pgsql.ContractMotStorage{})
+	ctx := context.Background()
+
 	u := models.ContractMot{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -213,11 +204,10 @@ func (s *APG) HandleUpdContractMot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_contract_mots_upd($1,$2,$3);", u.Id, u.ContractMotNameRu, u.ContractMotNameKz).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_contract_mots_upd: ", err)
+		log.Println("Failed execute ifContractMotService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -242,7 +232,11 @@ func (s *APG) HandleUpdContractMot(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /contractmots_del [post]
-func (s *APG) HandleDelContractMot(w http.ResponseWriter, r *http.Request) {
+func HandleDelContractMot(w http.ResponseWriter, r *http.Request) {
+	var gs ifContractMotService
+	gs = services.NewContractMotService(pgsql.ContractMotStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -259,15 +253,9 @@ func (s *APG) HandleDelContractMot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_contract_mots_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_contract_mots_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifContractMotService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -290,24 +278,25 @@ func (s *APG) HandleDelContractMot(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ContractMot_count
 // @Failure 500
 // @Router /contractmots/{id} [get]
-func (s *APG) HandleGetContractMot(w http.ResponseWriter, r *http.Request) {
+func HandleGetContractMot(w http.ResponseWriter, r *http.Request) {
+	var gs ifContractMotService
+	gs = services.NewContractMotService(pgsql.ContractMotStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.ContractMot{}
-
-	out_arr := []models.ContractMot{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_contract_mot_get($1);", i).Scan(&g.Id, &g.ContractMotNameRu, &g.ContractMotNameKz)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_contract_mot_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifContractMotService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.ContractMot_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

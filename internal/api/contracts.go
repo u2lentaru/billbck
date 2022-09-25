@@ -506,7 +506,7 @@ func HandleGetContractObject(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} string
 // @Failure 500
 // @Router /contracts_hist/{id} [get]
-func (s *APG) HandleGetContractHist(w http.ResponseWriter, r *http.Request) {
+func HandleGetContractHist(w http.ResponseWriter, r *http.Request) {
 	var gs ifContractService
 	gs = services.NewContractService(pgsql.ContractStorage{})
 	ctx := context.Background()

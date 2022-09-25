@@ -183,7 +183,7 @@ func (est *ContractStorage) GetObj(ctx context.Context, i int, a string) (models
 	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.Contract.Id, &gs.Object.Id, &gs.Startdate, &gs.Enddate, &gs.Object.ObjectName, &gs.Object.RegQty,
+		err = rows.Scan(&gs.Id, &gs.Contract.Id, &gs.Object.Id, &gs.Object.ObjType.Id, &gs.Startdate, &gs.Enddate, &gs.Object.ObjectName, &gs.Object.RegQty,
 			&gs.Object.FlatNumber, &gs.Object.House.Id, &gs.Object.House.HouseNumber, &gs.Object.House.BuildingNumber,
 			&gs.Object.House.Street.City.CityName, &gs.Object.House.Street.Id, &gs.Object.House.Street.StreetName, &gs.Object.TariffGroup.Id,
 			&gs.Object.TariffGroup.TariffGroupName, &gs.Contract.ContractNumber, &gs.Contract.Startdate, &gs.Contract.Enddate,

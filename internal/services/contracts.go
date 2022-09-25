@@ -18,7 +18,7 @@ type ifContractStorage interface {
 	Upd(ctx context.Context, eu models.Contract) (int, error)
 	Del(ctx context.Context, ed models.IdClose) (int, error)
 	GetOne(ctx context.Context, i int) (models.Contract_count, error)
-	GetObj(ctx context.Context, i int, a string) (models.ObjContract, error)
+	GetObj(ctx context.Context, i int, a string) (models.ObjContract_count, error)
 	GetHist(ctx context.Context, i int) (string, error)
 }
 
@@ -103,7 +103,7 @@ func (esv *ContractService) GetOne(ctx context.Context, i int) (models.Contract_
 }
 
 //func (esv *ContractService) GetObj(ctx context.Context, i int, s string) (models.Contract_count, error)
-func (esv *ContractService) GetObj(ctx context.Context, i int, s string) (models.ObjContract, error) {
+func (esv *ContractService) GetObj(ctx context.Context, i int, s string) (models.ObjContract_count, error) {
 	var est ifContractStorage
 	est = &esv.storage
 
@@ -111,7 +111,7 @@ func (esv *ContractService) GetObj(ctx context.Context, i int, s string) (models
 
 	if err != nil {
 		log.Println("ContractStorage.GetObj", err)
-		return models.ObjContract{}, err
+		return models.ObjContract_count{}, err
 	}
 
 	return out_count, nil

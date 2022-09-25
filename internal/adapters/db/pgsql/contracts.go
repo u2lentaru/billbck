@@ -211,10 +211,9 @@ func (est *ContractStorage) GetObj(ctx context.Context, i int, a string) (models
 //func (est *ContractStorage) GetHist(ctx context.Context, i int) (string, error)
 func (est *ContractStorage) GetHist(ctx context.Context, i int) (string, error) {
 	dbpool := pgclient.WDB
-	hist_arr := ""
 
 	h := ""
-	rows, err := dbpool.Query(context.Background(), "SELECT * from func_contracts_hist($1);", i)
+	rows, err := dbpool.Query(ctx, "SELECT * from func_contracts_hist($1);", i)
 
 	if err != nil {
 		log.Println("Failed execute from func_contract_getobject: ", err)
@@ -224,7 +223,7 @@ func (est *ContractStorage) GetHist(ctx context.Context, i int) (string, error) 
 	defer rows.Close()
 
 	qa := false
-	hist_arr = "["
+	hist_arr := "["
 
 	for rows.Next() {
 

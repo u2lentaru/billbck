@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifFormTypeService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.FormType_count, error)
+	Add(ctx context.Context, ea models.FormType) (int, error)
+	Upd(ctx context.Context, eu models.FormType) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.FormType_count, error)
+}
 
 // HandleFormTypes godoc
 // @Summary List form types
@@ -30,22 +40,11 @@ import (
 // @Failure 400,404
 // @Failure 500
 // @Router /form_types [get]
-func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
-	// type FormType struct {
-	// 	Id            int    `json:"id"`
-	// 	FormTypeName  string `json:"formtypename"`
-	// 	FormTypeDescr string `json:"formtypedescr"`
-	// }
-	// ft := FormType{}
-
-	// utils.SetupResponse(&w)
-
-	// if (*r).Method == "OPTIONS" {
-	// 	return
-	// }
-
-	ft := models.FormType{}
+func HandleFormTypes(w http.ResponseWriter, r *http.Request) {
+	var gs ifFormTypeService
+	gs = services.NewFormTypeService(pgsql.FormTypeStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -89,25 +88,6 @@ func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 		ftd = string(re.ReplaceAll([]byte(ftd), []byte("''")))
 	}
 
-	ftc := 0
-	// err = s.dbpool.QueryRow(ctx, "SELECT count(*) from st_form_types;").Scan(&ftc)
-	// err = s.dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2,$3,$4,$5,$6);", pg, pgs, ftn, ftd, ord, dsc).Scan(&ftc)
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_cnt_form_types_flt($1,$2);", ftn, ftd).Scan(&ftc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.FormType, 0,
-		func() int {
-			if ftc < pgs {
-				return ftc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -126,33 +106,14 @@ func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_get_form_types_flt($1,$2,$3,$4,$5,$6);", pg, pgs, ftn, ftd, ord, dsc)
-	// rows, err := s.dbpool.Query(ctx, "SELECT * from func_get_form_types();")
+	out_arr, err := gs.GetList(ctx, pg, pgs, ftn, ftd, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&ft.Id, &ft.FormTypeName, &ft.FormTypeDescr)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, ft)
-	}
-
-	// output, err := json.Marshal(out_arr)
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
-	// w.Write(output)
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.FormType_count{Values: out_arr, Count: ftc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -174,20 +135,12 @@ func (s *APG) HandleFormTypes(w http.ResponseWriter, r *http.Request) {
 // @Failure 400,404
 // @Failure 500
 // @Router /form_types_add [post]
-func (s *APG) HandleAddFormType(w http.ResponseWriter, r *http.Request) {
-	//FormType struct AddFormType
-	type FormType struct {
-		FormTypeName  string `json:"formtypename"`
-		FormTypeDescr string `json:"formtypedescr"`
-	}
+func HandleAddFormType(w http.ResponseWriter, r *http.Request) {
+	var gs ifFormTypeService
+	gs = services.NewFormTypeService(pgsql.FormTypeStorage{})
+	ctx := context.Background()
 
-	// utils.SetupResponse(&w)
-
-	// if (*r).Method == "OPTIONS" {
-	// 	return
-	// }
-
-	ft := FormType{}
+	a := models.FormType{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -197,21 +150,19 @@ func (s *APG) HandleAddFormType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ft)
+	err = json.Unmarshal(body, &a)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	fti := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_add_form_type($1,$2);", ft.FormTypeName, ft.FormTypeDescr).Scan(&fti)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifFormTypeService.Add: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: fti})
+	output, err := json.Marshal(models.Json_id{Id: ai})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -231,21 +182,12 @@ func (s *APG) HandleAddFormType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /form_types_upd [post]
-func (s *APG) HandleUpdFormType(w http.ResponseWriter, r *http.Request) {
-	//FormType struct UpdFormType
-	type FormType struct {
-		Id            int    `json:"id"`
-		FormTypeName  string `json:"formtypename"`
-		FormTypeDescr string `json:"formtypedescr"`
-	}
+func HandleUpdFormType(w http.ResponseWriter, r *http.Request) {
+	var gs ifFormTypeService
+	gs = services.NewFormTypeService(pgsql.FormTypeStorage{})
+	ctx := context.Background()
 
-	// utils.SetupResponse(&w)
-
-	// if (*r).Method == "OPTIONS" {
-	// 	return
-	// }
-
-	ft := FormType{}
+	u := models.FormType{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -255,21 +197,19 @@ func (s *APG) HandleUpdFormType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ft)
+	err = json.Unmarshal(body, &u)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	fti := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_upd_form_type($1,$2,$3);", ft.Id, ft.FormTypeName, ft.FormTypeDescr).Scan(&fti)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifFormTypeService.Upd: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: fti})
+	output, err := json.Marshal(models.Json_id{Id: ui})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -291,14 +231,12 @@ func (s *APG) HandleUpdFormType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /form_types_del [post]
-func (s *APG) HandleDelFormType(w http.ResponseWriter, r *http.Request) {
-	// utils.SetupResponse(&w)
+func HandleDelFormType(w http.ResponseWriter, r *http.Request) {
+	var gs ifFormTypeService
+	gs = services.NewFormTypeService(pgsql.FormTypeStorage{})
+	ctx := context.Background()
 
-	// if (*r).Method == "OPTIONS" {
-	// 	return
-	// }
-
-	ft := models.Json_ids{}
+	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -308,31 +246,17 @@ func (s *APG) HandleDelFormType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ft)
+	err = json.Unmarshal(body, &d)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	res := []int{}
-	fti := 0
-	for _, id := range ft.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_del_form_type($1);", id).Scan(&fti)
-		// log.Printf("id: %v fti : %v", id, fti)
-		res = append(res, fti)
-
-		if err != nil {
-			log.Println("Failed execute func_del_form_type: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifFormTypeService.Del: ", err)
 	}
-	// err = s.dbpool.QueryRow(context.Background(), "SELECT func_del_form_type($1);", ft.Id).Scan(&fti)
 
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
-
-	// output, err := json.Marshal(models.Json_id{Id: fti})
 	output, err := json.Marshal(models.Json_ids{Ids: res})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -352,33 +276,30 @@ func (s *APG) HandleDelFormType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.FormType_count
 // @Failure 500
 // @Router /form_types/{id} [get]
-func (s *APG) HandleGetFormType(w http.ResponseWriter, r *http.Request) {
+func HandleGetFormType(w http.ResponseWriter, r *http.Request) {
+	var gs ifFormTypeService
+	gs = services.NewFormTypeService(pgsql.FormTypeStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	fti := vars["id"]
-	fts := models.FormType{}
-	out_arr := []models.FormType{}
-
-	// err := s.dbpool.QueryRow(context.Background(), "SELECT * from func_get_form_type($1);", ft.Id).Scan(&fts.Id, &fts.FormTypeName, &fts.FormTypeDescr)
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_get_form_type($1);", fti).Scan(&fts.Id, &fts.FormTypeName, &fts.FormTypeDescr)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_get_form_type: ", err)
-		// http.Error(w, err.Error(), 500)
-		// return
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, fts)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifFormTypeService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(fts)
-	out_count, err := json.Marshal(models.FormType_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-
 	w.Write(out_count)
 
 	return
-
 }

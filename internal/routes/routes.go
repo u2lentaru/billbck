@@ -6,11 +6,11 @@ import (
 )
 
 func AddRoutes(r *mux.Router, apg *api.APG) {
-	r.HandleFunc("/form_types", apg.HandleFormTypes).Methods("GET", "OPTIONS")
-	r.HandleFunc("/form_types_add", apg.HandleAddFormType).Methods("POST", "OPTIONS")
-	r.HandleFunc("/form_types_upd", apg.HandleUpdFormType).Methods("POST", "OPTIONS")
-	r.HandleFunc("/form_types_del", apg.HandleDelFormType).Methods("POST", "OPTIONS")
-	r.HandleFunc("/form_types/{id:[0-9]+}", apg.HandleGetFormType).Methods("GET", "OPTIONS")
+	r.HandleFunc("/form_types", api.HandleFormTypes).Methods("GET", "OPTIONS")
+	r.HandleFunc("/form_types_add", api.HandleAddFormType).Methods("POST", "OPTIONS")
+	r.HandleFunc("/form_types_upd", api.HandleUpdFormType).Methods("POST", "OPTIONS")
+	r.HandleFunc("/form_types_del", api.HandleDelFormType).Methods("POST", "OPTIONS")
+	r.HandleFunc("/form_types/{id:[0-9]+}", api.HandleGetFormType).Methods("GET", "OPTIONS")
 	// r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler).Methods("GET", "OPTIONS")
 	r.HandleFunc("/sub_types", apg.HandleSubTypes).Methods("GET", "OPTIONS")
 	r.HandleFunc("/sub_types_add", apg.HandleAddSubType).Methods("POST", "OPTIONS")

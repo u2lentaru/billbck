@@ -127,7 +127,7 @@ func (est *EquipmentStorage) GetOne(ctx context.Context, i int) (models.Equipmen
 		&g.Qty, &g.WorkingHours, &g.EquipmentType.EquipmentTypeName, &g.EquipmentType.EquipmentTypePower, &g.Object.ObjectName)
 
 	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_equipment_getbyid: ", err)
+		log.Println("Failed execute func_equipment_getbyid: ", err)
 		return models.Equipment_count{Values: []models.Equipment{}, Count: 0, Auth: models.Auth{}}, err
 	}
 

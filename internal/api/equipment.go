@@ -11,10 +11,21 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifEquipmentService interface {
+	GetList(ctx context.Context, pg, pgs, gs1 int, gs2 string, ord int, dsc bool) (models.Equipment_count, error)
+	Add(ctx context.Context, ea models.Equipment) (int, error)
+	Upd(ctx context.Context, eu models.Equipment) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Equipment_count, error)
+	AddList(ctx context.Context, al models.Equipment_count) ([]int, error)
+	DelObj(ctx context.Context, d []int) ([]int, error)
+}
 
 // HandleEquipment godoc
 // @Summary List equipment
@@ -30,9 +41,11 @@ import (
 // @Success 200 {object} models.Equipment_count
 // @Failure 500
 // @Router /equipment [get]
-func (s *APG) HandleEquipment(w http.ResponseWriter, r *http.Request) {
-	gs := models.Equipment{}
+func HandleEquipment(w http.ResponseWriter, r *http.Request) {
+	var gs ifEquipmentService
+	gs = services.NewEquipmentService(pgsql.EquipmentStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -76,23 +89,6 @@ func (s *APG) HandleEquipment(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_equipment_cnt($1,$2);", gs2, utils.NullableInt(int32(gs1))).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Equipment, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -109,27 +105,14 @@ func (s *APG) HandleEquipment(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_equipment_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs2, utils.NullableInt(int32(gs1)), ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.EquipmentType.Id, &gs.Object.Id, &gs.Qty, &gs.WorkingHours, &gs.EquipmentType.EquipmentTypeName,
-			&gs.EquipmentType.EquipmentTypePower, &gs.Object.ObjectName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-			http.Error(w, err.Error(), 500)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Equipment_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -150,8 +133,12 @@ func (s *APG) HandleEquipment(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /equipment_add [post]
-func (s *APG) HandleAddEquipment(w http.ResponseWriter, r *http.Request) {
-	a := models.AddEquipment{}
+func HandleAddEquipment(w http.ResponseWriter, r *http.Request) {
+	var gs ifEquipmentService
+	gs = services.NewEquipmentService(pgsql.EquipmentStorage{})
+	ctx := context.Background()
+
+	a := models.Equipment{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -167,13 +154,10 @@ func (s *APG) HandleAddEquipment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_equipment_add($1,$2,$3,$4);", a.EquipmentType.Id, a.Object.Id,
-		a.Qty, a.WorkingHours).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_equipment_add: ", err)
-		http.Error(w, err.Error(), 500)
+		log.Println("Failed execute ifEquipmentService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -196,7 +180,11 @@ func (s *APG) HandleAddEquipment(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /equipment_upd [post]
-func (s *APG) HandleUpdEquipment(w http.ResponseWriter, r *http.Request) {
+func HandleUpdEquipment(w http.ResponseWriter, r *http.Request) {
+	var gs ifEquipmentService
+	gs = services.NewEquipmentService(pgsql.EquipmentStorage{})
+	ctx := context.Background()
+
 	u := models.Equipment{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -213,13 +201,10 @@ func (s *APG) HandleUpdEquipment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_equipment_upd($1,$2,$3,$4,$5);", u.Id, u.EquipmentType.Id, u.Object.Id,
-		u.Qty, u.WorkingHours).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_equipment_upd: ", err)
-		http.Error(w, err.Error(), 500)
+		log.Println("Failed execute ifEquipmentService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -243,7 +228,11 @@ func (s *APG) HandleUpdEquipment(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /equipment_del [post]
-func (s *APG) HandleDelEquipment(w http.ResponseWriter, r *http.Request) {
+func HandleDelEquipment(w http.ResponseWriter, r *http.Request) {
+	var gs ifEquipmentService
+	gs = services.NewEquipmentService(pgsql.EquipmentStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -260,16 +249,9 @@ func (s *APG) HandleDelEquipment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_equipment_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_equipment_del: ", err)
-			http.Error(w, err.Error(), 500)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifEquipmentService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -292,25 +274,25 @@ func (s *APG) HandleDelEquipment(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Equipment_count
 // @Failure 500
 // @Router /equipment/{id} [get]
-func (s *APG) HandleGetEquipment(w http.ResponseWriter, r *http.Request) {
+func HandleGetEquipment(w http.ResponseWriter, r *http.Request) {
+	var gs ifEquipmentService
+	gs = services.NewEquipmentService(pgsql.EquipmentStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Equipment{}
-	out_arr := []models.Equipment{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_equipment_getbyid($1);", i).Scan(&g.Id, &g.EquipmentType.Id, &g.Object.Id,
-		&g.Qty, &g.WorkingHours, &g.EquipmentType.EquipmentTypeName, &g.EquipmentType.EquipmentTypePower, &g.Object.ObjectName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_equipment_getbyid: ", err)
-		http.Error(w, err.Error(), 500)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifEquipmentService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Equipment_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -330,7 +312,11 @@ func (s *APG) HandleGetEquipment(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /equipment_addlist [post]
-func (s *APG) HandleAddEquipmentList(w http.ResponseWriter, r *http.Request) {
+func HandleAddEquipmentList(w http.ResponseWriter, r *http.Request) {
+	var gs ifEquipmentService
+	gs = services.NewEquipmentService(pgsql.EquipmentStorage{})
+	ctx := context.Background()
+
 	al := models.Equipment_count{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -347,32 +333,10 @@ func (s *APG) HandleAddEquipmentList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	first_value := true
+	res, err := gs.AddList(ctx, al)
 
-	for _, a := range al.Values {
-
-		if first_value {
-			err = s.Dbpool.QueryRow(context.Background(), "SELECT func_equipment_delbyobj($1);", a.Object.Id).Scan(&i)
-
-			if err != nil {
-				log.Println("Failed execute func_equipment_delbyobj: ", err)
-				http.Error(w, err.Error(), 500)
-			}
-
-			first_value = false
-			i = 0
-		}
-
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_equipment_add($1,$2,$3,$4);", a.EquipmentType.Id, a.Object.Id,
-			a.Qty, a.WorkingHours).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_equipment_add: ", err)
-			http.Error(w, err.Error(), 500)
-		}
+	if err != nil {
+		log.Println("Failed execute ifEquipmentService.AddList: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -395,7 +359,11 @@ func (s *APG) HandleAddEquipmentList(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /equipment_delobj [post]
-func (s *APG) HandleDelObjEquipment(w http.ResponseWriter, r *http.Request) {
+func HandleDelObjEquipment(w http.ResponseWriter, r *http.Request) {
+	var gs ifEquipmentService
+	gs = services.NewEquipmentService(pgsql.EquipmentStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -412,16 +380,9 @@ func (s *APG) HandleDelObjEquipment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_equipment_delbyobj($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_equipment_delbyobj: ", err)
-			http.Error(w, err.Error(), 500)
-		}
+	res, err := gs.DelObj(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifEquipmentService.DelObj: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})

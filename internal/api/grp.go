@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifGRpService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.GRp_count, error)
+	Add(ctx context.Context, ea models.GRp) (int, error)
+	Upd(ctx context.Context, eu models.GRp) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.GRp_count, error)
+}
 
 // HandleGRp godoc
 // @Summary List grp
@@ -28,9 +38,11 @@ import (
 // @Success 200 {object} models.GRp_count
 // @Failure 500
 // @Router /grp [get]
-func (s *APG) HandleGRp(w http.ResponseWriter, r *http.Request) {
-	gs := models.GRp{}
+func HandleGRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifGRpService
+	gs = services.NewGRpService(pgsql.GRpStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -65,23 +77,6 @@ func (s *APG) HandleGRp(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_grp_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.GRp, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -98,25 +93,14 @@ func (s *APG) HandleGRp(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_grp_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.GRpName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.GRp_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -138,8 +122,12 @@ func (s *APG) HandleGRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /grp_add [post]
-func (s *APG) HandleAddGRp(w http.ResponseWriter, r *http.Request) {
-	a := models.AddGRp{}
+func HandleAddGRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifGRpService
+	gs = services.NewGRpService(pgsql.GRpStorage{})
+	ctx := context.Background()
+
+	a := models.GRp{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -155,11 +143,10 @@ func (s *APG) HandleAddGRp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_grp_add($1);", a.GRpName).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_grp_add: ", err)
+		log.Println("Failed execute ifGRpService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -183,7 +170,11 @@ func (s *APG) HandleAddGRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /grp_upd [post]
-func (s *APG) HandleUpdGRp(w http.ResponseWriter, r *http.Request) {
+func HandleUpdGRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifGRpService
+	gs = services.NewGRpService(pgsql.GRpStorage{})
+	ctx := context.Background()
+
 	u := models.GRp{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -200,11 +191,10 @@ func (s *APG) HandleUpdGRp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_grp_upd($1,$2);", u.Id, u.GRpName).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_grp_upd: ", err)
+		log.Println("Failed execute ifGRpService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -228,7 +218,11 @@ func (s *APG) HandleUpdGRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /grp_del [post]
-func (s *APG) HandleDelGRp(w http.ResponseWriter, r *http.Request) {
+func HandleDelGRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifGRpService
+	gs = services.NewGRpService(pgsql.GRpStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -245,15 +239,9 @@ func (s *APG) HandleDelGRp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_grp_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_grp_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifGRpService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -276,23 +264,25 @@ func (s *APG) HandleDelGRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.GRp_count
 // @Failure 500
 // @Router /grp/{id} [get]
-func (s *APG) HandleGetGRp(w http.ResponseWriter, r *http.Request) {
+func HandleGetGRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifGRpService
+	gs = services.NewGRpService(pgsql.GRpStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.GRp{}
-	out_arr := []models.GRp{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_grp_getbyid($1);", i).Scan(&g.Id, &g.GRpName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_grp_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifGRpService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.GRp_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

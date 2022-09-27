@@ -12,10 +12,19 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifObjContractService interface {
+	GetList(ctx context.Context, pg, pgs, gs1, gs2, gs3 int, gs4, gs4f bool, ord int, dsc bool) (models.ObjContract_count, error)
+	Add(ctx context.Context, ea models.ObjContract) (int, error)
+	Upd(ctx context.Context, eu models.ObjContract) (int, error)
+	Del(ctx context.Context, ed models.IdClose) (int, error)
+	GetOne(ctx context.Context, i int, d string) (models.ObjContract_count, error)
+}
 
 // HandleObjContracts godoc
 // @Summary List objcontracts
@@ -33,9 +42,11 @@ import (
 // @Success 200 {object} models.ObjContract_count
 // @Failure 500
 // @Router /objcontracts [get]
-func (s *APG) HandleObjContracts(w http.ResponseWriter, r *http.Request) {
-	gs := models.ObjContract{}
+func HandleObjContracts(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjContractService
+	gs = services.NewObjContractService(pgsql.ObjContractStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -103,24 +114,6 @@ func (s *APG) HandleObjContracts(w http.ResponseWriter, r *http.Request) {
 		gs4f = false
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_contracts_cnt($1,$2,$3,$4);", utils.NullableInt(int32(gs1)),
-		utils.NullableInt(int32(gs2)), utils.NullableInt(int32(gs3)), utils.NullableBool(gs4, gs4f)).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.ObjContract, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -141,30 +134,14 @@ func (s *APG) HandleObjContracts(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_obj_contracts_get($1,$2,$3,$4,$5,$6,$7,$8);", pg, pgs, utils.NullableInt(int32(gs1)),
-		utils.NullableInt(int32(gs2)), utils.NullableInt(int32(gs3)), utils.NullableBool(gs4, gs4f), ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, gs3, gs4, gs4f, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.Contract.Id, &gs.Object.Id, &gs.ObjTypeId, &gs.Startdate, &gs.Enddate, &gs.Object.ObjectName, &gs.Object.RegQty,
-			&gs.Object.FlatNumber, &gs.Object.House.Id, &gs.Object.House.HouseNumber, &gs.Object.House.BuildingNumber,
-			&gs.Object.House.Street.City.CityName, &gs.Object.House.Street.Id, &gs.Object.House.Street.StreetName, &gs.Object.TariffGroup.Id,
-			&gs.Object.TariffGroup.TariffGroupName, &gs.Contract.ContractNumber, &gs.Contract.Startdate, &gs.Contract.Enddate,
-			&gs.Contract.Customer.SubId, &gs.Contract.Customer.SubName, &gs.Contract.Consignee.SubId, &gs.Contract.Consignee.SubName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.ObjContract_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -185,8 +162,12 @@ func (s *APG) HandleObjContracts(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objcontracts_add [post]
-func (s *APG) HandleAddObjContract(w http.ResponseWriter, r *http.Request) {
-	a := models.AddObjContract{}
+func HandleAddObjContract(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjContractService
+	gs = services.NewObjContractService(pgsql.ObjContractStorage{})
+	ctx := context.Background()
+
+	a := models.ObjContract{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -202,12 +183,10 @@ func (s *APG) HandleAddObjContract(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_contracts_add($1,$2,$3,$4);",
-		a.Contract.Id, a.Object.Id, a.ObjTypeId, a.Startdate).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_contracts_add: ", err)
+		log.Println("Failed execute ifAreaService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -231,7 +210,11 @@ func (s *APG) HandleAddObjContract(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objcontracts_upd [post]
-func (s *APG) HandleUpdObjContract(w http.ResponseWriter, r *http.Request) {
+func HandleUpdObjContract(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjContractService
+	gs = services.NewObjContractService(pgsql.ObjContractStorage{})
+	ctx := context.Background()
+
 	u := models.ObjContract{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -248,12 +231,10 @@ func (s *APG) HandleUpdObjContract(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_contracts_upd($1,$2,$3,$4,$5,$6);", u.Id,
-		u.Contract.Id, u.Object.Id, u.ObjTypeId, u.Startdate, u.Enddate).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_contracts_upd: ", err)
+		log.Println("Failed execute ifAreaService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -277,7 +258,11 @@ func (s *APG) HandleUpdObjContract(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objcontracts_del [post]
-func (s *APG) HandleDelObjContract(w http.ResponseWriter, r *http.Request) {
+func HandleDelObjContract(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjContractService
+	gs = services.NewObjContractService(pgsql.ObjContractStorage{})
+	ctx := context.Background()
+
 	d := models.IdClose{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -294,21 +279,10 @@ func (s *APG) HandleDelObjContract(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// res := []int{}
-	i := 0
-	_, err = time.Parse("2006-01-02", d.CloseDate)
+	i, err := gs.Del(ctx, d)
 	if err != nil {
-		d.CloseDate = time.Now().Format("2006-01-02")
+		log.Println("Failed execute ifAreaService.Del: ", err)
 	}
-
-	// for _, id := range d.Ids {
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_contracts_del($1,$2);", d.Id, d.CloseDate).Scan(&i)
-	// res = append(res, i)
-
-	if err != nil {
-		log.Println("Failed execute func_obj_contracts_del: ", err)
-	}
-	// }
 
 	output, err := json.Marshal(models.Json_id{Id: i})
 	if err != nil {
@@ -330,11 +304,17 @@ func (s *APG) HandleDelObjContract(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ObjContract_count
 // @Failure 500
 // @Router /objcontracts/{id} [get]
-func (s *APG) HandleGetObjContract(w http.ResponseWriter, r *http.Request) {
+func HandleGetObjContract(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjContractService
+	gs = services.NewObjContractService(pgsql.ObjContractStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.ObjContract{}
-	out_arr := []models.ObjContract{}
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
+	}
 
 	query := r.URL.Query()
 
@@ -349,22 +329,13 @@ func (s *APG) HandleGetObjContract(w http.ResponseWriter, r *http.Request) {
 		gs3 = string(re.ReplaceAll([]byte(gs3), []byte("''")))
 	}
 
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_obj_contract_get($1,$2);", i, gs3).Scan(&g.Id, &g.Contract.Id,
-		&g.Object.Id, &g.ObjTypeId, &g.Startdate, &g.Enddate, &g.Object.ObjectName, &g.Object.RegQty, &g.Object.FlatNumber, &g.Object.House.Id,
-		&g.Object.House.HouseNumber, &g.Object.House.BuildingNumber, &g.Object.House.Street.City.CityName, &g.Object.House.Street.Id,
-		&g.Object.House.Street.StreetName, &g.Object.TariffGroup.Id, &g.Object.TariffGroup.TariffGroupName, &g.Contract.ContractNumber,
-		&g.Contract.Startdate, &g.Contract.Enddate, &g.Contract.Customer.SubId, &g.Contract.Customer.SubName, &g.Contract.Consignee.SubId,
-		&g.Contract.Consignee.SubName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_obj_contract_get: ", err)
+	out_arr, err := gs.GetOne(ctx, i, gs3)
+	if err != nil {
+		log.Println("Failed execute ifObjContractService.GetOne: ", err)
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.ObjContract_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifKskService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Ksk_count, error)
+	Add(ctx context.Context, ea models.Ksk) (int, error)
+	Upd(ctx context.Context, eu models.Ksk) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Ksk_count, error)
+}
 
 // HandleKsk godoc
 // @Summary List ksk
@@ -29,9 +39,11 @@ import (
 // @Success 200 {object} models.Ksk_count
 // @Failure 500
 // @Router /ksk [get]
-func (s *APG) HandleKsk(w http.ResponseWriter, r *http.Request) {
-	gs := models.Ksk{}
+func HandleKsk(w http.ResponseWriter, r *http.Request) {
+	var gs ifKskService
+	gs = services.NewKskService(pgsql.KskStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -76,23 +88,6 @@ func (s *APG) HandleKsk(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_ksks_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Ksk, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -111,25 +106,14 @@ func (s *APG) HandleKsk(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_ksks_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.KskName, &gs.KskAddress, &gs.KskHead, &gs.KskPhone)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Ksk_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -150,8 +134,12 @@ func (s *APG) HandleKsk(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /ksk_add [post]
-func (s *APG) HandleAddKsk(w http.ResponseWriter, r *http.Request) {
-	a := models.AddKsk{}
+func HandleAddKsk(w http.ResponseWriter, r *http.Request) {
+	var gs ifKskService
+	gs = services.NewKskService(pgsql.KskStorage{})
+	ctx := context.Background()
+
+	a := models.Ksk{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -167,11 +155,10 @@ func (s *APG) HandleAddKsk(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_ksks_add($1,$2,$3,$4);", a.KskName, a.KskAddress, a.KskHead, a.KskPhone).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_ksks_add: ", err)
+		log.Println("Failed execute ifKskService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -195,7 +182,11 @@ func (s *APG) HandleAddKsk(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /ksk_upd [post]
-func (s *APG) HandleUpdKsk(w http.ResponseWriter, r *http.Request) {
+func HandleUpdKsk(w http.ResponseWriter, r *http.Request) {
+	var gs ifKskService
+	gs = services.NewKskService(pgsql.KskStorage{})
+	ctx := context.Background()
+
 	u := models.Ksk{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -212,11 +203,10 @@ func (s *APG) HandleUpdKsk(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_ksks_upd($1,$2,$3,$4,$5);", u.Id, u.KskName, u.KskAddress, u.KskHead, u.KskPhone).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_ksks_upd: ", err)
+		log.Println("Failed execute ifKskService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -240,7 +230,11 @@ func (s *APG) HandleUpdKsk(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /ksk_del [post]
-func (s *APG) HandleDelKsk(w http.ResponseWriter, r *http.Request) {
+func HandleDelKsk(w http.ResponseWriter, r *http.Request) {
+	var gs ifKskService
+	gs = services.NewKskService(pgsql.KskStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -257,15 +251,9 @@ func (s *APG) HandleDelKsk(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_ksks_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_ksks_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifKskService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -287,23 +275,25 @@ func (s *APG) HandleDelKsk(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Ksk_count
 // @Failure 500
 // @Router /ksk/{id} [get]
-func (s *APG) HandleGetKsk(w http.ResponseWriter, r *http.Request) {
+func HandleGetKsk(w http.ResponseWriter, r *http.Request) {
+	var gs ifKskService
+	gs = services.NewKskService(pgsql.KskStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Ksk{}
-	out_arr := []models.Ksk{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_ksk_get($1);", i).Scan(&g.Id, &g.KskName, &g.KskAddress, &g.KskHead, &g.KskPhone)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_ksk_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifKskService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Ksk_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

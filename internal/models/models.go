@@ -504,64 +504,6 @@ type UpdStreet struct {
 	Created    string `json:"created"`
 }
 
-//House struct
-type House struct {
-	Id             int          `json:"id"`
-	BuildingType   BuildingType `json:"buildingtype"`
-	Street         Street       `json:"street"`
-	HouseNumber    string       `json:"housenumber"`
-	BuildingNumber *string      `json:"buildingnumber"`
-	RP             Rp           `json:"tgu"`
-	Area           Area         `json:"area"`
-	Ksk            Ksk          `json:"ksk"`
-	Sector         Sector       `json:"sector"`
-	Connector      Connector    `json:"connector"`
-	InputType      InputType    `json:"inputtype"`
-	Reliability    Reliability  `json:"reliability"`
-	Voltage        Voltage      `json:"voltage"`
-	Notes          *string      `json:"notes"`
-}
-
-type AddHouse struct {
-	BuildingType   BuildingType `json:"buildingtype"`
-	Street         Street       `json:"street"`
-	HouseNumber    string       `json:"housenumber"`
-	BuildingNumber *string      `json:"buildingnumber"`
-	RP             Rp           `json:"tgu"`
-	Area           Area         `json:"area"`
-	Ksk            Ksk          `json:"ksk"`
-	Sector         Sector       `json:"sector"`
-	Connector      Connector    `json:"connector"`
-	InputType      InputType    `json:"inputtype"`
-	Reliability    Reliability  `json:"reliability"`
-	Voltage        Voltage      `json:"voltage"`
-	Notes          *string      `json:"notes"`
-}
-
-//UpdHouse struct
-type UpdHouse struct {
-	Id             int    `json:"id"`
-	BuildingTypeId int    `json:"buildingtypeid"`
-	StreetId       int    `json:"streetid"`
-	HouseNumber    string `json:"housenumber"`
-	BuildingNumber string `json:"buildingnumber"`
-	RPId           int    `json:"rpid"`
-	AreaId         int    `json:"areaid"`
-	KskId          int    `json:"kskid"`
-	SectorId       int    `json:"sectorid"`
-	ConnectorId    int    `json:"connectorid"`
-	InputTypeId    int    `json:"inputtypeid"`
-	ReliabilityId  int    `json:"reliabilityid"`
-	VoltageId      int    `json:"voltageid"`
-}
-
-//House_count  struct
-type House_count struct {
-	Values []House `json:"values"`
-	Count  int     `json:"count"`
-	Auth   Auth    `json:"auth"`
-}
-
 //Object struct
 type Object struct {
 	Id              int             `json:"id"`

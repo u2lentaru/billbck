@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifHouseService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, gs3, ord int, dsc bool) (models.House_count, error)
+	Add(ctx context.Context, ea models.House) (int, error)
+	Upd(ctx context.Context, eu models.House) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.House_count, error)
+}
 
 // HandleHouses godoc
 // @Summary List houses
@@ -30,9 +40,11 @@ import (
 // @Success 200 {object} models.House_count
 // @Failure 500
 // @Router /houses [get]
-func (s *APG) HandleHouses(w http.ResponseWriter, r *http.Request) {
-	gs := models.House{}
+func HandleHouses(w http.ResponseWriter, r *http.Request) {
+	var gs ifHouseService
+	gs = services.NewHouseService(pgsql.HouseStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -86,23 +98,6 @@ func (s *APG) HandleHouses(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_houses_cnt($1,$2,$3);", gs1, gs2, gs3).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.House, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -121,29 +116,14 @@ func (s *APG) HandleHouses(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_houses_get($1,$2,$3,$4,$5,$6,$7);", pg, pgs, gs1, gs2, gs3, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, gs3, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.BuildingType.Id, &gs.Street.Id, &gs.HouseNumber, &gs.BuildingNumber, &gs.RP.Id, &gs.Area.Id, &gs.Ksk.Id,
-			&gs.Sector.Id, &gs.Connector.Id, &gs.InputType.Id, &gs.Reliability.Id, &gs.Voltage.Id, &gs.Notes, &gs.BuildingType.BuildingTypeName,
-			&gs.Street.StreetName, &gs.Street.Created, &gs.Street.City.CityName, &gs.RP.RpName, &gs.Area.AreaName, &gs.Area.AreaNumber, &gs.Ksk.KskName,
-			&gs.Sector.SectorName, &gs.Connector.ConnectorName, &gs.InputType.InputTypeName, &gs.Reliability.ReliabilityName,
-			&gs.Voltage.VoltageName, &gs.Voltage.VoltageValue)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.House_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -164,8 +144,12 @@ func (s *APG) HandleHouses(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /houses_add [post]
-func (s *APG) HandleAddHouse(w http.ResponseWriter, r *http.Request) {
-	a := models.AddHouse{}
+func HandleAddHouse(w http.ResponseWriter, r *http.Request) {
+	var gs ifHouseService
+	gs = services.NewHouseService(pgsql.HouseStorage{})
+	ctx := context.Background()
+
+	a := models.House{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -181,13 +165,10 @@ func (s *APG) HandleAddHouse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_houses_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);",
-		a.BuildingType.Id, a.Street.Id, a.HouseNumber, a.BuildingNumber, a.RP.Id, a.Area.Id, a.Ksk.Id, a.Sector.Id, a.Connector.Id,
-		a.InputType.Id, a.Reliability.Id, a.Voltage.Id, a.Notes).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_houses_add: ", err)
+		log.Println("Failed execute ifHouseService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -211,7 +192,11 @@ func (s *APG) HandleAddHouse(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /houses_upd [post]
-func (s *APG) HandleUpdHouse(w http.ResponseWriter, r *http.Request) {
+func HandleUpdHouse(w http.ResponseWriter, r *http.Request) {
+	var gs ifHouseService
+	gs = services.NewHouseService(pgsql.HouseStorage{})
+	ctx := context.Background()
+
 	u := models.House{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -228,13 +213,10 @@ func (s *APG) HandleUpdHouse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_houses_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);", u.Id,
-		u.BuildingType.Id, u.Street.Id, u.HouseNumber, u.BuildingNumber, u.RP.Id, u.Area.Id, u.Ksk.Id, u.Sector.Id, u.Connector.Id,
-		u.InputType.Id, u.Reliability.Id, u.Voltage.Id, u.Notes).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_houses_upd: ", err)
+		log.Println("Failed execute ifHouseService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -258,7 +240,11 @@ func (s *APG) HandleUpdHouse(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /houses_del [post]
-func (s *APG) HandleDelHouse(w http.ResponseWriter, r *http.Request) {
+func HandleDelHouse(w http.ResponseWriter, r *http.Request) {
+	var gs ifHouseService
+	gs = services.NewHouseService(pgsql.HouseStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -275,15 +261,9 @@ func (s *APG) HandleDelHouse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_houses_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_houses_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifHouseService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -305,27 +285,25 @@ func (s *APG) HandleDelHouse(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.House_count
 // @Failure 500
 // @Router /houses/{id} [get]
-func (s *APG) HandleGetHouse(w http.ResponseWriter, r *http.Request) {
+func HandleGetHouse(w http.ResponseWriter, r *http.Request) {
+	var gs ifHouseService
+	gs = services.NewHouseService(pgsql.HouseStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.House{}
-	out_arr := []models.House{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_house_get($1);", i).Scan(&g.Id, &g.BuildingType.Id, &g.Street.Id,
-		&g.HouseNumber, &g.BuildingNumber, &g.RP.Id, &g.Area.Id, &g.Ksk.Id, &g.Sector.Id, &g.Connector.Id, &g.InputType.Id, &g.Reliability.Id,
-		&g.Voltage.Id, &g.Notes, &g.BuildingType.BuildingTypeName, &g.Street.StreetName, &g.Street.Created, &g.Street.City.CityName, &g.RP.RpName,
-		&g.Area.AreaName, &g.Area.AreaNumber, &g.Ksk.KskName, &g.Sector.SectorName, &g.Connector.ConnectorName, &g.InputType.InputTypeName,
-		&g.Reliability.ReliabilityName, &g.Voltage.VoltageName, &g.Voltage.VoltageValue)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_house_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifHouseService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.House_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

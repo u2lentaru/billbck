@@ -11,9 +11,20 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifObjLineService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.ObjLine_count, error)
+	Add(ctx context.Context, ea models.ObjLine) (int, error)
+	Upd(ctx context.Context, eu models.ObjLine) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.ObjLine_count, error)
+	GetObj(ctx context.Context, gs1, gs2 string) (models.ObjLine_count, error)
+}
 
 // HandleObjLines godoc
 // @Summary List objlines
@@ -29,11 +40,11 @@ import (
 // @Success 200 {object} models.ObjLine_count
 // @Failure 500
 // @Router /objlines [get]
-func (s *APG) HandleObjLines(w http.ResponseWriter, r *http.Request) {
-	// start := time.Now()
-	gs := models.ObjLine{}
+func HandleObjLines(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjLineService
+	gs = services.NewObjLineService(pgsql.ObjLineStorage{})
 	ctx := context.Background()
-	// out_arr := []models.ObjLine{}
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -78,23 +89,6 @@ func (s *APG) HandleObjLines(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_lines_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.ObjLine, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -113,34 +107,20 @@ func (s *APG) HandleObjLines(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_obj_lines_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.ObjId, &gs.ObjTypeId, &gs.CableResistance.Id, &gs.LineLength, &gs.Startdate, &gs.Enddate,
-			&gs.ObjName, &gs.CableResistance.CableResistanceName, &gs.CableResistance.Resistance, &gs.CableResistance.MaterialType)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.ObjLine_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
 	w.Write(out_count)
-
-	// log.Printf("Work time %s", time.Since(start))
 
 	return
 }
@@ -155,8 +135,12 @@ func (s *APG) HandleObjLines(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objlines_add [post]
-func (s *APG) HandleAddObjLine(w http.ResponseWriter, r *http.Request) {
-	a := models.AddObjLine{}
+func HandleAddObjLine(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjLineService
+	gs = services.NewObjLineService(pgsql.ObjLineStorage{})
+	ctx := context.Background()
+
+	a := models.ObjLine{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -172,12 +156,10 @@ func (s *APG) HandleAddObjLine(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_lines_add($1,$2,$3,$4,$5);", a.ObjId, a.ObjTypeId,
-		a.CableResistance.Id, a.LineLength, a.Startdate).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_lines_add: ", err)
+		log.Println("Failed execute ifKskService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -200,7 +182,11 @@ func (s *APG) HandleAddObjLine(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objlines_upd [post]
-func (s *APG) HandleUpdObjLine(w http.ResponseWriter, r *http.Request) {
+func HandleUpdObjLine(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjLineService
+	gs = services.NewObjLineService(pgsql.ObjLineStorage{})
+	ctx := context.Background()
+
 	u := models.ObjLine{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -217,12 +203,10 @@ func (s *APG) HandleUpdObjLine(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_lines_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.ObjId, u.ObjTypeId,
-		u.CableResistance.Id, u.LineLength, u.Startdate, u.Enddate).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_lines_upd: ", err)
+		log.Println("Failed execute ifKskService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -246,7 +230,11 @@ func (s *APG) HandleUpdObjLine(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objlines_del [post]
-func (s *APG) HandleDelObjLine(w http.ResponseWriter, r *http.Request) {
+func HandleDelObjLine(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjLineService
+	gs = services.NewObjLineService(pgsql.ObjLineStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -263,15 +251,9 @@ func (s *APG) HandleDelObjLine(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_lines_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_obj_lines_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifKskService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -293,24 +275,25 @@ func (s *APG) HandleDelObjLine(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ObjLine_count
 // @Failure 500
 // @Router /objlines/{id} [get]
-func (s *APG) HandleGetObjLine(w http.ResponseWriter, r *http.Request) {
+func HandleGetObjLine(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjLineService
+	gs = services.NewObjLineService(pgsql.ObjLineStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.ObjLine{}
-	out_arr := []models.ObjLine{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_obj_line_get($1);", i).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.CableResistance.Id, &g.LineLength, &g.Startdate, &g.Enddate, &g.ObjName, &g.CableResistance.CableResistanceName,
-		&g.CableResistance.Resistance, &g.CableResistance.MaterialType)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_obj_line_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifObjLineService.GetOne: ", err)
+	}
 
-	out_count, err := json.Marshal(models.ObjLine_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -333,10 +316,10 @@ func (s *APG) HandleGetObjLine(w http.ResponseWriter, r *http.Request) {
 // @Failure 500
 // @Router /objlines_obj [get]
 func (s *APG) HandleObjLinesByObj(w http.ResponseWriter, r *http.Request) {
-	// start := time.Now()
-	g := models.ObjLine{}
+	var gs ifObjLineService
+	gs = services.NewObjLineService(pgsql.ObjLineStorage{})
 	ctx := context.Background()
-	// out_arr := []models.ObjLine{}
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -358,53 +341,16 @@ func (s *APG) HandleObjLinesByObj(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_lines_obj_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
+	out_arr, err := gs.GetObj(ctx, gs1, gs2)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	out_arr := make([]models.ObjLine, 0, gsc)
-
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_obj_lines_obj($1,$2);", gs1, gs2)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&g.Id, &g.ObjId, &g.ObjTypeId, &g.CableResistance.Id, &g.LineLength, &g.Startdate, &g.Enddate,
-			&g.ObjName, &g.CableResistance.CableResistanceName, &g.CableResistance.Resistance, &g.CableResistance.MaterialType)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, g)
-	}
-
-	// gsc := 0
-	// err = s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_lines_obj_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.ObjLine_count{Values: out_arr, Count: gsc, Auth: auth})
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 
 	w.Write(out_count)
 
-	// log.Printf("Work time %s", time.Since(start))
-
 	return
-
 }

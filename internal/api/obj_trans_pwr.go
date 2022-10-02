@@ -160,7 +160,7 @@ func HandleAddObjTransPwr(w http.ResponseWriter, r *http.Request) {
 	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute ifObjTransCurrService.Add: ", err)
+		log.Println("Failed execute ifObjTransPwrService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -207,7 +207,7 @@ func HandleUpdObjTransPwr(w http.ResponseWriter, r *http.Request) {
 	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute ifObjTransCurrService.Upd: ", err)
+		log.Println("Failed execute ifObjTransPwrService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -255,7 +255,7 @@ func HandleDelObjTransPwr(w http.ResponseWriter, r *http.Request) {
 
 	res, err := gs.Del(ctx, d.Ids)
 	if err != nil {
-		log.Println("Failed execute ifObjTransCurrService.Del: ", err)
+		log.Println("Failed execute ifObjTransPwrService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -316,7 +316,7 @@ func HandleGetObjTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ObjTransPwr_count
 // @Failure 500
 // @Router /objtranspwr_obj [get]
-func (s *APG) HandleObjTransPwrByObj(w http.ResponseWriter, r *http.Request) {
+func HandleObjTransPwrByObj(w http.ResponseWriter, r *http.Request) {
 	var gs ifObjTransPwrService
 	gs = services.NewObjTransPwrService(pgsql.ObjTransPwrStorage{})
 	ctx := context.Background()

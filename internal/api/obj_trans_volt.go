@@ -11,9 +11,20 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifObjTransVoltService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.ObjTransVolt_count, error)
+	Add(ctx context.Context, ea models.ObjTransVolt) (int, error)
+	Upd(ctx context.Context, eu models.ObjTransVolt) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.ObjTransVolt_count, error)
+	GetObj(ctx context.Context, gs1, gs2 string) (models.ObjTransVolt_count, error)
+}
 
 // HandleObjTransVolt godoc
 // @Summary List objtransvolt
@@ -29,9 +40,11 @@ import (
 // @Success 200 {object} models.ObjTransVolt_count
 // @Failure 500
 // @Router /objtransvolt [get]
-func (s *APG) HandleObjTransVolt(w http.ResponseWriter, r *http.Request) {
-	gs := models.ObjTransVolt{}
+func HandleObjTransVolt(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransVoltService
+	gs = services.NewObjTransVoltService(pgsql.ObjTransVoltStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -76,23 +89,6 @@ func (s *APG) HandleObjTransVolt(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_volt_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.ObjTransVolt, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -111,29 +107,14 @@ func (s *APG) HandleObjTransVolt(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_obj_trans_volt_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.ObjId, &gs.ObjTypeId, &gs.TransVolt.Id, &gs.Startdate, &gs.Enddate, &gs.ObjName,
-			&gs.TransVolt.TransVoltName, &gs.TransVolt.TransType.Id, &gs.TransVolt.CheckDate, &gs.TransVolt.NextCheckDate,
-			&gs.TransVolt.ProdDate, &gs.TransVolt.Serial1, &gs.TransVolt.Serial2, &gs.TransVolt.Serial3,
-			&gs.TransVolt.TransType.TransTypeName, &gs.TransVolt.TransType.Ratio, &gs.TransVolt.TransType.Class,
-			&gs.TransVolt.TransType.MaxCurr, &gs.TransVolt.TransType.NomCurr)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.ObjTransVolt_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -155,8 +136,12 @@ func (s *APG) HandleObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtransvolt_add [post]
-func (s *APG) HandleAddObjTransVolt(w http.ResponseWriter, r *http.Request) {
-	a := models.AddObjTransVolt{}
+func HandleAddObjTransVolt(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransVoltService
+	gs = services.NewObjTransVoltService(pgsql.ObjTransVoltStorage{})
+	ctx := context.Background()
+
+	a := models.ObjTransVolt{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -172,12 +157,10 @@ func (s *APG) HandleAddObjTransVolt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_volt_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId,
-		a.TransVolt.Id, a.Startdate).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_trans_volt_add: ", err)
+		log.Println("Failed execute ifObjTransVoltService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -200,7 +183,11 @@ func (s *APG) HandleAddObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtransvolt_upd [post]
-func (s *APG) HandleUpdObjTransVolt(w http.ResponseWriter, r *http.Request) {
+func HandleUpdObjTransVolt(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransVoltService
+	gs = services.NewObjTransVoltService(pgsql.ObjTransVoltStorage{})
+	ctx := context.Background()
+
 	u := models.ObjTransVolt{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -217,12 +204,10 @@ func (s *APG) HandleUpdObjTransVolt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_volt_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId,
-		u.TransVolt.Id, u.Startdate, u.Enddate).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_trans_volt_upd: ", err)
+		log.Println("Failed execute ifObjTransVoltService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -247,7 +232,11 @@ func (s *APG) HandleUpdObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objtransvolt_del [post]
-func (s *APG) HandleDelObjTransVolt(w http.ResponseWriter, r *http.Request) {
+func HandleDelObjTransVolt(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransVoltService
+	gs = services.NewObjTransVoltService(pgsql.ObjTransVoltStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -264,15 +253,9 @@ func (s *APG) HandleDelObjTransVolt(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_volt_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_obj_trans_volt_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifObjTransVoltService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -294,26 +277,25 @@ func (s *APG) HandleDelObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ObjTransVolt_count
 // @Failure 500
 // @Router /objtransvolt/{id} [get]
-func (s *APG) HandleGetObjTransVolt(w http.ResponseWriter, r *http.Request) {
+func HandleGetObjTransVolt(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransVoltService
+	gs = services.NewObjTransVoltService(pgsql.ObjTransVoltStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.ObjTransVolt{}
-	out_arr := []models.ObjTransVolt{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_volt_getbyid($1);", i).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransVolt.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransVolt.TransVoltName, &g.TransVolt.TransType.Id,
-		&g.TransVolt.CheckDate, &g.TransVolt.NextCheckDate, &g.TransVolt.ProdDate, &g.TransVolt.Serial1, &g.TransVolt.Serial2,
-		&g.TransVolt.Serial3, &g.TransVolt.TransType.TransTypeName, &g.TransVolt.TransType.Ratio, &g.TransVolt.TransType.Class,
-		&g.TransVolt.TransType.MaxCurr, &g.TransVolt.TransType.NomCurr)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_obj_trans_volt_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifObjTransVoltService.GetOne: ", err)
+	}
 
-	out_count, err := json.Marshal(models.ObjTransVolt_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -334,9 +316,11 @@ func (s *APG) HandleGetObjTransVolt(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ObjTransVolt_count
 // @Failure 500
 // @Router /objtransvolt_obj [get]
-func (s *APG) HandleObjTransVoltByObj(w http.ResponseWriter, r *http.Request) {
-	g := models.ObjTransVolt{}
-	out_arr := []models.ObjTransVolt{}
+func HandleObjTransVoltByObj(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransVoltService
+	gs = services.NewObjTransVoltService(pgsql.ObjTransVoltStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -358,20 +342,14 @@ func (s *APG) HandleObjTransVoltByObj(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_volt_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransVolt.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransVolt.TransVoltName, &g.TransVolt.TransType.Id,
-		&g.TransVolt.CheckDate, &g.TransVolt.NextCheckDate, &g.TransVolt.ProdDate, &g.TransVolt.Serial1, &g.TransVolt.Serial2,
-		&g.TransVolt.Serial3, &g.TransVolt.TransType.TransTypeName, &g.TransVolt.TransType.Ratio, &g.TransVolt.TransType.Class,
-		&g.TransVolt.TransType.MaxCurr, &g.TransVolt.TransType.NomCurr)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_obj_trans_volt_getbyobj: ", err)
+	out_arr, err := gs.GetObj(ctx, gs1, gs2)
+	if err != nil {
+		log.Println("Failed execute ifObjTransVoltService.GetObj: ", err)
+		return
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-
-	out_count, err := json.Marshal(models.ObjTransVolt_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

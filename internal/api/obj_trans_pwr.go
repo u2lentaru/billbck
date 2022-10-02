@@ -11,9 +11,20 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifObjTransPwrService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.ObjTransPwr_count, error)
+	Add(ctx context.Context, ea models.ObjTransPwr) (int, error)
+	Upd(ctx context.Context, eu models.ObjTransPwr) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.ObjTransPwr_count, error)
+	GetObj(ctx context.Context, gs1, gs2 string) (models.ObjTransPwr_count, error)
+}
 
 // HandleObjTransPwr godoc
 // @Summary List objtranspwr
@@ -29,9 +40,11 @@ import (
 // @Success 200 {object} models.ObjTransPwr_count
 // @Failure 500
 // @Router /objtranspwr [get]
-func (s *APG) HandleObjTransPwr(w http.ResponseWriter, r *http.Request) {
-	gs := models.ObjTransPwr{}
+func HandleObjTransPwr(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransPwrService
+	gs = services.NewObjTransPwrService(pgsql.ObjTransPwrStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -76,23 +89,6 @@ func (s *APG) HandleObjTransPwr(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_pwr_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.ObjTransPwr, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -111,28 +107,14 @@ func (s *APG) HandleObjTransPwr(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_obj_trans_pwr_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.ObjId, &gs.ObjTypeId, &gs.TransPwr.Id, &gs.Startdate, &gs.Enddate, &gs.ObjName,
-			&gs.TransPwr.TransPwrName, &gs.TransPwr.TransPwrType.Id, &gs.TransPwr.TransPwrType.TransPwrTypeName,
-			&gs.TransPwr.TransPwrType.ShortCircuitPower, &gs.TransPwr.TransPwrType.IdlingLossPower,
-			&gs.TransPwr.TransPwrType.NominalPower)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.ObjTransPwr_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -154,8 +136,12 @@ func (s *APG) HandleObjTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtranspwr_add [post]
-func (s *APG) HandleAddObjTransPwr(w http.ResponseWriter, r *http.Request) {
-	a := models.AddObjTransPwr{}
+func HandleAddObjTransPwr(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransPwrService
+	gs = services.NewObjTransPwrService(pgsql.ObjTransPwrStorage{})
+	ctx := context.Background()
+
+	a := models.ObjTransPwr{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -171,12 +157,10 @@ func (s *APG) HandleAddObjTransPwr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_pwr_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId,
-		a.TransPwr.Id, a.Startdate).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_trans_pwr_add: ", err)
+		log.Println("Failed execute ifObjTransCurrService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -199,7 +183,11 @@ func (s *APG) HandleAddObjTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /objtranspwr_upd [post]
-func (s *APG) HandleUpdObjTransPwr(w http.ResponseWriter, r *http.Request) {
+func HandleUpdObjTransPwr(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransPwrService
+	gs = services.NewObjTransPwrService(pgsql.ObjTransPwrStorage{})
+	ctx := context.Background()
+
 	u := models.ObjTransPwr{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -216,12 +204,10 @@ func (s *APG) HandleUpdObjTransPwr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_pwr_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId,
-		u.TransPwr.Id, u.Startdate, u.Enddate).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_obj_trans_pwr_upd: ", err)
+		log.Println("Failed execute ifObjTransCurrService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -246,7 +232,11 @@ func (s *APG) HandleUpdObjTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /objtranspwr_del [post]
-func (s *APG) HandleDelObjTransPwr(w http.ResponseWriter, r *http.Request) {
+func HandleDelObjTransPwr(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransPwrService
+	gs = services.NewObjTransPwrService(pgsql.ObjTransPwrStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -263,15 +253,9 @@ func (s *APG) HandleDelObjTransPwr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_pwr_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_obj_trans_pwr_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifObjTransCurrService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -293,25 +277,25 @@ func (s *APG) HandleDelObjTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ObjTransPwr_count
 // @Failure 500
 // @Router /objtranspwr/{id} [get]
-func (s *APG) HandleGetObjTransPwr(w http.ResponseWriter, r *http.Request) {
+func HandleGetObjTransPwr(w http.ResponseWriter, r *http.Request) {
+	var gs ifObjTransPwrService
+	gs = services.NewObjTransPwrService(pgsql.ObjTransPwrStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.ObjTransPwr{}
-	out_arr := []models.ObjTransPwr{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_pwr_getbyid($1);", i).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransPwr.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransPwr.TransPwrName, &g.TransPwr.TransPwrType.Id,
-		&g.TransPwr.TransPwrType.TransPwrTypeName, &g.TransPwr.TransPwrType.ShortCircuitPower, &g.TransPwr.TransPwrType.IdlingLossPower,
-		&g.TransPwr.TransPwrType.NominalPower)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_obj_trans_pwr_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifObjTransPwrService.GetOne: ", err)
+	}
 
-	out_count, err := json.Marshal(models.ObjTransPwr_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -333,8 +317,10 @@ func (s *APG) HandleGetObjTransPwr(w http.ResponseWriter, r *http.Request) {
 // @Failure 500
 // @Router /objtranspwr_obj [get]
 func (s *APG) HandleObjTransPwrByObj(w http.ResponseWriter, r *http.Request) {
-	g := models.ObjTransPwr{}
-	out_arr := []models.ObjTransPwr{}
+	var gs ifObjTransPwrService
+	gs = services.NewObjTransPwrService(pgsql.ObjTransPwrStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -356,19 +342,14 @@ func (s *APG) HandleObjTransPwrByObj(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_pwr_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransPwr.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransPwr.TransPwrName, &g.TransPwr.TransPwrType.Id,
-		&g.TransPwr.TransPwrType.TransPwrTypeName, &g.TransPwr.TransPwrType.ShortCircuitPower, &g.TransPwr.TransPwrType.IdlingLossPower,
-		&g.TransPwr.TransPwrType.NominalPower)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_obj_trans_pwr_getbyobj: ", err)
+	out_arr, err := gs.GetObj(ctx, gs1, gs2)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-
-	out_count, err := json.Marshal(models.ObjTransPwr_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

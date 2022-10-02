@@ -159,7 +159,7 @@ func HandleAddObjLine(w http.ResponseWriter, r *http.Request) {
 	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute ifKskService.Add: ", err)
+		log.Println("Failed execute ifObjLineService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -206,7 +206,7 @@ func HandleUpdObjLine(w http.ResponseWriter, r *http.Request) {
 	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute ifKskService.Upd: ", err)
+		log.Println("Failed execute ifObjLineService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -253,7 +253,7 @@ func HandleDelObjLine(w http.ResponseWriter, r *http.Request) {
 
 	res, err := gs.Del(ctx, d.Ids)
 	if err != nil {
-		log.Println("Failed execute ifKskService.Del: ", err)
+		log.Println("Failed execute ifObjLineService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -315,7 +315,7 @@ func HandleGetObjLine(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.ObjLine_count
 // @Failure 500
 // @Router /objlines_obj [get]
-func (s *APG) HandleObjLinesByObj(w http.ResponseWriter, r *http.Request) {
+func HandleObjLinesByObj(w http.ResponseWriter, r *http.Request) {
 	var gs ifObjLineService
 	gs = services.NewObjLineService(pgsql.ObjLineStorage{})
 	ctx := context.Background()
@@ -349,6 +349,10 @@ func (s *APG) HandleObjLinesByObj(w http.ResponseWriter, r *http.Request) {
 
 	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
 
 	w.Write(out_count)
 

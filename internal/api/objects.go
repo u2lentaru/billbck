@@ -174,7 +174,7 @@ func HandleAddObject(w http.ResponseWriter, r *http.Request) {
 	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute ifContractService.Add: ", err)
+		log.Println("Failed execute ifObjectService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -222,7 +222,7 @@ func HandleUpdObject(w http.ResponseWriter, r *http.Request) {
 	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute ifContractService.Upd: ", err)
+		log.Println("Failed execute ifObjectService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -269,7 +269,7 @@ func HandleDelObject(w http.ResponseWriter, r *http.Request) {
 
 	res, err := gs.Del(ctx, d.Ids)
 	if err != nil {
-		log.Println("Failed execute ifObjTypeService.Del: ", err)
+		log.Println("Failed execute ifObjectService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -356,7 +356,7 @@ func HandleGetObjectContract(w http.ResponseWriter, r *http.Request) {
 
 	out_arr, err = gs.GetObjContract(ctx, i, dsc)
 	if err != nil {
-		log.Println("Failed execute ifContractService.GetObjContract: ", err)
+		log.Println("Failed execute ifObjectService.GetObjContract: ", err)
 	}
 
 	out_count, err := json.Marshal(out_arr)

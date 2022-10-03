@@ -1153,24 +1153,6 @@ type PuValueType_count struct {
 	Auth   Auth          `json:"auth"`
 }
 
-//OrderType struct
-type OrderType struct {
-	Id            int    `json:"id"`
-	OrderTypeName string `json:"ordertypename"`
-}
-
-//AddOrderType struct
-type AddOrderType struct {
-	OrderTypeName string `json:"ordertypename"`
-}
-
-//OrderType_count  struct
-type OrderType_count struct {
-	Values []OrderType `json:"values"`
-	Count  int         `json:"count"`
-	Auth   Auth        `json:"auth"`
-}
-
 //AskueFile struct
 type AskueFile struct {
 	AskueFile []byte `json:"askuefile"`

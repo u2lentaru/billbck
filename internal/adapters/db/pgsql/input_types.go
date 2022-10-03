@@ -73,7 +73,7 @@ func (est *InputTypeStorage) Add(ctx context.Context, a models.InputType) (int, 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_input_types_add($1);", a.InputTypeName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_input_types_add($1);", a.InputTypeName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_input_types_add: ", err)
@@ -88,7 +88,7 @@ func (est *InputTypeStorage) Upd(ctx context.Context, u models.InputType) (int, 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_input_types_upd($1,$2);", u.Id, u.InputTypeName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_input_types_upd($1,$2);", u.Id, u.InputTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_input_types_upd: ", err)
@@ -103,7 +103,7 @@ func (est *InputTypeStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_input_types_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_input_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *InputTypeStorage) GetOne(ctx context.Context, i int) (models.InputTyp
 	out_arr := []models.InputType{}
 	g := models.InputType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_input_type_get($1);", i).Scan(&g.Id, &g.InputTypeName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_input_type_get($1);", i).Scan(&g.Id, &g.InputTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_input_type_get: ", err)

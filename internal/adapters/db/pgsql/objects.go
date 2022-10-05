@@ -46,7 +46,7 @@ func (est *ObjectStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 str
 	rows, err := dbpool.Query(ctx, "SELECT * from func_objects_get($1,$2,$3,$4,$5,$6,$7);", pg, pgs, gs1, utils.NullableString(gs2),
 		utils.NullableBool(gs3, gs3f), ord, dsc)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err.Error(), "func_objects_get")
 		return models.Object_count{Values: []models.Object{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 
@@ -189,7 +189,7 @@ func (est *ObjectStorage) GetObjContract(ctx context.Context, i int, a string) (
 		return models.ObjContract_count{}, err
 	}
 
-	out_count := models.ObjContract_count{Values: out_arr, Count: gsc}
+	out_count := models.ObjContract_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 
 	return out_count, nil
 }

@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifPositionService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.Position_count, error)
+	Add(ctx context.Context, ea models.Position) (int, error)
+	Upd(ctx context.Context, eu models.Position) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Position_count, error)
+}
 
 // HandlePositions godoc
 // @Summary List positions
@@ -28,9 +38,11 @@ import (
 // @Success 200 {object} models.Position_count
 // @Failure 500
 // @Router /positions [get]
-func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
-	p := models.Position{}
+func HandlePositions(w http.ResponseWriter, r *http.Request) {
+	var gs ifPositionService
+	gs = services.NewPositionService(pgsql.PositionStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -65,23 +77,6 @@ func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
 		pn = string(re.ReplaceAll([]byte(pn), []byte("''")))
 	}
 
-	pc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_positions_cnt($1);", pn).Scan(&pc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Position, 0,
-		func() int {
-			if pc < pgs {
-				return pc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -100,25 +95,14 @@ func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_positions_get($1,$2,$3,$4,$5);", pg, pgs, pn, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, pn, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&p.Id, &p.PositionName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, p)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Position_count{Values: out_arr, Count: pc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -139,8 +123,12 @@ func (s *APG) HandlePositions(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /positions_add [post]
-func (s *APG) HandleAddPosition(w http.ResponseWriter, r *http.Request) {
-	ap := models.AddPosition{}
+func HandleAddPosition(w http.ResponseWriter, r *http.Request) {
+	var gs ifPositionService
+	gs = services.NewPositionService(pgsql.PositionStorage{})
+	ctx := context.Background()
+
+	a := models.Position{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -150,21 +138,19 @@ func (s *APG) HandleAddPosition(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ap)
+	err = json.Unmarshal(body, &a)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	api := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_positions_add($1);", ap.PositionName).Scan(&api)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifPositionService.Add: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: api})
+	output, err := json.Marshal(models.Json_id{Id: ai})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -185,8 +171,12 @@ func (s *APG) HandleAddPosition(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /positions_upd [post]
-func (s *APG) HandleUpdPosition(w http.ResponseWriter, r *http.Request) {
-	up := models.Position{}
+func HandleUpdPosition(w http.ResponseWriter, r *http.Request) {
+	var gs ifPositionService
+	gs = services.NewPositionService(pgsql.PositionStorage{})
+	ctx := context.Background()
+
+	u := models.Position{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -196,21 +186,19 @@ func (s *APG) HandleUpdPosition(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &up)
+	err = json.Unmarshal(body, &u)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	upi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_positions_upd($1,$2);", up.Id, up.PositionName).Scan(&upi)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifPositionService.Upd: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: upi})
+	output, err := json.Marshal(models.Json_id{Id: ui})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -232,8 +220,12 @@ func (s *APG) HandleUpdPosition(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /positions_del [post]
-func (s *APG) HandleDelPosition(w http.ResponseWriter, r *http.Request) {
-	dp := models.Json_ids{}
+func HandleDelPosition(w http.ResponseWriter, r *http.Request) {
+	var gs ifPositionService
+	gs = services.NewPositionService(pgsql.PositionStorage{})
+	ctx := context.Background()
+
+	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -243,27 +235,16 @@ func (s *APG) HandleDelPosition(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &dp)
+	err = json.Unmarshal(body, &d)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	res := []int{}
-	pi := 0
-	for _, id := range dp.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_positions_del($1);", id).Scan(&pi)
-		res = append(res, pi)
-
-		if err != nil {
-			log.Println("Failed execute func_positions_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifPositionService.Del: ", err)
 	}
-
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
 	if err != nil {
@@ -284,25 +265,25 @@ func (s *APG) HandleDelPosition(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Position_count
 // @Failure 500
 // @Router /positions/{id} [get]
-func (s *APG) HandleGetPosition(w http.ResponseWriter, r *http.Request) {
+func HandleGetPosition(w http.ResponseWriter, r *http.Request) {
+	var gs ifPositionService
+	gs = services.NewPositionService(pgsql.PositionStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	pi := vars["id"]
-	p := models.Position{}
-	out_arr := []models.Position{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_position_get($1);", pi).Scan(&p.Id, &p.PositionName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_position_get: ", err)
-		// http.Error(w, err.Error(), 500)
-		// return
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, p)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifPositionService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(p)
-	out_count, err := json.Marshal(models.Position_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

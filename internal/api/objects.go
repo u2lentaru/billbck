@@ -335,6 +335,8 @@ func HandleGetObjectContract(w http.ResponseWriter, r *http.Request) {
 	var gs ifObjectService
 	gs = services.NewObjectService(pgsql.ObjectStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
 	i, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -359,6 +361,7 @@ func HandleGetObjectContract(w http.ResponseWriter, r *http.Request) {
 		log.Println("Failed execute ifObjectService.GetObjContract: ", err)
 	}
 
+	out_arr.Auth = auth
 	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)

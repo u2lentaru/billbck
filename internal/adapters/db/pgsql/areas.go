@@ -44,7 +44,7 @@ func (est *AreaStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 
 	rows, err := dbpool.Query(ctx, "SELECT * from func_areas_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err.Error(), "func_areas_get")
 		return models.Area_count{Values: []models.Area{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 

@@ -225,24 +225,6 @@ type Uzo_count struct {
 	Auth   Auth  `json:"auth"`
 }
 
-//PuType struct
-type PuType struct {
-	Id         int    `json:"id"`
-	PuTypeName string `json:"putypename"`
-}
-
-//AddPuType struct
-type AddPuType struct {
-	PuTypeName string `json:"putypename"`
-}
-
-//PuType_count  struct
-type PuType_count struct {
-	Values []PuType `json:"values"`
-	Count  int      `json:"count"`
-	Auth   Auth     `json:"auth"`
-}
-
 //TariffGroup struct
 type TariffGroup struct {
 	Id              int    `json:"id"`

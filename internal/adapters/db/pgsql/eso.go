@@ -44,7 +44,7 @@ func (est *EsoStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord
 
 	rows, err := dbpool.Query(ctx, "SELECT * from func_eso_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(err.Error(), "func_eso_get")
 		return models.Eso_count{Values: []models.Eso{}, Count: gsc, Auth: models.Auth{}}, err
 	}
 

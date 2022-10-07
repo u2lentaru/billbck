@@ -123,7 +123,7 @@ func (est *PeriodStorage) GetOne(ctx context.Context, i int) (models.Period_coun
 		&g.Enddate)
 
 	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_period_get: ", err)
+		log.Println("Failed execute func_period_get: ", err)
 		return models.Period_count{Values: []models.Period{}, Count: 0, Auth: models.Auth{}}, err
 	}
 

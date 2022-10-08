@@ -167,24 +167,6 @@ type Sector_count struct {
 	Auth   Auth     `json:"auth"`
 }
 
-//Reliability struct
-type Reliability struct {
-	Id              int    `json:"id"`
-	ReliabilityName string `json:"reliabilityname"`
-}
-
-//AddReliability struct
-type AddReliability struct {
-	ReliabilityName string `json:"reliabilityname"`
-}
-
-//Reliability_count  struct
-type Reliability_count struct {
-	Values []Reliability `json:"values"`
-	Count  int           `json:"count"`
-	Auth   Auth          `json:"auth"`
-}
-
 //Voltage struct
 type Voltage struct {
 	Id           int    `json:"id"`

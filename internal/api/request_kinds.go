@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifRequestKindService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.RequestKind_count, error)
+	Add(ctx context.Context, ea models.RequestKind) (int, error)
+	Upd(ctx context.Context, eu models.RequestKind) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.RequestKind_count, error)
+}
 
 // HandleRequestKinds godoc
 // @Summary List requestkinds
@@ -28,9 +38,11 @@ import (
 // @Success 200 {object} models.RequestKind_count
 // @Failure 500
 // @Router /requestkinds [get]
-func (s *APG) HandleRequestKinds(w http.ResponseWriter, r *http.Request) {
-	gs := models.RequestKind{}
+func HandleRequestKinds(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestKindService
+	gs = services.NewRequestKindService(pgsql.RequestKindStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -65,23 +77,6 @@ func (s *APG) HandleRequestKinds(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_request_kinds_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.RequestKind, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -98,25 +93,14 @@ func (s *APG) HandleRequestKinds(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_request_kinds_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.RequestKindName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.RequestKind_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -137,8 +121,12 @@ func (s *APG) HandleRequestKinds(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requestkinds_add [post]
-func (s *APG) HandleAddRequestKind(w http.ResponseWriter, r *http.Request) {
-	a := models.AddRequestKind{}
+func HandleAddRequestKind(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestKindService
+	gs = services.NewRequestKindService(pgsql.RequestKindStorage{})
+	ctx := context.Background()
+
+	a := models.RequestKind{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -154,11 +142,10 @@ func (s *APG) HandleAddRequestKind(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_request_kinds_add($1);", a.RequestKindName).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_request_kinds_add: ", err)
+		log.Println("Failed execute ifRequestKindService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -182,7 +169,11 @@ func (s *APG) HandleAddRequestKind(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requestkinds_upd [post]
-func (s *APG) HandleUpdRequestKind(w http.ResponseWriter, r *http.Request) {
+func HandleUpdRequestKind(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestKindService
+	gs = services.NewRequestKindService(pgsql.RequestKindStorage{})
+	ctx := context.Background()
+
 	u := models.RequestKind{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -199,11 +190,10 @@ func (s *APG) HandleUpdRequestKind(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_request_kinds_upd($1,$2);", u.Id, u.RequestKindName).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_request_kinds_upd: ", err)
+		log.Println("Failed execute ifRequestKindService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -227,7 +217,11 @@ func (s *APG) HandleUpdRequestKind(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /requestkinds_del [post]
-func (s *APG) HandleDelRequestKind(w http.ResponseWriter, r *http.Request) {
+func HandleDelRequestKind(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestKindService
+	gs = services.NewRequestKindService(pgsql.RequestKindStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -244,15 +238,9 @@ func (s *APG) HandleDelRequestKind(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_request_kinds_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_request_kinds_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifRequestKindService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -275,23 +263,25 @@ func (s *APG) HandleDelRequestKind(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.RequestKind_count
 // @Failure 500
 // @Router /requestkinds/{id} [get]
-func (s *APG) HandleGetRequestKind(w http.ResponseWriter, r *http.Request) {
+func HandleGetRequestKind(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestKindService
+	gs = services.NewRequestKindService(pgsql.RequestKindStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.RequestKind{}
-	out_arr := []models.RequestKind{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_request_kind_get($1);", i).Scan(&g.Id, &g.RequestKindName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_request_kind_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifRequestKindService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.RequestKind_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

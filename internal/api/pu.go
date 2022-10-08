@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -13,12 +12,19 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
 
-func NullableString(s string) sql.NullString {
-	return sql.NullString{String: s, Valid: s != ""}
+type ifPuService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2, gs3, gs4, gs5, gs6, gs7 string, ord int, dsc bool) (models.Pu_count, error)
+	Add(ctx context.Context, ea models.Pu) (int, error)
+	Upd(ctx context.Context, eu models.Pu) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Pu_count, error)
+	GetObj(ctx context.Context, gs1, gs2 string) (models.Pu_count, error)
 }
 
 // HandlePu godoc
@@ -40,9 +46,11 @@ func NullableString(s string) sql.NullString {
 // @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /pu [get]
-func (s *APG) HandlePu(w http.ResponseWriter, r *http.Request) {
-	gs := models.Pu{}
+func HandlePu(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuService
+	gs = services.NewPuService(pgsql.PuStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -134,24 +142,6 @@ func (s *APG) HandlePu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_pu_cnt($1,$2,$3,$4,$5,$6,$7);", gs1, gs2, gs3, NullableString(gs4), NullableString(gs5),
-		NullableString(gs6), NullableString(gs7)).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Pu, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -172,31 +162,14 @@ func (s *APG) HandlePu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_pu_get($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);", pg, pgs, gs1, gs2, gs3, NullableString(gs4),
-		NullableString(gs5), NullableString(gs6), NullableString(gs7), ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, gs3, gs4, gs5, gs6, gs7, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.Startdate, &gs.Enddate, &gs.PuType.Id, &gs.PuType.PuTypeName, &gs.PuNumber, &gs.InstallDate,
-			&gs.CheckInterval, &gs.InitialValue, &gs.DevStopped, &gs.Object.Id, &gs.PuObjectType, &gs.Object.ObjectName, &gs.Object.House.Id,
-			&gs.Object.House.HouseNumber, &gs.Object.FlatNumber, &gs.Object.House.BuildingNumber, &gs.Object.RegQty,
-			&gs.Object.House.Street.Id, &gs.Object.House.Street.StreetName, &gs.Object.House.Street.City.CityName,
-			&gs.Object.House.BuildingType.BuildingTypeName, &gs.Object.House.Street.City.Id, &gs.Object.House.Street.Created,
-			&gs.Object.House.Street.Closed, &gs.Pid)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Pu_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -217,8 +190,12 @@ func (s *APG) HandlePu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /pu_add [post]
-func (s *APG) HandleAddPu(w http.ResponseWriter, r *http.Request) {
-	a := models.AddPu{}
+func HandleAddPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuService
+	gs = services.NewPuService(pgsql.PuStorage{})
+	ctx := context.Background()
+
+	a := models.Pu{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -234,13 +211,10 @@ func (s *APG) HandleAddPu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);",
-		a.Object.Id, a.PuObjectType, a.PuType.Id, a.PuNumber, a.InstallDate, a.CheckInterval, a.InitialValue, a.DevStopped, a.Startdate,
-		a.Pid).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_pu_add: ", err)
+		log.Println("Failed execute ifPuService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -264,7 +238,11 @@ func (s *APG) HandleAddPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /pu_upd [post]
-func (s *APG) HandleUpdPu(w http.ResponseWriter, r *http.Request) {
+func HandleUpdPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuService
+	gs = services.NewPuService(pgsql.PuStorage{})
+	ctx := context.Background()
+
 	u := models.Pu{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -281,12 +259,10 @@ func (s *APG) HandleUpdPu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);", u.Id, u.Object.Id, u.PuObjectType,
-		u.PuType.Id, u.PuNumber, u.InstallDate, u.CheckInterval, u.InitialValue, u.DevStopped, u.Startdate, u.Enddate, u.Pid).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_pu_upd: ", err)
+		log.Println("Failed execute ifPuService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -310,7 +286,11 @@ func (s *APG) HandleUpdPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /pu_del [post]
-func (s *APG) HandleDelPu(w http.ResponseWriter, r *http.Request) {
+func HandleDelPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuService
+	gs = services.NewPuService(pgsql.PuStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -327,15 +307,9 @@ func (s *APG) HandleDelPu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_pu_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifPuService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -357,28 +331,25 @@ func (s *APG) HandleDelPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /pu/{id} [get]
-func (s *APG) HandleGetPu(w http.ResponseWriter, r *http.Request) {
+func HandleGetPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuService
+	gs = services.NewPuService(pgsql.PuStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Pu{}
-	out_arr := []models.Pu{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_pu_getbyid($1);", i).Scan(&g.Id, &g.Startdate, &g.Enddate,
-		&g.PuType.Id, &g.PuType.PuTypeName, &g.PuNumber, &g.InstallDate, &g.CheckInterval, &g.InitialValue, &g.DevStopped, &g.Object.Id,
-		&g.PuObjectType, &g.Object.ObjectName, &g.Object.House.Id, &g.Object.House.HouseNumber, &g.Object.FlatNumber,
-		&g.Object.House.BuildingNumber, &g.Object.RegQty, &g.Object.House.Street.Id, &g.Object.House.Street.StreetName,
-		&g.Object.House.Street.City.CityName, &g.Object.House.BuildingType.BuildingTypeName, &g.Object.House.Street.City.Id,
-		&g.Object.House.Street.Created, &g.Object.House.Street.Closed, &g.Pid)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_pu_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifPuService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Pu_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -398,11 +369,11 @@ func (s *APG) HandleGetPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /pu_obj [get]
-func (s *APG) HandlePuObj(w http.ResponseWriter, r *http.Request) {
-	gs := models.Pu{}
+func HandlePuObj(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuService
+	gs = services.NewPuService(pgsql.PuStorage{})
 	ctx := context.Background()
-
-	out_arr := []models.Pu{}
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -424,34 +395,13 @@ func (s *APG) HandlePuObj(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_pu_obj($1,$2);", gs1, gs2)
+	out_arr, err := gs.GetObj(ctx, gs1, gs2)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifPuService.GetObj: ", err)
 	}
 
-	defer rows.Close()
-
-	gsc := 0
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.Startdate, &gs.Enddate, &gs.PuType.Id, &gs.PuType.PuTypeName, &gs.PuNumber, &gs.InstallDate,
-			&gs.CheckInterval, &gs.InitialValue, &gs.DevStopped, &gs.Object.Id, &gs.PuObjectType, &gs.Object.ObjectName, &gs.Object.House.Id,
-			&gs.Object.House.HouseNumber, &gs.Object.FlatNumber, &gs.Object.House.BuildingNumber, &gs.Object.RegQty,
-			&gs.Object.House.Street.Id, &gs.Object.House.Street.StreetName, &gs.Object.House.Street.City.CityName,
-			&gs.Object.House.BuildingType.BuildingTypeName, &gs.Object.House.Street.City.Id, &gs.Object.House.Street.Created,
-			&gs.Object.House.Street.Closed, &gs.Pid)
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-		gsc++
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Pu_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)

@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
 
 // HandleRequestTypes godoc
@@ -80,7 +81,7 @@ func (s *APG) HandleRequestTypes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_request_types_cnt($1,$2);", gs1, NullableString(gs2)).Scan(&gsc)
+	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_request_types_cnt($1,$2);", gs1, utils.NullableString(gs2)).Scan(&gsc)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -112,7 +113,7 @@ func (s *APG) HandleRequestTypes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_request_types_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, NullableString(gs2), ord, dsc)
+	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_request_types_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, utils.NullableString(gs2), ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

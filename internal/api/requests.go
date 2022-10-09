@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -12,10 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifRequestService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.Request_count, error)
+	Add(ctx context.Context, ea models.Request) (int, error)
+	Upd(ctx context.Context, eu models.Request) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Request_count, error)
+}
 
 // HandleRequests godoc
 // @Summary List of requests
@@ -30,9 +38,11 @@ import (
 // @Success 200 {object} models.Request_count
 // @Failure 500
 // @Router /requests [get]
-func (s *APG) HandleRequests(w http.ResponseWriter, r *http.Request) {
-	gs := models.Request{}
+func HandleRequests(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestService
+	gs = services.NewRequestService(pgsql.RequestStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -67,23 +77,6 @@ func (s *APG) HandleRequests(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_requests_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Request, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -100,41 +93,14 @@ func (s *APG) HandleRequests(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_requests_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	var ci, cli, ai, oi sql.NullInt32
-	var cn, cln, an, on sql.NullString
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.RequestNumber, &gs.RequestDate, &ci, &gs.ServiceType.Id,
-			&gs.RequestType.Id, &gs.RequestKind.Id, &cli, &gs.TermDate, &gs.Executive, &gs.Accept, &gs.Notes,
-			&gs.Result.Id, &ai, &oi, &cn, &gs.ServiceType.ServiceTypeName, &gs.RequestType.RequestTypeName,
-			&gs.RequestKind.RequestKindName, &cln, &gs.Result.ResultName, &an, &on)
-
-		gs.Contract.Id = int(ci.Int32)
-		gs.Contract.ContractNumber = cn.String
-		gs.ClaimType.Id = int(cli.Int32)
-		gs.ClaimType.ClaimTypeName = cln.String
-		gs.Act.Id = int(ai.Int32)
-		gs.Act.ActNumber = an.String
-		gs.Object.Id = int(oi.Int32)
-		gs.Object.ObjectName = on.String
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Request_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -155,8 +121,12 @@ func (s *APG) HandleRequests(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requests_add [post]
-func (s *APG) HandleAddRequest(w http.ResponseWriter, r *http.Request) {
-	a := models.AddRequest{}
+func HandleAddRequest(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestService
+	gs = services.NewRequestService(pgsql.RequestStorage{})
+	ctx := context.Background()
+
+	a := models.Request{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -172,16 +142,10 @@ func (s *APG) HandleAddRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// log.Println("a: ", a)
-
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_requests_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);",
-		a.RequestNumber, a.RequestDate, utils.NullableInt(int32(a.Contract.Id)), a.ServiceType.Id, a.RequestType.Id, a.RequestKind.Id,
-		utils.NullableInt(int32(a.ClaimType.Id)), a.TermDate, a.Executive, a.Accept, a.Notes, a.Result.Id,
-		utils.NullableInt(int32(a.Act.Id)), utils.NullableInt(int32(a.Object.Id))).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_requests_add: ", err)
+		log.Println("Failed execute ifRequestService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -205,7 +169,11 @@ func (s *APG) HandleAddRequest(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /requests_upd [post]
-func (s *APG) HandleUpdRequest(w http.ResponseWriter, r *http.Request) {
+func HandleUpdRequest(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestService
+	gs = services.NewRequestService(pgsql.RequestStorage{})
+	ctx := context.Background()
+
 	u := models.Request{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -222,14 +190,10 @@ func (s *APG) HandleUpdRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_requests_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15);",
-		u.Id, u.RequestNumber, u.RequestDate, utils.NullableInt(int32(u.Contract.Id)), u.ServiceType.Id,
-		u.RequestType.Id, u.RequestKind.Id, utils.NullableInt(int32(u.ClaimType.Id)), u.TermDate, u.Executive, u.Accept,
-		u.Notes, u.Result.Id, utils.NullableInt(int32(u.Act.Id)), utils.NullableInt(int32(u.Object.Id))).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_requests_upd: ", err)
+		log.Println("Failed execute ifRequestService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -253,7 +217,11 @@ func (s *APG) HandleUpdRequest(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /requests_del [post]
-func (s *APG) HandleDelRequest(w http.ResponseWriter, r *http.Request) {
+func HandleDelRequest(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestService
+	gs = services.NewRequestService(pgsql.RequestStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -270,15 +238,9 @@ func (s *APG) HandleDelRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_requests_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_requests_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifRequestService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -301,38 +263,25 @@ func (s *APG) HandleDelRequest(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Request_count
 // @Failure 500
 // @Router /requests/{id} [get]
-func (s *APG) HandleGetRequest(w http.ResponseWriter, r *http.Request) {
+func HandleGetRequest(w http.ResponseWriter, r *http.Request) {
+	var gs ifRequestService
+	gs = services.NewRequestService(pgsql.RequestStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Request{}
-	out_arr := []models.Request{}
-
-	var ci, cli, ai, oi sql.NullInt32
-	var cn, cln, an, on sql.NullString
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_request_get($1);", i).Scan(&g.Id,
-		&g.RequestNumber, &g.RequestDate, &ci, &g.ServiceType.Id, &g.RequestType.Id, &g.RequestKind.Id, &cli, &g.TermDate,
-		&g.Executive, &g.Accept, &g.Notes, &g.Result.Id, &ai, &oi, &cn, &g.ServiceType.ServiceTypeName,
-		&g.RequestType.RequestTypeName, &g.RequestKind.RequestKindName, &cln, &g.Result.ResultName, &an, &on)
-
-	g.Contract.Id = int(ci.Int32)
-	g.Contract.ContractNumber = cn.String
-	g.ClaimType.Id = int(cli.Int32)
-	g.ClaimType.ClaimTypeName = cln.String
-	g.Act.Id = int(ai.Int32)
-	g.Act.ActNumber = an.String
-	g.Object.Id = int(oi.Int32)
-	g.Object.ObjectName = on.String
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_request_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifRequestService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Request_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

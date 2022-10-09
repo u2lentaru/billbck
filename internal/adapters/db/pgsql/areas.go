@@ -73,7 +73,7 @@ func (est *AreaStorage) Add(ctx context.Context, a models.Area) (int, error) {
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_areas_add($1,$2);", a.AreaNumber, a.AreaName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_areas_add($1,$2);", a.AreaNumber, a.AreaName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_areas_add: ", err)
@@ -88,7 +88,7 @@ func (est *AreaStorage) Upd(ctx context.Context, u models.Area) (int, error) {
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_areas_upd($1,$2,$3);", u.Id, u.AreaNumber, u.AreaName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_areas_upd($1,$2,$3);", u.Id, u.AreaNumber, u.AreaName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_areas_upd: ", err)
@@ -103,7 +103,7 @@ func (est *AreaStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_areas_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_areas_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,10 +119,10 @@ func (est *AreaStorage) GetOne(ctx context.Context, i int) (models.Area_count, e
 	out_arr := []models.Area{}
 	g := models.Area{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_area_get($1);", i).Scan(&g.Id, &g.AreaNumber, &g.AreaName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_area_get($1);", i).Scan(&g.Id, &g.AreaNumber, &g.AreaName)
 
 	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_area_get: ", err)
+		log.Println("Failed execute func_area_get: ", err)
 		return models.Area_count{Values: []models.Area{}, Count: 0, Auth: models.Auth{}}, err
 	}
 

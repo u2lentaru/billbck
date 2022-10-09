@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifRpService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Rp_count, error)
+	Add(ctx context.Context, ea models.Rp) (int, error)
+	Upd(ctx context.Context, eu models.Rp) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Rp_count, error)
+}
 
 // HandleRp godoc
 // @Summary List rp
@@ -29,9 +39,11 @@ import (
 // @Success 200 {object} models.Rp_count
 // @Failure 500
 // @Router /rp [get]
-func (s *APG) HandleRp(w http.ResponseWriter, r *http.Request) {
-	gs := models.Rp{}
+func HandleRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifRpService
+	gs = services.NewRpService(pgsql.RpStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -76,23 +88,6 @@ func (s *APG) HandleRp(w http.ResponseWriter, r *http.Request) {
 		gs2 = string(re.ReplaceAll([]byte(gs2), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_rp_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Rp, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -111,28 +106,14 @@ func (s *APG) HandleRp(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_rp_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.RpName, &gs.InvNumber, &gs.InputVoltage.Id, &gs.OutputVoltage1.Id, &gs.OutputVoltage2.Id,
-			&gs.Tp.Id, &gs.InputVoltage.VoltageName, &gs.InputVoltage.VoltageValue, &gs.OutputVoltage1.VoltageName,
-			&gs.OutputVoltage1.VoltageValue, &gs.OutputVoltage2.VoltageName, &gs.OutputVoltage2.VoltageValue,
-			&gs.Tp.TpName, &gs.Tp.GRp.Id, &gs.Tp.GRp.GRpName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Rp_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -153,8 +134,12 @@ func (s *APG) HandleRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /rp_add [post]
-func (s *APG) HandleAddRp(w http.ResponseWriter, r *http.Request) {
-	a := models.AddRp{}
+func HandleAddRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifRpService
+	gs = services.NewRpService(pgsql.RpStorage{})
+	ctx := context.Background()
+
+	a := models.Rp{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -170,12 +155,10 @@ func (s *APG) HandleAddRp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_rp_add($1,$2,$3,$4,$5,$6);", a.RpName, a.InvNumber, a.InputVoltage.Id,
-		a.OutputVoltage1.Id, a.OutputVoltage2.Id, a.Tp.Id).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_rp_add: ", err)
+		log.Println("Failed execute ifRpService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -199,7 +182,11 @@ func (s *APG) HandleAddRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /rp_upd [post]
-func (s *APG) HandleUpdRp(w http.ResponseWriter, r *http.Request) {
+func HandleUpdRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifRpService
+	gs = services.NewRpService(pgsql.RpStorage{})
+	ctx := context.Background()
+
 	u := models.Rp{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -216,12 +203,10 @@ func (s *APG) HandleUpdRp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_rp_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.RpName, u.InvNumber,
-		u.InputVoltage.Id, u.OutputVoltage1.Id, u.OutputVoltage2.Id, u.Tp.Id).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_rp_upd: ", err)
+		log.Println("Failed execute ifRpService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -245,7 +230,11 @@ func (s *APG) HandleUpdRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /rp_del [post]
-func (s *APG) HandleDelRp(w http.ResponseWriter, r *http.Request) {
+func HandleDelRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifRpService
+	gs = services.NewRpService(pgsql.RpStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -262,15 +251,9 @@ func (s *APG) HandleDelRp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_rp_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_rp_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifRpService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -292,26 +275,25 @@ func (s *APG) HandleDelRp(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Rp_count
 // @Failure 500
 // @Router /rp/{id} [get]
-func (s *APG) HandleGetRp(w http.ResponseWriter, r *http.Request) {
+func HandleGetRp(w http.ResponseWriter, r *http.Request) {
+	var gs ifRpService
+	gs = services.NewRpService(pgsql.RpStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Rp{}
-	out_arr := []models.Rp{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_rp_getbyid($1);", i).Scan(&g.Id, &g.RpName, &g.InvNumber,
-		&g.InputVoltage.Id, &g.OutputVoltage1.Id, &g.OutputVoltage2.Id, &g.Tp.Id, &g.InputVoltage.VoltageName,
-		&g.InputVoltage.VoltageValue, &g.OutputVoltage1.VoltageName, &g.OutputVoltage1.VoltageValue, &g.OutputVoltage2.VoltageName,
-		&g.OutputVoltage2.VoltageValue, &g.Tp.TpName, &g.Tp.GRp.Id, &g.Tp.GRp.GRpName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_rp_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifRpService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Rp_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

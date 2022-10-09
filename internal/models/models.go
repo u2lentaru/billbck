@@ -606,24 +606,6 @@ type SealStatus_count struct {
 	Auth   Auth         `json:"auth"`
 }
 
-//Result struct
-type Result struct {
-	Id         int    `json:"id"`
-	ResultName string `json:"resultname"`
-}
-
-//AddResult struct
-type AddResult struct {
-	ResultName string `json:"resultname"`
-}
-
-//Result_count  struct
-type Result_count struct {
-	Values []Result `json:"values"`
-	Count  int      `json:"count"`
-	Auth   Auth     `json:"auth"`
-}
-
 //ServiceType struct
 type ServiceType struct {
 	Id              int    `json:"id"`
@@ -862,12 +844,10 @@ type AskueLoadRes struct {
 // 	Id                   int    `json:"id"`
 // 	DistributionZoneName string `json:"distributionzonename"`
 // }
-
 // //AddDistributionZone struct
 // type AddDistributionZone struct {
 // 	DistributionZoneName string `json:"distributionzonename"`
 // }
-
 // //DistributionZone_count  struct
 // type DistributionZone_count struct {
 // 	Values []DistributionZone `json:"values"`

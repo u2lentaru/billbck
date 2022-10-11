@@ -20,7 +20,7 @@ type ifReasonStorage interface {
 	GetOne(ctx context.Context, i int) (models.Reason_count, error)
 }
 
-//func NewReasonService(storage pgsql.Reasontorage) *ReasonService
+//func NewReasonService(storage pgsql.ReasonStorage) *ReasonService
 func NewReasonService(storage pgsql.ReasonStorage) *ReasonService {
 	return &ReasonService{storage}
 }

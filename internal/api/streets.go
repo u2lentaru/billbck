@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifStreetService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, gs2, ord int, dsc bool) (models.Street_count, error)
+	Add(ctx context.Context, ea models.Street) (int, error)
+	Upd(ctx context.Context, eu models.Street) (int, error)
+	Del(ctx context.Context, d models.StreetClose) (models.Json_id, error)
+	GetOne(ctx context.Context, i int) (models.Street_count, error)
+}
 
 // HandleStreets godoc
 // @Summary List streets
@@ -29,9 +39,11 @@ import (
 // @Success 200 {object} models.Street_count
 // @Failure 500
 // @Router /streets [get]
-func (s *APG) HandleStreets(w http.ResponseWriter, r *http.Request) {
-	gs := models.Street{}
+func HandleStreets(w http.ResponseWriter, r *http.Request) {
+	var gs ifStreetService
+	gs = services.NewStreetService(pgsql.StreetStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -75,23 +87,6 @@ func (s *APG) HandleStreets(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_streets_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Street, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -108,25 +103,14 @@ func (s *APG) HandleStreets(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_streets_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.StreetName, &gs.Created, &gs.Closed, &gs.City.CityName, &gs.City.Id)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Street_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -148,8 +132,12 @@ func (s *APG) HandleStreets(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /streets_add [post]
-func (s *APG) HandleAddStreet(w http.ResponseWriter, r *http.Request) {
-	a := models.AddStreet{}
+func HandleAddStreet(w http.ResponseWriter, r *http.Request) {
+	var gs ifStreetService
+	gs = services.NewStreetService(pgsql.StreetStorage{})
+	ctx := context.Background()
+
+	a := models.Street{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -165,11 +153,10 @@ func (s *APG) HandleAddStreet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_streets_add($1,$2,$3);", a.StreetName, a.City.Id, a.Created).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_streets_add: ", err)
+		log.Println("Failed execute ifStreetService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -193,7 +180,11 @@ func (s *APG) HandleAddStreet(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /streets_upd [post]
-func (s *APG) HandleUpdStreet(w http.ResponseWriter, r *http.Request) {
+func HandleUpdStreet(w http.ResponseWriter, r *http.Request) {
+	var gs ifStreetService
+	gs = services.NewStreetService(pgsql.StreetStorage{})
+	ctx := context.Background()
+
 	u := models.Street{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -210,11 +201,10 @@ func (s *APG) HandleUpdStreet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_streets_upd($1,$2,$3);", u.Id, u.StreetName, u.Created).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_streets_upd: ", err)
+		log.Println("Failed execute ifStreetService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -238,7 +228,11 @@ func (s *APG) HandleUpdStreet(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /streets_del [post]
-func (s *APG) HandleDelStreet(w http.ResponseWriter, r *http.Request) {
+func HandleDelStreet(w http.ResponseWriter, r *http.Request) {
+	var gs ifStreetService
+	gs = services.NewStreetService(pgsql.StreetStorage{})
+	ctx := context.Background()
+
 	d := models.StreetClose{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -255,14 +249,12 @@ func (s *APG) HandleDelStreet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	i := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_streets_del($1,$2);", d.Id, d.Close).Scan(&i)
-
+	i, err := gs.Del(ctx, d)
 	if err != nil {
-		log.Println("Failed execute func_streets_del: ", err)
+		log.Println("Failed execute ifStreetService.Del: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: i})
+	output, err := json.Marshal(i)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -282,24 +274,25 @@ func (s *APG) HandleDelStreet(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Street_count
 // @Failure 500
 // @Router /streets/{id} [get]
-func (s *APG) HandleGetStreet(w http.ResponseWriter, r *http.Request) {
+func HandleGetStreet(w http.ResponseWriter, r *http.Request) {
+	var gs ifStreetService
+	gs = services.NewStreetService(pgsql.StreetStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Street{}
-	out_arr := []models.Street{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_street_get($1);", i).Scan(&g.Id, &g.StreetName, &g.Created, &g.Closed,
-		&g.City.CityName, &g.City.Id)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_street_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifStreetService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Street_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

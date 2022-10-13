@@ -11,10 +11,20 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifSubBankService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, gs2 int, gs3 string, ord int, dsc bool) (models.SubBank_count, error)
+	Add(ctx context.Context, ea models.SubBank) (int, error)
+	Upd(ctx context.Context, eu models.SubBank) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.SubBank_count, error)
+	SetActive(ctx context.Context, i int) (int, error)
+}
 
 // HandleSubBanks godoc
 // @Summary List subject accounts
@@ -31,9 +41,11 @@ import (
 // @Success 200 {object} models.SubBank_count
 // @Failure 500
 // @Router /sub_banks [get]
-func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
-	sb := models.SubBank{}
+func HandleSubBanks(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubBankService
+	gs = services.NewSubBankService(pgsql.SubBankStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -85,23 +97,6 @@ func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
 		an = string(re.ReplaceAll([]byte(an), []byte("''")))
 	}
 
-	sbc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_banks_cnt($1,$2,$3);", sbn, utils.NullableInt(int32(sbi)), an).Scan(&sbc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.SubBank, 0,
-		func() int {
-			if sbc < pgs {
-				return sbc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -120,25 +115,14 @@ func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_sub_banks_get($1,$2,$3,$4,$5,$6,$7);", pg, pgs, sbn, utils.NullableInt(int32(sbi)), an, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, sbn, sbi, an, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&sb.Id, &sb.Sub.Id, &sb.Bank.Id, &sb.AccNumber, &sb.Active, &sb.Sub.SBName, &sb.Bank.BankName)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, sb)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.SubBank_count{Values: out_arr, Count: sbc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -160,8 +144,12 @@ func (s *APG) HandleSubBanks(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_banks_add [post]
-func (s *APG) HandleAddSubBank(w http.ResponseWriter, r *http.Request) {
-	asb := models.AddSubBank{}
+func HandleAddSubBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubBankService
+	gs = services.NewSubBankService(pgsql.SubBankStorage{})
+	ctx := context.Background()
+
+	a := models.SubBank{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -171,21 +159,19 @@ func (s *APG) HandleAddSubBank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &asb)
+	err = json.Unmarshal(body, &a)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	asbi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_banks_add($1,$2,$3);", asb.Sub.Id, asb.Bank.Id, asb.AccNumber).Scan(&asbi)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifSubBankService.Add: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: asbi})
+	output, err := json.Marshal(models.Json_id{Id: ai})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -206,8 +192,12 @@ func (s *APG) HandleAddSubBank(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_banks_upd [post]
-func (s *APG) HandleUpdSubBank(w http.ResponseWriter, r *http.Request) {
-	usb := models.SubBank{}
+func HandleUpdSubBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubBankService
+	gs = services.NewSubBankService(pgsql.SubBankStorage{})
+	ctx := context.Background()
+
+	u := models.SubBank{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -217,22 +207,19 @@ func (s *APG) HandleUpdSubBank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &usb)
+	err = json.Unmarshal(body, &u)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	usbi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_banks_upd($1,$2,$3,$4);", usb.Id, usb.Sub.Id, usb.Bank.Id,
-		usb.AccNumber).Scan(&usbi)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifSubBankService.Upd: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: usbi})
+	output, err := json.Marshal(models.Json_id{Id: ui})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -254,7 +241,11 @@ func (s *APG) HandleUpdSubBank(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sub_banks_del [post]
-func (s *APG) HandleDelSubBank(w http.ResponseWriter, r *http.Request) {
+func HandleDelSubBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubBankService
+	gs = services.NewSubBankService(pgsql.SubBankStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -271,15 +262,9 @@ func (s *APG) HandleDelSubBank(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_banks_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_sub_banks_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifSubBankService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -302,24 +287,25 @@ func (s *APG) HandleDelSubBank(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.SubBank_count
 // @Failure 500
 // @Router /sub_banks/{id} [get]
-func (s *APG) HandleGetSubBank(w http.ResponseWriter, r *http.Request) {
+func HandleGetSubBank(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubBankService
+	gs = services.NewSubBankService(pgsql.SubBankStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.SubBank{}
-	out_arr := []models.SubBank{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_sub_bank_get($1);", i).Scan(&g.Id, &g.Sub.Id, &g.Bank.Id,
-		&g.AccNumber, &g.Active, &g.Sub.SBName, &g.Bank.BankName)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_sub_bank_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifSubBankService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.SubBank_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -339,19 +325,23 @@ func (s *APG) HandleGetSubBank(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_banks_setactive/{id} [post]
-func (s *APG) HandleGetSubBankSetActive(w http.ResponseWriter, r *http.Request) {
+func HandleGetSubBankSetActive(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubBankService
+	gs = services.NewSubBankService(pgsql.SubBankStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-
-	sai := 0
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_banks_set_active($1);", i).Scan(&sai)
-
+	i, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		i = 0
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: sai})
+	res, err := gs.SetActive(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifSubBankService.SetActive: ", err)
+	}
+
+	output, err := json.Marshal(models.Json_id{Id: res})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)

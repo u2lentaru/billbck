@@ -11,8 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifSubTypeService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.SubType_count, error)
+	Add(ctx context.Context, ea models.SubType) (int, error)
+	Upd(ctx context.Context, eu models.SubType) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.SubType_count, error)
+}
 
 // HandleSubTypes godoc
 // @Summary List subjects types
@@ -28,9 +39,11 @@ import (
 // @Success 200 {object} models.SubType_count
 // @Failure 500
 // @Router /sub_types [get]
-func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
-	st := models.SubType{}
+func HandleSubTypes(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubTypeService
+	gs = services.NewSubTypeService(pgsql.SubTypeStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -73,23 +86,6 @@ func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 		std = string(re.ReplaceAll([]byte(std), []byte("''")))
 	}
 
-	stc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_types_cnt($1,$2);", stn, std).Scan(&stc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.SubType, 0,
-		func() int {
-			if stc < pgs {
-				return stc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -108,25 +104,14 @@ func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_sub_types_get($1,$2,$3,$4,$5,$6);", pg, pgs, stn, std, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, stn, std, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&st.Id, &st.SubTypeName, &st.SubTypeDescr)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, st)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.SubType_count{Values: out_arr, Count: stc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -148,8 +133,12 @@ func (s *APG) HandleSubTypes(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_types_add [post]
-func (s *APG) HandleAddSubType(w http.ResponseWriter, r *http.Request) {
-	ast := models.AddSubType{}
+func HandleAddSubType(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubTypeService
+	gs = services.NewSubTypeService(pgsql.SubTypeStorage{})
+	ctx := context.Background()
+
+	a := models.SubType{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -159,21 +148,19 @@ func (s *APG) HandleAddSubType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ast)
+	err = json.Unmarshal(body, &a)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	asti := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_types_add($1,$2);", ast.SubTypeDescr, ast.SubTypeName).Scan(&asti)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifSubTypeService.Add: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: asti})
+	output, err := json.Marshal(models.Json_id{Id: ai})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -194,8 +181,12 @@ func (s *APG) HandleAddSubType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /sub_types_upd [post]
-func (s *APG) HandleUpdSubType(w http.ResponseWriter, r *http.Request) {
-	ust := models.SubType{}
+func HandleUpdSubType(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubTypeService
+	gs = services.NewSubTypeService(pgsql.SubTypeStorage{})
+	ctx := context.Background()
+
+	u := models.SubType{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -205,21 +196,19 @@ func (s *APG) HandleUpdSubType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ust)
+	err = json.Unmarshal(body, &u)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	usti := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_types_upd($1,$2,$3);", ust.Id, ust.SubTypeName, ust.SubTypeDescr).Scan(&usti)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifSubTypeService.Upd: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: usti})
+	output, err := json.Marshal(models.Json_id{Id: ui})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -241,8 +230,12 @@ func (s *APG) HandleUpdSubType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /sub_types_del [post]
-func (s *APG) HandleDelSubType(w http.ResponseWriter, r *http.Request) {
-	dst := models.Json_ids{}
+func HandleDelSubType(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubTypeService
+	gs = services.NewSubTypeService(pgsql.SubTypeStorage{})
+	ctx := context.Background()
+
+	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -252,27 +245,16 @@ func (s *APG) HandleDelSubType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &dst)
+	err = json.Unmarshal(body, &d)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	res := []int{}
-	sti := 0
-	for _, id := range dst.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_types_del($1);", id).Scan(&sti)
-		res = append(res, sti)
-
-		if err != nil {
-			log.Println("Failed execute func_sub_types_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifSubTypeService.Del: ", err)
 	}
-
-	// if err != nil {
-	// 	http.Error(w, err.Error(), 500)
-	// 	return
-	// }
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
 	if err != nil {
@@ -294,24 +276,25 @@ func (s *APG) HandleDelSubType(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.SubType_count
 // @Failure 500
 // @Router /sub_types/{id} [get]
-func (s *APG) HandleGetSubType(w http.ResponseWriter, r *http.Request) {
+func HandleGetSubType(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubTypeService
+	gs = services.NewSubTypeService(pgsql.SubTypeStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	sti := vars["id"]
-	st := models.SubType{}
-	out_arr := []models.SubType{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_sub_type_get($1);", sti).Scan(&st.Id, &st.SubTypeName, &st.SubTypeDescr)
-
+	i, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		i = 0
 	}
 
-	out_arr = append(out_arr, st)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifSubTypeService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(st)
-	out_count, err := json.Marshal(models.SubType_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

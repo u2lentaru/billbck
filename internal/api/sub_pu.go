@@ -9,9 +9,20 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifSubPuService interface {
+	GetList(ctx context.Context, pg, pgs, gs1, ord int, dsc bool) (models.Pu_count, error)
+	Add(ctx context.Context, ea models.SubPu) (int, error)
+	Upd(ctx context.Context, eu models.SubPu) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.SubPu_count, error)
+	GetPrl(ctx context.Context, pg, pgs, gs1, gs2, ord int, dsc bool) (models.Pu_count, error)
+}
 
 // HandleSubPu godoc
 // @Summary List subpu
@@ -26,9 +37,11 @@ import (
 // @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /subpu [get]
-func (s *APG) HandleSubPu(w http.ResponseWriter, r *http.Request) {
-	gs := models.Pu{}
+func HandleSubPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubPuService
+	gs = services.NewSubPuService(pgsql.SubPuStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -62,23 +75,6 @@ func (s *APG) HandleSubPu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_pu_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Pu, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -97,30 +93,14 @@ func (s *APG) HandleSubPu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_sub_pu_get($1,$2,$3::int,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.Startdate, &gs.Enddate, &gs.PuType.Id, &gs.PuType.PuTypeName, &gs.PuNumber, &gs.InstallDate,
-			&gs.CheckInterval, &gs.InitialValue, &gs.DevStopped, &gs.Object.Id, &gs.PuObjectType, &gs.Object.ObjectName, &gs.Object.House.Id,
-			&gs.Object.House.HouseNumber, &gs.Object.FlatNumber, &gs.Object.House.BuildingNumber, &gs.Object.RegQty,
-			&gs.Object.House.Street.Id, &gs.Object.House.Street.StreetName, &gs.Object.House.Street.City.CityName,
-			&gs.Object.House.BuildingType.BuildingTypeName, &gs.Object.House.Street.City.Id, &gs.Object.House.Street.Created,
-			&gs.Object.House.Street.Closed, &gs.Pid)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Pu_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -141,8 +121,12 @@ func (s *APG) HandleSubPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subpu_add [post]
-func (s *APG) HandleAddSubPu(w http.ResponseWriter, r *http.Request) {
-	a := models.AddSubPu{}
+func HandleAddSubPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubPuService
+	gs = services.NewSubPuService(pgsql.SubPuStorage{})
+	ctx := context.Background()
+
+	a := models.SubPu{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -158,11 +142,10 @@ func (s *APG) HandleAddSubPu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_pu_add($1,$2);", a.ParId, a.SubId).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_sub_pu_add: ", err)
+		log.Println("Failed execute ifStaffService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -186,7 +169,11 @@ func (s *APG) HandleAddSubPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subpu_upd [post]
-func (s *APG) HandleUpdSubPu(w http.ResponseWriter, r *http.Request) {
+func HandleUpdSubPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubPuService
+	gs = services.NewSubPuService(pgsql.SubPuStorage{})
+	ctx := context.Background()
+
 	u := models.SubPu{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -203,11 +190,10 @@ func (s *APG) HandleUpdSubPu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_pu_upd($1,$2,$3);", u.Id, u.ParId, u.SubId).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_sub_pu_upd: ", err)
+		log.Println("Failed execute ifStaffService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -231,7 +217,11 @@ func (s *APG) HandleUpdSubPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /subpu_del [post]
-func (s *APG) HandleDelSubPu(w http.ResponseWriter, r *http.Request) {
+func HandleDelSubPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubPuService
+	gs = services.NewSubPuService(pgsql.SubPuStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -248,15 +238,9 @@ func (s *APG) HandleDelSubPu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_pu_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_sub_pu_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifStaffService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -278,23 +262,25 @@ func (s *APG) HandleDelSubPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.SubPu_count
 // @Failure 500
 // @Router /subpu/{id} [get]
-func (s *APG) HandleGetSubPu(w http.ResponseWriter, r *http.Request) {
+func HandleGetSubPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubPuService
+	gs = services.NewSubPuService(pgsql.SubPuStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.SubPu{}
-	out_arr := []models.SubPu{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_sub_pu_getbyid($1);", i).Scan(&g.Id, &g.ParId, &g.SubId)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_sub_pu_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifSubPuService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.SubPu_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -319,10 +305,11 @@ func (s *APG) HandleGetSubPu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Pu_count
 // @Failure 500
 // @Router /subpu_prl [get]
-func (s *APG) HandlePrlSubPu(w http.ResponseWriter, r *http.Request) {
-	gs := models.Pu{}
+func HandlePrlSubPu(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubPuService
+	gs = services.NewSubPuService(pgsql.SubPuStorage{})
 	ctx := context.Background()
-	out_arr := []models.Pu{}
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -383,37 +370,14 @@ func (s *APG) HandlePrlSubPu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_sub_pu_prl($1,$2,$3::int,$4::int,$5,$6);", pg, pgs, gs1, gs2, ord, dsc)
+	out_arr, err := gs.GetPrl(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.Startdate, &gs.Enddate, &gs.PuType.Id, &gs.PuType.PuTypeName, &gs.PuNumber, &gs.InstallDate,
-			&gs.CheckInterval, &gs.InitialValue, &gs.DevStopped, &gs.Object.Id, &gs.PuObjectType, &gs.Object.ObjectName, &gs.Object.House.Id,
-			&gs.Object.House.HouseNumber, &gs.Object.FlatNumber, &gs.Object.House.BuildingNumber, &gs.Object.RegQty,
-			&gs.Object.House.Street.Id, &gs.Object.House.Street.StreetName, &gs.Object.House.Street.City.CityName,
-			&gs.Object.House.BuildingType.BuildingTypeName, &gs.Object.House.Street.City.Id, &gs.Object.House.Street.Created,
-			&gs.Object.House.Street.Closed, &gs.Pid)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	gsc := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_pu_prl_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_count, err := json.Marshal(models.Pu_count{Values: out_arr, Count: gsc})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

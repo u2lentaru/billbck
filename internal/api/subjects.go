@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -12,9 +11,20 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifSubjectService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2, gs3 string, ord int, dsc bool) (models.Subject_count, error)
+	Add(ctx context.Context, ea models.Subject) (int, error)
+	Upd(ctx context.Context, eu models.Subject) (int, error)
+	Del(ctx context.Context, ed models.SubjectClose) (int, error)
+	GetOne(ctx context.Context, i int) (models.Subject_count, error)
+	GetHist(ctx context.Context, i int) ([]string, error)
+}
 
 // HandleSubjects godoc
 // @Summary List subjects
@@ -31,9 +41,11 @@ import (
 // @Success 200 {object} models.Subject_count
 // @Failure 500
 // @Router /subjects [get]
-func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
-	sj := models.Subject{}
+func HandleSubjects(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubjectService
+	gs = services.NewSubjectService(pgsql.SubjectStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -87,23 +99,6 @@ func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sjc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_sub_details_cnt($1,$2,$3);", sjn, sjd, hc).Scan(&sjc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Subject, 0,
-		func() int {
-			if sjc < pgs {
-				return sjc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -122,35 +117,14 @@ func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_sub_details_get($1,$2,$3,$4,$5,$6,$7);", pg, pgs, sjn, sjd, hc, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, sjn, sjd, hc, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	var shp, sap sql.NullInt32
-	var shn, san sql.NullString
-
-	for rows.Next() {
-		err = rows.Scan(&sj.SubId, &sj.SubType.Id, &sj.SubPhys, &sj.SubDescr, &sj.SubName, &sj.SubBin, &shp, &sj.SubHeadName,
-			&sap, &sj.SubAccName, &sj.SubAddr, &sj.SubPhone, &sj.SubStart, &sj.SubAccNumber, &sj.SubType.SubTypeName,
-			&shn, &san, &sj.Job, &sj.Email, &sj.MobPhone, &sj.JobPhone, &sj.Notes)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		sj.SubHeadPos.Id = int(shp.Int32)
-		sj.SubAccPos.Id = int(sap.Int32)
-		sj.SubHeadPos.PositionName = shn.String
-		sj.SubAccPos.PositionName = san.String
-
-		out_arr = append(out_arr, sj)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Subject_count{Values: out_arr, Count: sjc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -172,8 +146,12 @@ func (s *APG) HandleSubjects(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subjects_add [post]
-func (s *APG) HandleAddSubject(w http.ResponseWriter, r *http.Request) {
-	asb := models.AddSubject{}
+func HandleAddSubject(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubjectService
+	gs = services.NewSubjectService(pgsql.SubjectStorage{})
+	ctx := context.Background()
+
+	a := models.Subject{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -183,24 +161,19 @@ func (s *APG) HandleAddSubject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &asb)
+	err = json.Unmarshal(body, &a)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	asbi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_details_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18);",
-		asb.SubType.Id, asb.SubPhys, asb.SubDescr, asb.SubName, asb.SubBin, utils.NullableInt(int32(asb.SubHeadPos.Id)), asb.SubHeadName,
-		utils.NullableInt(int32(asb.SubAccPos.Id)), asb.SubAccName, asb.SubAddr, asb.SubPhone, asb.SubStart, asb.SubAccNumber, asb.Job,
-		asb.Email, asb.MobPhone, asb.JobPhone, asb.Notes).Scan(&asbi)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifSubjectService.Add: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: asbi})
+	output, err := json.Marshal(models.Json_id{Id: ai})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -221,8 +194,12 @@ func (s *APG) HandleAddSubject(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subjects_upd [post]
-func (s *APG) HandleUpdSubject(w http.ResponseWriter, r *http.Request) {
-	usb := models.Subject{}
+func HandleUpdSubject(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubjectService
+	gs = services.NewSubjectService(pgsql.SubjectStorage{})
+	ctx := context.Background()
+
+	u := models.Subject{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -232,24 +209,19 @@ func (s *APG) HandleUpdSubject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &usb)
+	err = json.Unmarshal(body, &u)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	usbi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_sub_details_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19);",
-		usb.SubId, usb.SubType.Id, usb.SubPhys, usb.SubDescr, usb.SubName, usb.SubBin, utils.NullableInt(int32(usb.SubHeadPos.Id)),
-		usb.SubHeadName, utils.NullableInt(int32(usb.SubAccPos.Id)), usb.SubAccName, usb.SubAddr, usb.SubPhone, usb.SubStart,
-		usb.SubAccNumber, usb.Job, usb.Email, usb.MobPhone, usb.JobPhone, usb.Notes).Scan(&usbi)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifSubjectService.Upd: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: usbi})
+	output, err := json.Marshal(models.Json_id{Id: ui})
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -271,8 +243,12 @@ func (s *APG) HandleUpdSubject(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /subjects_del [post]
-func (s *APG) HandleDelSubject(w http.ResponseWriter, r *http.Request) {
-	dsb := models.SubjectClose{}
+func HandleDelSubject(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubjectService
+	gs = services.NewSubjectService(pgsql.SubjectStorage{})
+	ctx := context.Background()
+
+	d := models.SubjectClose{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -282,21 +258,18 @@ func (s *APG) HandleDelSubject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &dsb)
+	err = json.Unmarshal(body, &d)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	sbi := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_subjects_close($1,$2);", dsb.SubId, dsb.SubClose).Scan(&sbi)
-
+	res, err := gs.Del(ctx, d)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifSubjectService.Del: ", err)
 	}
 
-	output, err := json.Marshal(models.Json_id{Id: sbi})
+	output, err := json.Marshal(models.Json_id{Id: res})
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -315,35 +288,25 @@ func (s *APG) HandleDelSubject(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Subject_count
 // @Failure 500
 // @Router /subjects/{id} [get]
-func (s *APG) HandleGetSubject(w http.ResponseWriter, r *http.Request) {
+func HandleGetSubject(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubjectService
+	gs = services.NewSubjectService(pgsql.SubjectStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	sbi := vars["id"]
-	sb := models.Subject{}
-	out_arr := []models.Subject{}
-
-	var shp, sap sql.NullInt32
-	var shn, san sql.NullString
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_sub_detail_get($1);", sbi).Scan(&sb.SubId, &sb.SubType.Id, &sb.SubPhys,
-		&sb.SubDescr, &sb.SubName, &sb.SubBin, &shp, &sb.SubHeadName, &sap, &sb.SubAccName, &sb.SubAddr, &sb.SubPhone,
-		&sb.SubStart, &sb.SubAccNumber, &sb.SubType.SubTypeName, &shn, &san, &sb.Job, &sb.Email,
-		&sb.MobPhone, &sb.JobPhone, &sb.Notes)
-
+	i, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		i = 0
 	}
 
-	sb.SubHeadPos.Id = int(shp.Int32)
-	sb.SubAccPos.Id = int(sap.Int32)
-	sb.SubHeadPos.PositionName = shn.String
-	sb.SubAccPos.PositionName = san.String
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifSubjectService.GetOne: ", err)
+	}
 
-	out_arr = append(out_arr, sb)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-
-	// output, err := json.Marshal(sb)
-	out_count, err := json.Marshal(models.Subject_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -364,43 +327,25 @@ func (s *APG) HandleGetSubject(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} string
 // @Failure 500
 // @Router /subjects_hist/{id} [get]
-func (s *APG) HandleGetSubjectHist(w http.ResponseWriter, r *http.Request) {
+func HandleGetSubjectHist(w http.ResponseWriter, r *http.Request) {
+	var gs ifSubjectService
+	gs = services.NewSubjectService(pgsql.SubjectStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
-	sbi := vars["id"]
-	// hist_arr := []models.Subject_hist{}
-	hist_arr := []string{}
-
-	// sb := models.Subject_hist{}
-	h := ""
-	rows, err := s.Dbpool.Query(context.Background(), "SELECT * from func_sub_detail_get_hist($1);", sbi)
-
+	i, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		i = 0
 	}
 
-	defer rows.Close()
-
-	qa := false
-	w.Write([]byte("["))
-
-	for rows.Next() {
-
-		if qa {
-			w.Write([]byte(","))
-		}
-		qa = true
-
-		err = rows.Scan(&h)
-		w.Write([]byte(h))
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-		hist_arr = append(hist_arr, h)
+	out_arr, err := gs.GetHist(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifSubjectService.GetHist: ", err)
 	}
 
-	w.Write([]byte("]"))
+	out_count, err := json.Marshal(out_arr)
+
+	w.Write(out_count)
 
 	return
 }

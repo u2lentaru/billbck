@@ -11,9 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifTransCurrService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.TransCurr_count, error)
+	Add(ctx context.Context, ea models.TransCurr) (int, error)
+	Upd(ctx context.Context, eu models.TransCurr) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.TransCurr_count, error)
+}
 
 // HandleTransCurr godoc
 // @Summary List current transformers
@@ -28,9 +38,11 @@ import (
 // @Success 200 {object} models.TransCurr_count
 // @Failure 500
 // @Router /transcurr [get]
-func (s *APG) HandleTransCurr(w http.ResponseWriter, r *http.Request) {
-	gs := models.TransCurr{}
+func HandleTransCurr(w http.ResponseWriter, r *http.Request) {
+	var gs ifTransCurrService
+	gs = services.NewTransCurrService(pgsql.TransCurrStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -65,23 +77,6 @@ func (s *APG) HandleTransCurr(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_trans_curr_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.TransCurr, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -98,27 +93,14 @@ func (s *APG) HandleTransCurr(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_trans_curr_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.TransCurrName, &gs.TransType.Id, &gs.CheckDate, &gs.NextCheckDate, &gs.ProdDate, &gs.Serial1,
-			&gs.Serial2, &gs.Serial3, &gs.TransType.TransTypeName, &gs.TransType.Ratio, &gs.TransType.Class, &gs.TransType.MaxCurr,
-			&gs.TransType.NomCurr)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.TransCurr_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -140,8 +122,12 @@ func (s *APG) HandleTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transcurr_add [post]
-func (s *APG) HandleAddTransCurr(w http.ResponseWriter, r *http.Request) {
-	a := models.AddTransCurr{}
+func HandleAddTransCurr(w http.ResponseWriter, r *http.Request) {
+	var gs ifTransCurrService
+	gs = services.NewTransCurrService(pgsql.TransCurrStorage{})
+	ctx := context.Background()
+
+	a := models.TransCurr{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -157,12 +143,10 @@ func (s *APG) HandleAddTransCurr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_trans_curr_add($1,$2,$3,$4,$5,$6,$7,$8);", a.TransCurrName,
-		a.TransType.Id, a.CheckDate, a.NextCheckDate, a.ProdDate, a.Serial1, a.Serial2, a.Serial3).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_trans_curr_add: ", err)
+		log.Println("Failed execute ifTransCurrService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -186,7 +170,11 @@ func (s *APG) HandleAddTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /transcurr_upd [post]
-func (s *APG) HandleUpdTransCurr(w http.ResponseWriter, r *http.Request) {
+func HandleUpdTransCurr(w http.ResponseWriter, r *http.Request) {
+	var gs ifTransCurrService
+	gs = services.NewTransCurrService(pgsql.TransCurrStorage{})
+	ctx := context.Background()
+
 	u := models.TransCurr{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -203,12 +191,10 @@ func (s *APG) HandleUpdTransCurr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_trans_curr_upd($1,$2,$3,$4,$5,$6,$7,$8,$9);", u.Id, u.TransCurrName,
-		u.TransType.Id, u.CheckDate, u.NextCheckDate, u.ProdDate, u.Serial1, u.Serial2, u.Serial3).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_trans_curr_upd: ", err)
+		log.Println("Failed execute ifTransCurrService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -233,7 +219,11 @@ func (s *APG) HandleUpdTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /transcurr_del [post]
-func (s *APG) HandleDelTransCurr(w http.ResponseWriter, r *http.Request) {
+func HandleDelTransCurr(w http.ResponseWriter, r *http.Request) {
+	var gs ifTransCurrService
+	gs = services.NewTransCurrService(pgsql.TransCurrStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -250,15 +240,9 @@ func (s *APG) HandleDelTransCurr(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_trans_curr_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_trans_curr_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifTransCurrService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -281,24 +265,25 @@ func (s *APG) HandleDelTransCurr(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.TransCurr_count
 // @Failure 500
 // @Router /transcurr/{id} [get]
-func (s *APG) HandleGetTransCurr(w http.ResponseWriter, r *http.Request) {
+func HandleGetTransCurr(w http.ResponseWriter, r *http.Request) {
+	var gs ifTransCurrService
+	gs = services.NewTransCurrService(pgsql.TransCurrStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.TransCurr{}
-	out_arr := []models.TransCurr{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_trans_curr_getbyid($1);", i).Scan(&g.Id, &g.TransCurrName,
-		&g.TransType.Id, &g.CheckDate, &g.NextCheckDate, &g.ProdDate, &g.Serial1, &g.Serial2, &g.Serial3, &g.TransType.TransTypeName,
-		&g.TransType.Ratio, &g.TransType.Class, &g.TransType.MaxCurr, &g.TransType.NomCurr)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_trans_curr_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifTransCurrService.GetOne: ", err)
+	}
 
-	out_count, err := json.Marshal(models.TransCurr_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

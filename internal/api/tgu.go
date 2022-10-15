@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -12,10 +11,19 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifTguService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1, gs2 string, ord int, dsc bool) (models.Tgu_count, error)
+	Add(ctx context.Context, ea models.Tgu) (int, error)
+	Upd(ctx context.Context, eu models.Tgu) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Tgu_count, error)
+}
 
 // HandleTgu godoc
 // @Summary List tgu
@@ -31,9 +39,11 @@ import (
 // @Success 200 {object} models.Tgu_count
 // @Failure 500
 // @Router /tgu [get]
-func (s *APG) HandleTgu(w http.ResponseWriter, r *http.Request) {
-	gs := models.Tgu{}
+func HandleTgu(w http.ResponseWriter, r *http.Request) {
+	var gs ifTguService
+	gs = services.NewTguService(pgsql.TguStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -77,23 +87,6 @@ func (s *APG) HandleTgu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_tgu_cnt($1,$2);", gs1, utils.NullableString(gs2)).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Tgu, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -110,54 +103,14 @@ func (s *APG) HandleTgu(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_tgu_get($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, utils.NullableString(gs2), ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	// var iid, o1id, o2id, iv, o1v, o2v *int
-
-	var iid, o1id, o2id, iv, o1v, o2v sql.NullInt32
-	var ivn, ov1n, ov2n sql.NullString
-
-	for rows.Next() {
-		// err = rows.Scan(&gs.Id, &gs.PId, &gs.TguName, &gs.TguType.Id, &gs.InvNumber, &gs.InputVoltage.Id, &gs.OutputVoltage1.Id,
-		// 	&gs.OutputVoltage2.Id, &gs.TguType.TguTypeName, &gs.InputVoltage.VoltageValue, &gs.OutputVoltage1.VoltageValue,
-		// 	&gs.OutputVoltage2.VoltageValue)
-
-		// err = rows.Scan(&gs.Id, &gs.PId, &gs.TguName, &gs.TguType.Id, &gs.InvNumber, &gs.IVId, &gs.OV1Id,
-		// 	&gs.OV2Id, &gs.TguType.TguTypeName, &gs.IVV, &gs.OV1V, &gs.OV2V)
-
-		err = rows.Scan(&gs.Id, &gs.PId, &gs.TguName, &gs.TguType.Id, &gs.InvNumber, &iid, &o1id,
-			&o2id, &gs.TguType.TguTypeName, &iv, &o1v, &o2v, &ivn, &ov1n, &ov2n)
-
-		gs.InputVoltage.Id = int(iid.Int32)
-		gs.InputVoltage.VoltageName = ivn.String
-		gs.InputVoltage.VoltageValue = int(iv.Int32)
-		gs.OutputVoltage1.Id = int(o1id.Int32)
-		gs.OutputVoltage1.VoltageName = ov1n.String
-		gs.OutputVoltage1.VoltageValue = int(o1v.Int32)
-		gs.OutputVoltage2.Id = int(o2id.Int32)
-		gs.OutputVoltage2.VoltageName = ov2n.String
-		gs.OutputVoltage2.VoltageValue = int(o2v.Int32)
-		// gs.InputVoltage.VoltageValue = *iv
-		// gs.OutputVoltage1.Id = *o1id
-		// gs.OutputVoltage1.VoltageValue = *o1v
-		// gs.OutputVoltage2.Id = *o2id
-		// gs.OutputVoltage2.VoltageValue = *o2v
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Tgu_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -178,8 +131,12 @@ func (s *APG) HandleTgu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tgu_add [post]
-func (s *APG) HandleAddTgu(w http.ResponseWriter, r *http.Request) {
-	a := models.AddTgu{}
+func HandleAddTgu(w http.ResponseWriter, r *http.Request) {
+	var gs ifTguService
+	gs = services.NewTguService(pgsql.TguStorage{})
+	ctx := context.Background()
+
+	a := models.Tgu{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -195,12 +152,10 @@ func (s *APG) HandleAddTgu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_tgu_add($1,$2,$3,$4,$5,$6,$7);", a.PId, a.TguName, a.TguType.Id,
-		a.InvNumber, a.InputVoltage.Id, a.OutputVoltage1.Id, a.OutputVoltage2.Id).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_tgu_add: ", err)
+		log.Println("Failed execute ifTguService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -223,7 +178,11 @@ func (s *APG) HandleAddTgu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /tgu_upd [post]
-func (s *APG) HandleUpdTgu(w http.ResponseWriter, r *http.Request) {
+func HandleUpdTgu(w http.ResponseWriter, r *http.Request) {
+	var gs ifTguService
+	gs = services.NewTguService(pgsql.TguStorage{})
+	ctx := context.Background()
+
 	u := models.Tgu{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -240,15 +199,10 @@ func (s *APG) HandleUpdTgu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_tgu_upd($1,$2,$3,$4,$5,$6,$7,$8);", u.Id, u.PId, u.TguName, u.TguType.Id,
-		u.InvNumber, u.InputVoltage.Id, u.OutputVoltage1.Id, u.OutputVoltage2.Id).Scan(&ui)
-
-	// err = s.Dbpool.QueryRow(context.Background(), "SELECT func_tgu_upd($1,$2,$3,$4,$5,$6,$7,$8);", u.Id, u.PId, u.TguName, u.TguType.Id,
-	// 	u.InvNumber, u.IVId, u.OV1Id, u.OV2Id).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_tgu_upd: ", err)
+		log.Println("Failed execute ifTguService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -273,7 +227,11 @@ func (s *APG) HandleUpdTgu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /tgu_del [post]
-func (s *APG) HandleDelTgu(w http.ResponseWriter, r *http.Request) {
+func HandleDelTgu(w http.ResponseWriter, r *http.Request) {
+	var gs ifTguService
+	gs = services.NewTguService(pgsql.TguStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -290,15 +248,9 @@ func (s *APG) HandleDelTgu(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_tgu_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_tgu_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifTguService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -320,41 +272,25 @@ func (s *APG) HandleDelTgu(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Tgu_count
 // @Failure 500
 // @Router /tgu/{id} [get]
-func (s *APG) HandleGetTgu(w http.ResponseWriter, r *http.Request) {
+func HandleGetTgu(w http.ResponseWriter, r *http.Request) {
+	var gs ifTguService
+	gs = services.NewTguService(pgsql.TguStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Tgu{}
-	out_arr := []models.Tgu{}
-
-	var iid, o1id, o2id, iv, o1v, o2v sql.NullInt32
-	var ivn, ov1n, ov2n sql.NullString
-
-	// err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_tgu_getbyid($1);", i).Scan(&g.Id, &g.PId, &g.TguName, &g.TguType.Id,
-	// 	&g.InvNumber, &g.InputVoltage.Id, &g.OutputVoltage1.Id, &g.OutputVoltage2.Id, &g.TguType.TguTypeName, &g.InputVoltage.VoltageValue,
-	// 	&g.OutputVoltage1.VoltageValue, &g.OutputVoltage2.VoltageValue)
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_tgu_getbyid($1);", i).Scan(&g.Id, &g.PId, &g.TguName, &g.TguType.Id,
-		&g.InvNumber, &iid, &o1id, &o2id, &g.TguType.TguTypeName, &iv, &o1v, &o2v, &ivn, &ov1n, &ov2n)
-
-	g.InputVoltage.Id = int(iid.Int32)
-	g.InputVoltage.VoltageName = ivn.String
-	g.InputVoltage.VoltageValue = int(iv.Int32)
-	g.OutputVoltage1.Id = int(o1id.Int32)
-	g.OutputVoltage1.VoltageName = ov1n.String
-	g.OutputVoltage1.VoltageValue = int(o1v.Int32)
-	g.OutputVoltage2.Id = int(o2id.Int32)
-	g.OutputVoltage2.VoltageName = ov2n.String
-	g.OutputVoltage2.VoltageValue = int(o2v.Int32)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_tgu_getbyid: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifTguService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Tgu_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

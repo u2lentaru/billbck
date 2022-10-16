@@ -10,10 +10,22 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
 	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifBalanceService interface {
+	GetList(ctx context.Context, pg, pgs, gs1, gs2 int) (models.Balance_count, error)
+	GetNode(ctx context.Context, gs1, gs2 string) (models.Balance, error)
+	GetNodeSum(ctx context.Context, gs1, gs2 int, gs3, gs4 string) (models.Json_sum, error)
+	GetNodeSumL1(ctx context.Context, gs1, gs2 int, gs3, gs4 string) (models.Json_sum, error)
+	GetNodeSumL0(ctx context.Context, gs1, gs2 int, gs3, gs4 string) (models.Json_sum, error)
+	GetTabL1(ctx context.Context, pg, pgs, gs1, gs2 int, gs3, gs4 string) (models.BalanceTab_sum, error)
+	GetTabL0(ctx context.Context, pg, pgs, gs1, gs2 int, gs3, gs4 string) (models.BalanceTab_sum, error)
+	GetBranch(ctx context.Context, gs1, gs2 int) (models.BalanceTab_sum, error)
+}
 
 // HandleBalance godoc
 // @Summary Get balance nodes
@@ -24,11 +36,12 @@ import (
 // @Param page_size query int false "page size"
 // @Param pid query int true "Balance nodes by pid"
 // @Param tid query int true "Balance node type id"
-// @Success 200 {object} models.Balance
+// @Success 200 {object} models.Balance_count
 // @Failure 500
 // @Router /balance [get]
-func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
-	gs := models.Balance{}
+func HandleBalance(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -72,41 +85,13 @@ func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_cnt($1,$2);", gs1, gs2).Scan(&gsc)
-
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, gs2)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	out_arr := make([]models.Balance, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_balance_get($1,$2,$3,$4);", pg, pgs, gs1, gs2)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.PId, &gs.BName, &gs.BTypeId, &gs.BTypeName, &gs.ChildCount, &gs.ReqId)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	out_count, err := json.Marshal(models.Balance_count{Values: out_arr, Count: gsc})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -127,24 +112,26 @@ func (s *APG) HandleBalance(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Balance
 // @Failure 500
 // @Router /balance/{id}/{tid} [get]
-func (s *APG) HandleGetBalance(w http.ResponseWriter, r *http.Request) {
+func HandleGetBalance(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
+	ctx := context.Background()
+
 	vars := mux.Vars(r)
 	i := vars["id"]
 	tid := vars["tid"]
-	g := models.Balance{}
 
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_balance_getbyid($1,$2);", i, tid).Scan(&g.Id, &g.PId, &g.BName, &g.BTypeId,
-		&g.BTypeName, &g.ChildCount, &g.ReqId)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_balance_get: ", err)
+	out_arr, err := gs.GetNode(ctx, i, tid)
+	if err != nil {
+		log.Println("Failed execute ifBalanceService.GetNode: ", err)
 	}
-	output, err := json.Marshal(g)
+
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	w.Write(output)
+	w.Write(out_count)
 
 	return
 
@@ -161,7 +148,9 @@ func (s *APG) HandleGetBalance(w http.ResponseWriter, r *http.Request) {
 // @Param ed query string false "Balance enddate. Default last day of previous month"
 // @Success 200 {object} models.Json_sum
 // @Router /balance_sum [get]
-func (s *APG) HandleBalanceSum(w http.ResponseWriter, r *http.Request) {
+func HandleBalanceSum(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -184,18 +173,6 @@ func (s *APG) HandleBalanceSum(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// now := time.Now()
-	// currentYear, currentMonth, _ := now.Date()
-	// currentLocation := now.Location()
-
-	// firstOfPrevMonth := time.Date(currentYear, currentMonth-1, 1, 0, 0, 0, 0, currentLocation)
-	// lastOfPrevMonth := firstOfPrevMonth.AddDate(0, 1, -1)
-
-	// if currentMonth == 1 {
-	// 	firstOfPrevMonth = time.Date(currentYear-1, 12, 1, 0, 0, 0, 0, currentLocation)
-	// 	lastOfPrevMonth = firstOfPrevMonth.AddDate(0, 1, -1)
-	// }
-
 	gs3 := utils.FirstOfPrevMonth().Format("2006-01-02")
 	gs3s, ok := query["sd"]
 	if ok && len(gs3s) > 0 {
@@ -216,14 +193,13 @@ func (s *APG) HandleBalanceSum(w http.ResponseWriter, r *http.Request) {
 		gs4 = string(re.ReplaceAll([]byte(gs4), []byte("''")))
 	}
 
-	sum := 0.0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_sum($1,$2,$3,$4);", gs1, gs2, gs3, gs4).Scan(&sum)
+	sum, err := gs.GetNodeSum(ctx, gs1, gs2, gs3, gs4)
+
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBalanceService.GetNodeSum: ", err)
 	}
 
-	out_count, err := json.Marshal(models.Json_sum{Sum: float32(sum)})
+	out_count, err := json.Marshal(sum)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -245,7 +221,9 @@ func (s *APG) HandleBalanceSum(w http.ResponseWriter, r *http.Request) {
 // @Param ed query string false "Balance enddate. Default last day of previous month"
 // @Success 200 {object} models.Json_sum
 // @Router /balance_sum1 [get]
-func (s *APG) HandleBalanceSum1(w http.ResponseWriter, r *http.Request) {
+func HandleBalanceSum1(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -290,14 +268,13 @@ func (s *APG) HandleBalanceSum1(w http.ResponseWriter, r *http.Request) {
 		gs4 = string(re.ReplaceAll([]byte(gs4), []byte("''")))
 	}
 
-	sum := 0.0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_sum1($1,$2,$3,$4);", gs1, gs2, gs3, gs4).Scan(&sum)
+	sum, err := gs.GetNodeSumL1(ctx, gs1, gs2, gs3, gs4)
+
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBalanceService.GetNodeSumL1: ", err)
 	}
 
-	out_count, err := json.Marshal(models.Json_sum{Sum: float32(sum)})
+	out_count, err := json.Marshal(sum)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -319,7 +296,9 @@ func (s *APG) HandleBalanceSum1(w http.ResponseWriter, r *http.Request) {
 // @Param ed query string false "Balance enddate. Default last day of previous month"
 // @Success 200 {object} models.Json_sum
 // @Router /balance_sum0 [get]
-func (s *APG) HandleBalanceSum0(w http.ResponseWriter, r *http.Request) {
+func HandleBalanceSum0(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
 	ctx := context.Background()
 
 	query := r.URL.Query()
@@ -364,14 +343,13 @@ func (s *APG) HandleBalanceSum0(w http.ResponseWriter, r *http.Request) {
 		gs4 = string(re.ReplaceAll([]byte(gs4), []byte("''")))
 	}
 
-	sum := 0.0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_sum0($1,$2,$3,$4);", gs1, gs2, gs3, gs4).Scan(&sum)
+	sum, err := gs.GetNodeSumL0(ctx, gs1, gs2, gs3, gs4)
+
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBalanceService.GetNodeSumL0: ", err)
 	}
 
-	out_count, err := json.Marshal(models.Json_sum{Sum: float32(sum)})
+	out_count, err := json.Marshal(sum)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -395,10 +373,10 @@ func (s *APG) HandleBalanceSum0(w http.ResponseWriter, r *http.Request) {
 // @Param ed query string false "Balance enddate. Default last day of previous month"
 // @Success 200 {object} models.BalanceTab_sum
 // @Router /balance_tab1 [get]
-func (s *APG) HandleBalanceTab1(w http.ResponseWriter, r *http.Request) {
-	gs := models.BalanceTab{}
+func HandleBalanceTab1(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
 	ctx := context.Background()
-	out_arr := []models.BalanceTab{}
 
 	query := r.URL.Query()
 
@@ -463,50 +441,13 @@ func (s *APG) HandleBalanceTab1(w http.ResponseWriter, r *http.Request) {
 		gs4 = string(re.ReplaceAll([]byte(gs4), []byte("''")))
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_balance_tab1($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, gs3, gs4)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.PId, &gs.BName, &gs.BTypeId, &gs.BTypeName, &gs.Sum, &gs.ReqId)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	ogsc := -1.0
-	// ogsc := 0.0
-	// err = s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_sum1($1,$2,$3,$4);", gs1, gs2, gs3, gs4).Scan(&ogsc)
+	out_arr, err := gs.GetTabL1(ctx, pg, pgs, gs1, gs2, gs3, gs4)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBalanceService.GetTabL1: ", err)
 	}
 
-	//input node sum
-	igsc := 0.0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_sum($1,$2,$3,$4);", gs1, gs2, gs3, gs4).Scan(&igsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	tab1cnt := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_tab1_cnt($1,$2);", gs1, gs2).Scan(&tab1cnt)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_count, err := json.Marshal(models.BalanceTab_sum{Values: out_arr, InSum: igsc, OutSum: ogsc, Count: tab1cnt})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -529,10 +470,10 @@ func (s *APG) HandleBalanceTab1(w http.ResponseWriter, r *http.Request) {
 // @Param ed query string false "Balance enddate. Default last day of previous month"
 // @Success 200 {object} models.BalanceTab_sum
 // @Router /balance_tab0 [get]
-func (s *APG) HandleBalanceTab0(w http.ResponseWriter, r *http.Request) {
-	gs := models.BalanceTab{}
+func HandleBalanceTab0(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
 	ctx := context.Background()
-	out_arr := []models.BalanceTab{}
 
 	query := r.URL.Query()
 
@@ -595,50 +536,13 @@ func (s *APG) HandleBalanceTab0(w http.ResponseWriter, r *http.Request) {
 		gs4 = string(re.ReplaceAll([]byte(gs4), []byte("''")))
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_balance_tab0($1,$2,$3,$4,$5,$6);", pg, pgs, gs1, gs2, gs3, gs4)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.PId, &gs.BName, &gs.BTypeId, &gs.BTypeName, &gs.Sum, &gs.ReqId)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	ogsc := -1.0
-	// ogsc := 0.0
-	// err = s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_sum0($1,$2,$3,$4);", gs1, gs2, gs3, gs4).Scan(&ogsc)
+	out_arr, err := gs.GetTabL0(ctx, pg, pgs, gs1, gs2, gs3, gs4)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBalanceService.GetTabL0: ", err)
 	}
 
-	//input node sum
-	igsc := 0.0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_sum($1,$2,$3,$4);", gs1, gs2, gs3, gs4).Scan(&igsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	tab0cnt := 0
-	err = s.Dbpool.QueryRow(ctx, "SELECT * from func_balance_tab0_cnt($1,$2);", gs1, gs2).Scan(&tab0cnt)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_count, err := json.Marshal(models.BalanceTab_sum{Values: out_arr, InSum: igsc, OutSum: ogsc, Count: tab0cnt})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -657,10 +561,10 @@ func (s *APG) HandleBalanceTab0(w http.ResponseWriter, r *http.Request) {
 // @Param tid query int true "Node type id"
 // @Success 200 {object} models.BalanceTab_sum
 // @Router /balance_branch [get]
-func (s *APG) HandleBalanceBranch(w http.ResponseWriter, r *http.Request) {
-	gs := models.BalanceTab{}
+func HandleBalanceBranch(w http.ResponseWriter, r *http.Request) {
+	var gs ifBalanceService
+	gs = services.NewBalanceService(pgsql.BalanceStorage{})
 	ctx := context.Background()
-	out_arr := []models.BalanceTab{}
 
 	query := r.URL.Query()
 
@@ -682,24 +586,13 @@ func (s *APG) HandleBalanceBranch(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_balance_getbranch($1,$2);", gs1, gs2)
+	out_arr, err := gs.GetBranch(ctx, gs1, gs2)
+
 	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
+		log.Println("Failed execute ifBalanceService.GetBranch: ", err)
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.PId, &gs.BName, &gs.BTypeId, &gs.BTypeName, &gs.Sum, &gs.ReqId)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	out_count, err := json.Marshal(models.BalanceTab_sum{Values: out_arr, InSum: 0, OutSum: 0, Count: 0})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

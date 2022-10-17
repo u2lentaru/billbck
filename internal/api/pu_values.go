@@ -3,20 +3,27 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
-	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
-	"github.com/xuri/excelize/v2"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
+
+type ifPuValueService interface {
+	GetList(ctx context.Context, pg, pgs, gs1, ord int, dsc bool) (models.PuValue_count, error)
+	Add(ctx context.Context, ea models.PuValue) (int, error)
+	Upd(ctx context.Context, eu models.PuValue) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.PuValue_count, error)
+	AskuePrev(ctx context.Context, af models.AskueFile) (models.PuValueAskue_count, error)
+	AskueLoad(ctx context.Context, af models.AskueFile) (models.AskueLoadRes, error)
+}
 
 // HandlePuValues godoc
 // @Summary List pu values
@@ -31,9 +38,11 @@ import (
 // @Success 200 {object} models.PuValue_count
 // @Failure 500
 // @Router /puvalues [get]
-func (s *APG) HandlePuValues(w http.ResponseWriter, r *http.Request) {
-	gs := models.PuValue{}
+func HandlePuValues(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuValueService
+	gs = services.NewPuValueService(pgsql.PuValueStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -67,23 +76,6 @@ func (s *APG) HandlePuValues(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_pu_values_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.PuValue, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -102,31 +94,14 @@ func (s *APG) HandlePuValues(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_pu_values_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		pv := 0.0
-
-		err = rows.Scan(&gs.Id, &gs.PuId, &gs.ValueDate, &pv)
-
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		gs.PuValue = strconv.FormatFloat(pv, 'f', 1, 32)
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-
-	out_count, err := json.Marshal(models.PuValue_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -148,7 +123,11 @@ func (s *APG) HandlePuValues(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /puvalues_add [post]
-func (s *APG) HandleAddPuValue(w http.ResponseWriter, r *http.Request) {
+func HandleAddPuValue(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuValueService
+	gs = services.NewPuValueService(pgsql.PuValueStorage{})
+	ctx := context.Background()
+
 	a := models.PuValue{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -165,17 +144,10 @@ func (s *APG) HandleAddPuValue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-
-	pv, err := strconv.ParseFloat(a.PuValue, 32)
-	if err != nil {
-		pv = 0
-	}
-
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_values_add($1,$2,$3);", a.PuId, a.ValueDate, pv).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_pu_values_add: ", err)
+		log.Println("Failed execute ifPuValueService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -199,7 +171,11 @@ func (s *APG) HandleAddPuValue(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /puvalues_upd [post]
-func (s *APG) HandleUpdPuValue(w http.ResponseWriter, r *http.Request) {
+func HandleUpdPuValue(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuValueService
+	gs = services.NewPuValueService(pgsql.PuValueStorage{})
+	ctx := context.Background()
+
 	u := models.PuValue{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -216,18 +192,10 @@ func (s *APG) HandleUpdPuValue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-
-	pv, err := strconv.ParseFloat(u.PuValue, 32)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		pv = 0
-	}
-
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_values_upd($1,$2,$3);", u.Id, u.ValueDate, pv).Scan(&ui)
-
-	if err != nil {
-		log.Println("Failed execute func_pu_values_upd: ", err)
+		log.Println("Failed execute ifPuValueService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -251,7 +219,11 @@ func (s *APG) HandleUpdPuValue(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /puvalues_del [post]
-func (s *APG) HandleDelPuValue(w http.ResponseWriter, r *http.Request) {
+func HandleDelPuValue(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuValueService
+	gs = services.NewPuValueService(pgsql.PuValueStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -268,15 +240,9 @@ func (s *APG) HandleDelPuValue(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_values_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_pu_values_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifPuValueService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -298,27 +264,25 @@ func (s *APG) HandleDelPuValue(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.PuValue_count
 // @Failure 500
 // @Router /puvalues/{id} [get]
-func (s *APG) HandleGetPuValue(w http.ResponseWriter, r *http.Request) {
+func HandleGetPuValue(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuValueService
+	gs = services.NewPuValueService(pgsql.PuValueStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.PuValue{}
-	out_arr := []models.PuValue{}
-
-	pv := 0.0
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_pu_value_get($1);", i).Scan(&g.Id, &g.PuId, &g.ValueDate, &pv)
-
-	g.PuValue = strconv.FormatFloat(pv, 'f', 1, 32)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_pu_value_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifPuValueService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.PuValue_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -339,10 +303,11 @@ func (s *APG) HandleGetPuValue(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.PuValueAskue_count
 // @Failure 500
 // @Router /puvalues_askue_prev [post]
-func (s *APG) HandlePuValuesAskuePreview(w http.ResponseWriter, r *http.Request) {
-	g := models.AskueType{}
-	gs := models.PuValueAskue{}
-	out_arr := []models.PuValueAskue{}
+func HandlePuValuesAskuePreview(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuValueService
+	gs = services.NewPuValueService(pgsql.PuValueStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	af := models.AskueFile{}
 	body, err := ioutil.ReadAll(r.Body)
@@ -357,147 +322,14 @@ func (s *APG) HandlePuValuesAskuePreview(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	tmpfile, err := ioutil.TempFile("/", "askue.*.xslx")
+
+	out_arr, err := gs.AskuePrev(ctx, af)
 	if err != nil {
-		http.Error(w, "Failed create temporary file! :"+err.Error(), 500)
+		log.Println("Failed execute ifPuValueService.AskuePrev: ", err)
 	}
 
-	// defer os.Remove(tmpfile.Name())
-	defer func() {
-		if err := os.Remove(tmpfile.Name()); err != nil {
-			http.Error(w, "Failed remove temporary file! :"+err.Error(), 500)
-		}
-	}()
-
-	if _, err := tmpfile.Write(af.AskueFile); err != nil {
-		tmpfile.Close()
-		http.Error(w, "Failed write to temporary file! :"+err.Error(), 500)
-	}
-	if err := tmpfile.Close(); err != nil {
-		http.Error(w, "Failed close temporary file! :"+err.Error(), 500)
-	}
-	f, err := excelize.OpenFile(tmpfile.Name())
-	if err != nil {
-		http.Error(w, "Failed open temporary Excel file! :"+err.Error(), 500)
-		return
-	}
-	defer func() {
-		if err := f.Close(); err != nil {
-			http.Error(w, err.Error(), 500)
-		}
-	}()
-	rows, err := f.GetRows(af.Sheet)
-	if err != nil {
-		http.Error(w, "Failed GetRows Excel file! :"+err.Error(), 500)
-		return
-	}
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT * from func_askue_type_get($1);", af.AskueType).Scan(&g.Id, &g.AskueTypeName,
-		&g.StartLine, &g.PuColumn, &g.ValueColumn, &g.DateColumn, &g.DateColumnArray)
-
-	if err != nil && err != pgx.ErrNoRows {
-		http.Error(w, "Failed execute func_askue_type_get! :"+err.Error(), 500)
-		return
-	}
-	vds := []string{}
-	if g.DateColumnArray != nil {
-		vds = strings.Split(*g.DateColumnArray, ",")
-	}
-
-	gsc := 0
-	pui := 0
-	pv := 0.0
-	for i, row := range rows {
-		if i < g.StartLine-1 {
-			continue
-		}
-		gs.Valid = true
-		gs.PuNumber = row[g.PuColumn-1]
-
-		pv, err = strconv.ParseFloat(row[g.ValueColumn-1], 32)
-		if err != nil {
-			gs.Valid = false
-			gs.Notes = "Incorrect PuValue: " + row[g.ValueColumn-1] + " "
-		} else {
-			gs.PuValue = float32(pv)
-		}
-		// gs.PuValue = row[g.ValueColumn-1]
-
-		if g.DateColumnArray != nil {
-			dcn := 0
-			fdc := [3]bool{false, false, false}
-			for i, vd := range vds {
-				if i == 0 {
-					dcn, err = strconv.Atoi(vd)
-					if err != nil {
-						// http.Error(w, "Incorrect DateColumnArray: "+err.Error(), 500)
-						// return
-						gs.ValueDate = "0000-00-00"
-						fdc[i] = true
-					} else {
-						_, err = time.Parse("2006-01-02", row[dcn])
-
-						if err != nil {
-							fdc[i] = true
-						}
-						gs.ValueDate = row[dcn]
-					}
-				} else {
-					dcn, err = strconv.Atoi(vd)
-					if err != nil {
-						fdc[i] = true
-						continue
-					}
-
-					_, err = time.Parse("2006-01-02", row[dcn])
-
-					if err != nil {
-						fdc[i] = true
-						continue
-					}
-
-					if row[dcn] > gs.ValueDate {
-						gs.ValueDate = vd
-					}
-				}
-			}
-
-			if fdc[0] && fdc[1] && fdc[2] {
-				gs.Valid = false
-				gs.Notes = gs.Notes + "Incorrect ValueDate "
-			}
-
-		} else {
-			_, err = time.Parse("2006-01-02", row[g.DateColumn-1])
-			//  tdv, err := time.Parse("02.01.2006", row[g.DateColumn-1])
-
-			if err != nil {
-				gs.Valid = false
-				gs.Notes = gs.Notes + "Incorrect ValueDate: " + row[g.DateColumn-1] + " "
-			}
-
-			gs.ValueDate = row[g.DateColumn-1]
-			// gs.ValueDate = fmt.Sprintf(tdv.Format("2006-01-02"))
-		}
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_getbynumber($1);", gs.PuNumber).Scan(&pui)
-
-		if err != nil {
-			http.Error(w, "Failed execute func_pu_getbynumber: "+err.Error(), 500)
-			// return
-		}
-		if pui == 0 {
-			// http.Error(w, "Pu number does not exist!", 500)
-			// return
-			gs.Valid = false
-			gs.Notes = gs.Notes + "Punumber does not exist"
-		}
-
-		gs.PuId = pui
-
-		out_arr = append(out_arr, gs)
-		gsc++
-	}
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.PuValueAskue_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -518,10 +350,10 @@ func (s *APG) HandlePuValuesAskuePreview(w http.ResponseWriter, r *http.Request)
 // @Success 200 {object} models.AskueLoadRes
 // @Failure 500
 // @Router /puvalues_askue [post]
-func (s *APG) HandlePuValuesAskue(w http.ResponseWriter, r *http.Request) {
-	var procrec, dnrec int
-	g := models.AskueType{}
-	gs := models.PuValueAskue{}
+func HandlePuValuesAskue(w http.ResponseWriter, r *http.Request) {
+	var gs ifPuValueService
+	gs = services.NewPuValueService(pgsql.PuValueStorage{})
+	ctx := context.Background()
 
 	af := models.AskueFile{}
 	body, err := ioutil.ReadAll(r.Body)
@@ -536,162 +368,13 @@ func (s *APG) HandlePuValuesAskue(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
-	tmpfile, err := ioutil.TempFile("/", "askue.*.xslx")
+
+	out_arr, err := gs.AskueLoad(ctx, af)
 	if err != nil {
-		http.Error(w, "Failed create temporary file! :"+err.Error(), 500)
+		log.Println("Failed execute ifPuValueService.AskueLoad: ", err)
 	}
 
-	// defer os.Remove(tmpfile.Name())
-	defer func() {
-		if err := os.Remove(tmpfile.Name()); err != nil {
-			http.Error(w, "Failed remove temporary file! :"+err.Error(), 500)
-		}
-	}()
-
-	if _, err := tmpfile.Write(af.AskueFile); err != nil {
-		tmpfile.Close()
-		http.Error(w, "Failed write to temporary file! :"+err.Error(), 500)
-	}
-	if err := tmpfile.Close(); err != nil {
-		http.Error(w, "Failed close temporary file! :"+err.Error(), 500)
-	}
-	f, err := excelize.OpenFile(tmpfile.Name())
-	if err != nil {
-		http.Error(w, "Failed open temporary Excel file! :"+err.Error(), 500)
-		return
-	}
-	defer func() {
-		if err := f.Close(); err != nil {
-			http.Error(w, err.Error(), 500)
-		}
-	}()
-
-	rows, err := f.GetRows(af.Sheet)
-	if err != nil {
-		http.Error(w, "Failed GetRows Excel file! :"+err.Error(), 500)
-		return
-	}
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT * from func_askue_type_get($1);", af.AskueType).Scan(&g.Id, &g.AskueTypeName,
-		&g.StartLine, &g.PuColumn, &g.ValueColumn, &g.DateColumn, &g.DateColumnArray)
-
-	if err != nil && err != pgx.ErrNoRows {
-		http.Error(w, "Failed execute func_askue_type_get! :"+err.Error(), 500)
-		return
-	}
-	vds := []string{}
-	if g.DateColumnArray != nil {
-		vds = strings.Split(*g.DateColumnArray, ",")
-	}
-
-	pui := 0
-	pv := 0.0
-	for i, row := range rows {
-		if i < g.StartLine-1 {
-			continue
-		}
-		gs.Valid = true
-		gs.PuNumber = row[g.PuColumn-1]
-
-		pv, err = strconv.ParseFloat(row[g.ValueColumn-1], 32)
-		if err != nil {
-			gs.Valid = false
-			gs.Notes = "Incorrect PuValue: " + row[g.ValueColumn-1] + " "
-		} else {
-			gs.PuValue = float32(pv)
-		}
-		// gs.PuValue = row[g.ValueColumn-1]
-
-		if g.DateColumnArray != nil {
-			dcn := 0
-			fdc := [3]bool{false, false, false}
-			for i, vd := range vds {
-				if i == 0 {
-					dcn, err = strconv.Atoi(vd)
-					if err != nil {
-						// http.Error(w, "Incorrect DateColumnArray: "+err.Error(), 500)
-						// return
-						gs.ValueDate = "0000-00-00"
-						fdc[i] = true
-					} else {
-						_, err = time.Parse("2006-01-02", row[dcn])
-
-						if err != nil {
-							fdc[i] = true
-						}
-						gs.ValueDate = row[dcn]
-					}
-				} else {
-					dcn, err = strconv.Atoi(vd)
-					if err != nil {
-						fdc[i] = true
-						continue
-					}
-
-					_, err = time.Parse("2006-01-02", row[dcn])
-
-					if err != nil {
-						fdc[i] = true
-						continue
-					}
-
-					if row[dcn] > gs.ValueDate {
-						gs.ValueDate = vd
-					}
-				}
-			}
-
-			if fdc[0] && fdc[1] && fdc[2] {
-				gs.Valid = false
-				gs.Notes = gs.Notes + "Incorrect ValueDate "
-			}
-
-		} else {
-			_, err = time.Parse("2006-01-02", row[g.DateColumn-1])
-			//  tdv, err := time.Parse("02.01.2006", row[g.DateColumn-1])
-
-			if err != nil {
-				gs.Valid = false
-				gs.Notes = gs.Notes + "Incorrect ValueDate: " + row[g.DateColumn-1] + " "
-			}
-
-			gs.ValueDate = row[g.DateColumn-1]
-			// gs.ValueDate = fmt.Sprintf(tdv.Format("2006-01-02"))
-		}
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_getbynumber($1);", gs.PuNumber).Scan(&pui)
-
-		if err != nil {
-			// http.Error(w, "Failed execute func_pu_getbynumber: "+err.Error(), 500)
-			log.Println("Failed execute func_pu_getbynumber: " + err.Error())
-		}
-		if pui == 0 {
-			gs.Valid = false
-			gs.Notes = gs.Notes + "Punumber does not exist"
-		}
-
-		gs.PuId = pui
-
-		if gs.Valid {
-			err = s.Dbpool.QueryRow(context.Background(), "SELECT func_pu_values_add($1,$2,$3);", gs.PuId, gs.ValueDate, gs.PuValue).Scan(&pui)
-
-			if err != nil {
-				log.Println("Failed execute func_pu_values_add: " + err.Error())
-				dnrec++
-			} else {
-				if pui == 0 {
-					log.Println("Can't add record into wt_pu_values!")
-					dnrec++
-				} else {
-					procrec++
-				}
-			}
-
-		} else {
-			dnrec++
-		}
-
-	}
-
-	out_count, err := json.Marshal(models.AskueLoadRes{Processed: procrec, Denied: dnrec})
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -699,35 +382,4 @@ func (s *APG) HandlePuValuesAskue(w http.ResponseWriter, r *http.Request) {
 	w.Write(out_count)
 
 	return
-}
-
-// func DVTrans(sd string) (string, bool) - "DD.MM "* -> "DD.MM.YYYY", true ; !"DD.MM "* - "", false
-func DVTrans(sd string) (string, bool) {
-	var fl bool
-	if sd[5:6] == " " {
-		log.Println("sd is ok.")
-		fl = true
-	} else {
-		log.Println("Incorrect dv!")
-		fl = false
-	}
-
-	dv := "16.01 07:41 (4)"
-	dv = dv[:5]
-	tdv, err := time.Parse("02.01", dv)
-
-	if err != nil {
-		log.Println("Incorrect dv!")
-		return "", false
-	}
-
-	stdv := fmt.Sprintf(tdv.Format("02.01.2006"))
-	log.Println(stdv[:5])
-	y := fmt.Sprintf(time.Now().Format("02.01.2006"))
-	log.Println("y: ", y)
-	y = y[6:]
-	stdv = stdv[:5]
-	log.Println("y:=", y, " stdv:= ", stdv, " + ", stdv+"."+y)
-	return stdv + "." + y, fl
-
 }

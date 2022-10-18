@@ -286,7 +286,7 @@ func HandleDelAct(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Act_count
 // @Failure 500
 // @Router /acts/{id} [get]
-func (s *APG) HandleGetAct(w http.ResponseWriter, r *http.Request) {
+func HandleGetAct(w http.ResponseWriter, r *http.Request) {
 	var gs ifActService
 	gs = services.NewActService(pgsql.ActStorage{})
 	ctx := context.Background()

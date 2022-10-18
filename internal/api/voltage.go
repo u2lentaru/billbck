@@ -11,13 +11,18 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/u2lentaru/billbck/internal/adapters/db/pgsql"
 	"github.com/u2lentaru/billbck/internal/models"
+	"github.com/u2lentaru/billbck/internal/services"
+	"github.com/u2lentaru/billbck/internal/utils"
 )
 
-type APG struct {
-	Dbpool *pgxpool.Pool
+type ifVoltageService interface {
+	GetList(ctx context.Context, pg, pgs int, gs1 string, ord int, dsc bool) (models.Voltage_count, error)
+	Add(ctx context.Context, ea models.Voltage) (int, error)
+	Upd(ctx context.Context, eu models.Voltage) (int, error)
+	Del(ctx context.Context, ed []int) ([]int, error)
+	GetOne(ctx context.Context, i int) (models.Voltage_count, error)
 }
 
 // HandleVoltages godoc
@@ -33,9 +38,11 @@ type APG struct {
 // @Success 200 {object} models.Voltage_count
 // @Failure 500
 // @Router /voltages [get]
-func (s *APG) HandleVoltages(w http.ResponseWriter, r *http.Request) {
-	gs := models.Voltage{}
+func HandleVoltages(w http.ResponseWriter, r *http.Request) {
+	var gs ifVoltageService
+	gs = services.NewVoltageService(pgsql.VoltageStorage{})
 	ctx := context.Background()
+	auth := utils.GetAuth(r)
 
 	query := r.URL.Query()
 
@@ -70,23 +77,6 @@ func (s *APG) HandleVoltages(w http.ResponseWriter, r *http.Request) {
 		gs1 = string(re.ReplaceAll([]byte(gs1), []byte("''")))
 	}
 
-	gsc := 0
-	err := s.Dbpool.QueryRow(ctx, "SELECT * from func_voltages_cnt($1);", gs1).Scan(&gsc)
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
-	out_arr := make([]models.Voltage, 0,
-		func() int {
-			if gsc < pgs {
-				return gsc
-			} else {
-				return pgs
-			}
-		}())
-
 	ord := 1
 	ords, ok := query["ordering"]
 	if !ok || len(ords) == 0 {
@@ -103,25 +93,14 @@ func (s *APG) HandleVoltages(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	rows, err := s.Dbpool.Query(ctx, "SELECT * from func_voltages_get($1,$2,$3,$4,$5);", pg, pgs, gs1, ord, dsc)
+	out_arr, err := gs.GetList(ctx, pg, pgs, gs1, ord, dsc)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		err = rows.Scan(&gs.Id, &gs.VoltageName, &gs.VoltageValue)
-		if err != nil {
-			log.Println("failed to scan row:", err)
-		}
-
-		out_arr = append(out_arr, gs)
-	}
-
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
-	out_count, err := json.Marshal(models.Voltage_count{Values: out_arr, Count: gsc, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -143,8 +122,12 @@ func (s *APG) HandleVoltages(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /voltages_add [post]
-func (s *APG) HandleAddVoltage(w http.ResponseWriter, r *http.Request) {
-	a := models.AddVoltage{}
+func HandleAddVoltage(w http.ResponseWriter, r *http.Request) {
+	var gs ifVoltageService
+	gs = services.NewVoltageService(pgsql.VoltageStorage{})
+	ctx := context.Background()
+
+	a := models.Voltage{}
 	body, err := ioutil.ReadAll(r.Body)
 
 	defer r.Body.Close()
@@ -160,11 +143,10 @@ func (s *APG) HandleAddVoltage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ai := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_voltages_add($1, $2);", a.VoltageName, a.VoltageValue).Scan(&ai)
+	ai, err := gs.Add(ctx, a)
 
 	if err != nil {
-		log.Println("Failed execute func_voltages_add: ", err)
+		log.Println("Failed execute ifVoltageService.Add: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ai})
@@ -188,7 +170,11 @@ func (s *APG) HandleAddVoltage(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /voltages_upd [post]
-func (s *APG) HandleUpdVoltage(w http.ResponseWriter, r *http.Request) {
+func HandleUpdVoltage(w http.ResponseWriter, r *http.Request) {
+	var gs ifVoltageService
+	gs = services.NewVoltageService(pgsql.VoltageStorage{})
+	ctx := context.Background()
+
 	u := models.Voltage{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -205,11 +191,10 @@ func (s *APG) HandleUpdVoltage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ui := 0
-	err = s.Dbpool.QueryRow(context.Background(), "SELECT func_voltages_upd($1,$2,$3);", u.Id, u.VoltageName, u.VoltageValue).Scan(&ui)
+	ui, err := gs.Upd(ctx, u)
 
 	if err != nil {
-		log.Println("Failed execute func_voltages_upd: ", err)
+		log.Println("Failed execute ifVoltageService.Upd: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_id{Id: ui})
@@ -234,7 +219,11 @@ func (s *APG) HandleUpdVoltage(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_ids
 // @Failure 500
 // @Router /voltages_del [post]
-func (s *APG) HandleDelVoltage(w http.ResponseWriter, r *http.Request) {
+func HandleDelVoltage(w http.ResponseWriter, r *http.Request) {
+	var gs ifVoltageService
+	gs = services.NewVoltageService(pgsql.VoltageStorage{})
+	ctx := context.Background()
+
 	d := models.Json_ids{}
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -251,15 +240,9 @@ func (s *APG) HandleDelVoltage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res := []int{}
-	i := 0
-	for _, id := range d.Ids {
-		err = s.Dbpool.QueryRow(context.Background(), "SELECT func_voltages_del($1);", id).Scan(&i)
-		res = append(res, i)
-
-		if err != nil {
-			log.Println("Failed execute func_voltages_del: ", err)
-		}
+	res, err := gs.Del(ctx, d.Ids)
+	if err != nil {
+		log.Println("Failed execute ifVoltageService.Del: ", err)
 	}
 
 	output, err := json.Marshal(models.Json_ids{Ids: res})
@@ -282,23 +265,25 @@ func (s *APG) HandleDelVoltage(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Voltage_count
 // @Failure 500
 // @Router /voltages/{id} [get]
-func (s *APG) HandleGetVoltage(w http.ResponseWriter, r *http.Request) {
+func HandleGetVoltage(w http.ResponseWriter, r *http.Request) {
+	var gs ifVoltageService
+	gs = services.NewVoltageService(pgsql.VoltageStorage{})
+	ctx := context.Background()
+	auth := utils.GetAuth(r)
+
 	vars := mux.Vars(r)
-	i := vars["id"]
-	g := models.Voltage{}
-	out_arr := []models.Voltage{}
-
-	err := s.Dbpool.QueryRow(context.Background(), "SELECT * from func_voltage_get($1);", i).Scan(&g.Id, &g.VoltageName, &g.VoltageValue)
-
-	if err != nil && err != pgx.ErrNoRows {
-		log.Println("Failed execute from func_voltage_get: ", err)
+	i, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		i = 0
 	}
 
-	out_arr = append(out_arr, g)
-	auth := models.Auth{Create: true, Read: true, Update: true, Delete: true}
+	out_arr, err := gs.GetOne(ctx, i)
+	if err != nil {
+		log.Println("Failed execute ifVoltageService.GetOne: ", err)
+	}
 
-	// output, err := json.Marshal(g)
-	out_count, err := json.Marshal(models.Voltage_count{Values: out_arr, Count: 1, Auth: auth})
+	out_arr.Auth = auth
+	out_count, err := json.Marshal(out_arr)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return

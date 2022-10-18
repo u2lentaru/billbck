@@ -5,7 +5,7 @@ import (
 	"github.com/u2lentaru/billbck/internal/api"
 )
 
-func AddRoutes(r *mux.Router, apg *api.APG) {
+func AddRoutes(r *mux.Router) {
 	r.HandleFunc("/form_types", api.HandleFormTypes).Methods("GET", "OPTIONS")
 	r.HandleFunc("/form_types_add", api.HandleAddFormType).Methods("POST", "OPTIONS")
 	r.HandleFunc("/form_types_upd", api.HandleUpdFormType).Methods("POST", "OPTIONS")
@@ -79,11 +79,11 @@ func AddRoutes(r *mux.Router, apg *api.APG) {
 	r.HandleFunc("/reliabilities_upd", api.HandleUpdReliability).Methods("POST", "OPTIONS")
 	r.HandleFunc("/reliabilities_del", api.HandleDelReliability).Methods("POST", "OPTIONS")
 	r.HandleFunc("/reliabilities/{id:[0-9]+}", api.HandleGetReliability).Methods("GET", "OPTIONS")
-	r.HandleFunc("/voltages", apg.HandleVoltages).Methods("GET", "OPTIONS")
-	r.HandleFunc("/voltages_add", apg.HandleAddVoltage).Methods("POST", "OPTIONS")
-	r.HandleFunc("/voltages_upd", apg.HandleUpdVoltage).Methods("POST", "OPTIONS")
-	r.HandleFunc("/voltages_del", apg.HandleDelVoltage).Methods("POST", "OPTIONS")
-	r.HandleFunc("/voltages/{id:[0-9]+}", apg.HandleGetVoltage).Methods("GET", "OPTIONS")
+	r.HandleFunc("/voltages", api.HandleVoltages).Methods("GET", "OPTIONS")
+	r.HandleFunc("/voltages_add", api.HandleAddVoltage).Methods("POST", "OPTIONS")
+	r.HandleFunc("/voltages_upd", api.HandleUpdVoltage).Methods("POST", "OPTIONS")
+	r.HandleFunc("/voltages_del", api.HandleDelVoltage).Methods("POST", "OPTIONS")
+	r.HandleFunc("/voltages/{id:[0-9]+}", api.HandleGetVoltage).Methods("GET", "OPTIONS")
 	r.HandleFunc("/eso", api.HandleEso).Methods("GET", "OPTIONS")
 	r.HandleFunc("/eso_add", api.HandleAddEso).Methods("POST", "OPTIONS")
 	r.HandleFunc("/eso_upd", api.HandleUpdEso).Methods("POST", "OPTIONS")
@@ -193,7 +193,7 @@ func AddRoutes(r *mux.Router, apg *api.APG) {
 	r.HandleFunc("/acts_upd", api.HandleUpdAct).Methods("POST", "OPTIONS")
 	r.HandleFunc("/acts_del", api.HandleDelAct).Methods("POST", "OPTIONS")
 	r.HandleFunc("/acts_activate", api.HandleActActivate).Methods("GET", "OPTIONS")
-	r.HandleFunc("/acts/{id:[0-9]+}", apg.HandleGetAct).Methods("GET", "OPTIONS")
+	r.HandleFunc("/acts/{id:[0-9]+}", api.HandleGetAct).Methods("GET", "OPTIONS")
 	r.HandleFunc("/actdetails", api.HandleActDetails).Methods("GET", "OPTIONS")
 	r.HandleFunc("/actdetails_add", api.HandleAddActDetail).Methods("POST", "OPTIONS")
 	r.HandleFunc("/actdetails_upd", api.HandleUpdActDetail).Methods("POST", "OPTIONS")
@@ -282,7 +282,7 @@ func AddRoutes(r *mux.Router, apg *api.APG) {
 	r.HandleFunc("/charges_upd", api.HandleUpdCharge).Methods("POST", "OPTIONS")
 	r.HandleFunc("/charges_del", api.HandleDelCharge).Methods("POST", "OPTIONS")
 	r.HandleFunc("/charges/{id:[0-9]+}", api.HandleGetCharge).Methods("GET", "OPTIONS")
-	r.HandleFunc("/charges_run/{id:[0-9]+}", apg.HandleChargeRun).Methods("GET", "OPTIONS")
+	r.HandleFunc("/charges_run/{id:[0-9]+}", api.HandleChargeRun).Methods("GET", "OPTIONS")
 	r.HandleFunc("/payments", api.HandlePayments).Methods("GET", "OPTIONS")
 	r.HandleFunc("/payments_add", api.HandleAddPayment).Methods("POST", "OPTIONS")
 	r.HandleFunc("/payments_upd", api.HandleUpdPayment).Methods("POST", "OPTIONS")

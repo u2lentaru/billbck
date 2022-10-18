@@ -11,7 +11,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/u2lentaru/billbck/internal/api"
 	"github.com/u2lentaru/billbck/internal/routes"
 	"github.com/u2lentaru/billbck/internal/utils"
 	"github.com/u2lentaru/billbck/pkg/pgclient"
@@ -54,13 +53,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	apg := api.APG{Dbpool: dbpool}
+	// apg := api.APG{Dbpool: dbpool}
 	route := mux.NewRouter()
 
 	route.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler).Methods("GET", "OPTIONS")
 
-	art := &apg
-	routes.AddRoutes(route, art)
+	// routes.AddRoutes(route, &apg)
+	routes.AddRoutes(route)
 
 	n := negroni.New(negroni.HandlerFunc(utils.MWSetupResponse))
 

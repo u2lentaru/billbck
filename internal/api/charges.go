@@ -312,7 +312,7 @@ func HandleGetCharge(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} models.Json_id
 // @Failure 500
 // @Router /charges_run/{id} [get]
-func (s *APG) HandleChargeRun(w http.ResponseWriter, r *http.Request) {
+func HandleChargeRun(w http.ResponseWriter, r *http.Request) {
 	var gs ifChargeService
 	gs = services.NewChargeService(pgsql.ChargeStorage{})
 	ctx := context.Background()

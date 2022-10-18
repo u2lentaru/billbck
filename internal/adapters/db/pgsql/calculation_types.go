@@ -60,11 +60,6 @@ func (est *CalculationTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1
 	}
 
 	out_count := models.CalculationType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.CalculationType_count{}, err
-	}
-
 	return out_count, nil
 }
 

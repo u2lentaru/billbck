@@ -62,11 +62,6 @@ func (est *EquipmentStorage) GetList(ctx context.Context, pg, pgs, gs1 int, gs2 
 	}
 
 	out_count := models.Equipment_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Equipment_count{}, err
-	}
-
 	return out_count, nil
 }
 

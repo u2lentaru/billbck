@@ -60,11 +60,6 @@ func (est *StaffStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, o
 	}
 
 	out_count := models.Staff_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Staff_count{}, err
-	}
-
 	return out_count, nil
 }
 

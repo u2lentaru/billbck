@@ -71,11 +71,6 @@ func (est *ObjectStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 str
 	}
 
 	out_count := models.Object_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Object_count{}, err
-	}
-
 	return out_count, nil
 }
 

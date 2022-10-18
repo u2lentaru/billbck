@@ -60,11 +60,6 @@ func (est *ObjTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 string,
 	}
 
 	out_count := models.ObjType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.ObjType_count{}, err
-	}
-
 	return out_count, nil
 }
 

@@ -68,11 +68,6 @@ func (est *ObjContractStorage) GetList(ctx context.Context, pg, pgs, gs1, gs2, g
 	}
 
 	out_count := models.ObjContract_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.ObjContract_count{}, err
-	}
-
 	return out_count, nil
 }
 

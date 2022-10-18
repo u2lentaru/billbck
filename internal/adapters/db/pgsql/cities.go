@@ -60,11 +60,6 @@ func (est *CityStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, or
 	}
 
 	out_count := models.City_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.City_count{}, err
-	}
-
 	return out_count, nil
 }
 

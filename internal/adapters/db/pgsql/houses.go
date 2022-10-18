@@ -64,11 +64,6 @@ func (est *HouseStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 stri
 	}
 
 	out_count := models.House_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.House_count{}, err
-	}
-
 	return out_count, nil
 }
 

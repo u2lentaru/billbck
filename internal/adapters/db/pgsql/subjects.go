@@ -72,11 +72,6 @@ func (est *SubjectStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2, g
 	}
 
 	out_count := models.Subject_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Subject_count{}, err
-	}
-
 	return out_count, nil
 }
 

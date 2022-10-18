@@ -23,3 +23,9 @@ type SubBank_count struct {
 	Count  int       `json:"count"`
 	Auth   Auth      `json:"auth"`
 }
+
+//SB struct
+type SB struct {
+	Id     int    `json:"id"`
+	SBName string `json:"subname"`
+}

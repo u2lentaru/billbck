@@ -60,11 +60,6 @@ func (est *PuValueTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 str
 	}
 
 	out_count := models.PuValueType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.PuValueType_count{}, err
-	}
-
 	return out_count, nil
 }
 

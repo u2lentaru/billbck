@@ -63,11 +63,6 @@ func (est *ChargeStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 str
 	}
 
 	out_count := models.Charge_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Charge_count{}, err
-	}
-
 	return out_count, nil
 }
 

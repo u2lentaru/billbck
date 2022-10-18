@@ -60,11 +60,6 @@ func (est *PeriodStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, 
 	}
 
 	out_count := models.Period_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Period_count{}, err
-	}
-
 	return out_count, nil
 }
 

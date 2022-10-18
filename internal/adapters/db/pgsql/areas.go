@@ -60,11 +60,6 @@ func (est *AreaStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 strin
 	}
 
 	out_count := models.Area_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Area_count{}, err
-	}
-
 	return out_count, nil
 }
 

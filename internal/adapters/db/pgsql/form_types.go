@@ -60,11 +60,6 @@ func (est *FormTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs2 s
 	}
 
 	out_count := models.FormType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.FormType_count{}, err
-	}
-
 	return out_count, nil
 }
 

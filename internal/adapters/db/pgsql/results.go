@@ -60,11 +60,6 @@ func (est *ResultStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, 
 	}
 
 	out_count := models.Result_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Result_count{}, err
-	}
-
 	return out_count, nil
 }
 

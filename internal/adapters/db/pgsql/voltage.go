@@ -60,7 +60,6 @@ func (est *VoltageStorage) GetList(ctx context.Context, pg, pgs int, gs1 string,
 	}
 
 	out_count := models.Voltage_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-
 	return out_count, nil
 }
 

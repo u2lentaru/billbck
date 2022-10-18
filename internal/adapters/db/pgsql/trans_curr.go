@@ -62,11 +62,6 @@ func (est *TransCurrStorage) GetList(ctx context.Context, pg, pgs int, gs1 strin
 	}
 
 	out_count := models.TransCurr_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.TransCurr_count{}, err
-	}
-
 	return out_count, nil
 }
 

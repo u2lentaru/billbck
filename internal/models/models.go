@@ -36,24 +36,6 @@ type AddForm struct {
 	Form string `json:"form"`
 }
 
-//Vals  struct
-type Vals struct {
-	Vals []string `json:"vals"`
-}
-
-//SB struct
-type SB struct {
-	Id     int    `json:"id"`
-	SBName string `json:"subname"`
-}
-
-//LoginForm struct
-type LoginForm struct {
-	Form   string `json:"form"`
-	Rights string `json:"rights"`
-	UserId int    `json:"userid"`
-}
-
 //IdClose struct
 type IdClose struct {
 	Id          int         `json:"id"`

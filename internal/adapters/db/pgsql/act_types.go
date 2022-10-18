@@ -60,10 +60,6 @@ func (est *ActTypeStorage) GetList(ctx context.Context, pg, pgs int, nm string, 
 	}
 
 	out_count := models.ActType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.ActType_count{}, err
-	}
 
 	return out_count, nil
 }

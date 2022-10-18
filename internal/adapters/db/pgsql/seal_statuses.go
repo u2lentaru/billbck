@@ -60,11 +60,6 @@ func (est *SealStatusStorage) GetList(ctx context.Context, pg, pgs int, gs1 stri
 	}
 
 	out_count := models.SealStatus_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.SealStatus_count{}, err
-	}
-
 	return out_count, nil
 }
 

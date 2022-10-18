@@ -60,11 +60,6 @@ func (est *TariffGroupStorage) GetList(ctx context.Context, pg, pgs int, gs1 str
 	}
 
 	out_count := models.TariffGroup_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.TariffGroup_count{}, err
-	}
-
 	return out_count, nil
 }
 

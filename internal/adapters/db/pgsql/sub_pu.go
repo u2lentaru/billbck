@@ -65,11 +65,6 @@ func (est *SubPuStorage) GetList(ctx context.Context, pg, pgs, gs1, ord int, dsc
 	}
 
 	out_count := models.Pu_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.Pu_count{}, err
-	}
-
 	return out_count, nil
 }
 

@@ -60,11 +60,6 @@ func (est *AskueTypeStorage) GetList(ctx context.Context, pg, pgs int, gs1 strin
 	}
 
 	out_count := models.AskueType_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.AskueType_count{}, err
-	}
-
 	return out_count, nil
 }
 

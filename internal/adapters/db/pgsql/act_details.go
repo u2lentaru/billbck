@@ -86,11 +86,6 @@ func (est *ActDetailStorage) GetList(ctx context.Context, pg, pgs, nm, ord int, 
 
 	out_count := models.ActDetail_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
 
-	if err != nil {
-		log.Println(err.Error())
-		return models.ActDetail_count{}, err
-	}
-
 	return out_count, nil
 }
 

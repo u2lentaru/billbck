@@ -69,7 +69,6 @@ func (est *PuValueStorage) GetList(ctx context.Context, pg, pgs, gs1, ord int, d
 	}
 
 	out_count := models.PuValue_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-
 	return out_count, nil
 }
 

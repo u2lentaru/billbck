@@ -61,11 +61,6 @@ func (est *SubBankStorage) GetList(ctx context.Context, pg, pgs int, gs1 string,
 	}
 
 	out_count := models.SubBank_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.SubBank_count{}, err
-	}
-
 	return out_count, nil
 }
 

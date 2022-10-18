@@ -60,11 +60,6 @@ func (est *GRpStorage) GetList(ctx context.Context, pg, pgs int, gs1 string, ord
 	}
 
 	out_count := models.GRp_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.GRp_count{}, err
-	}
-
 	return out_count, nil
 }
 

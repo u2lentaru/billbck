@@ -63,11 +63,6 @@ func (est *ObjTransPwrStorage) GetList(ctx context.Context, pg, pgs int, gs1, gs
 	}
 
 	out_count := models.ObjTransPwr_count{Values: out_arr, Count: gsc, Auth: models.Auth{}}
-	if err != nil {
-		log.Println(err.Error())
-		return models.ObjTransPwr_count{}, err
-	}
-
 	return out_count, nil
 }
 

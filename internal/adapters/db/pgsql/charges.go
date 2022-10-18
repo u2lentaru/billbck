@@ -76,8 +76,8 @@ func (est *ChargeStorage) Add(ctx context.Context, a models.Charge) (int, error)
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_charges_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);", a.ChargeDate, a.Contract.Id,
-		a.Object.Id, a.ObjTypeId, a.Pu.Id, a.ChargeType.Id, a.Qty, a.TransLoss, a.Lineloss, a.Startdate, a.Enddate).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_charges_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);", a.ChargeDate, a.Contract.Id, a.Object.Id,
+		a.ObjTypeId, a.Pu.Id, a.ChargeType.Id, a.Qty, a.TransLoss, a.Lineloss, a.Startdate, a.Enddate).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_charges_add: ", err)
@@ -92,8 +92,8 @@ func (est *ChargeStorage) Upd(ctx context.Context, u models.Charge) (int, error)
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_charges_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);", u.Id, u.ChargeDate,
-		u.Contract.Id, u.Object.Id, u.ObjTypeId, u.Pu.Id, u.ChargeType.Id, u.Qty, u.TransLoss, u.Lineloss, u.Startdate, u.Enddate).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_charges_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);", u.Id, u.ChargeDate, u.Contract.Id,
+		u.Object.Id, u.ObjTypeId, u.Pu.Id, u.ChargeType.Id, u.Qty, u.TransLoss, u.Lineloss, u.Startdate, u.Enddate).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_charges_upd: ", err)
@@ -108,7 +108,7 @@ func (est *ChargeStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_charges_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_charges_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -124,9 +124,9 @@ func (est *ChargeStorage) GetOne(ctx context.Context, i int) (models.Charge_coun
 	out_arr := []models.Charge{}
 	g := models.Charge{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_charge_get($1);", i).Scan(&g.Id, &g.ChargeDate, &g.Contract.Id,
-		&g.Object.Id, &g.ObjTypeId, &g.Pu.Id, &g.ChargeType.Id, &g.Qty, &g.TransLoss, &g.Lineloss, &g.Startdate, &g.Enddate,
-		&g.Contract.ContractNumber, &g.Object.ObjectName, &g.Pu.PuNumber, &g.ChargeType.ChargeTypeName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_charge_get($1);", i).Scan(&g.Id, &g.ChargeDate, &g.Contract.Id, &g.Object.Id,
+		&g.ObjTypeId, &g.Pu.Id, &g.ChargeType.Id, &g.Qty, &g.TransLoss, &g.Lineloss, &g.Startdate, &g.Enddate, &g.Contract.ContractNumber,
+		&g.Object.ObjectName, &g.Pu.PuNumber, &g.ChargeType.ChargeTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_charge_get: ", err)
@@ -144,7 +144,7 @@ func (est *ChargeStorage) ChargeRun(ctx context.Context, i int) (int, error) {
 	dbpool := pgclient.WDB
 	pr := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_charges_run($1);", i).Scan(&pr)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_charges_run($1);", i).Scan(&pr)
 
 	if err != nil {
 		log.Println("Failed execute func_charges_run: ", err)

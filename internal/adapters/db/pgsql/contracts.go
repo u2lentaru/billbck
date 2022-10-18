@@ -91,7 +91,7 @@ func (est *ContractStorage) Add(ctx context.Context, a models.Contract) (int, er
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_contracts_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);",
+	err := dbpool.QueryRow(ctx, "SELECT func_contracts_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);",
 		a.PersonalAccount, a.BarCode, a.ContractNumber, a.Startdate, a.Customer.SubId, a.Consignee.SubId, a.EsoContractNumber, a.Eso.Id,
 		a.Area.Id, a.CustomerGroup.Id, a.Notes).Scan(&ai)
 
@@ -108,7 +108,7 @@ func (est *ContractStorage) Upd(ctx context.Context, u models.Contract) (int, er
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_contracts_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);", u.Id,
+	err := dbpool.QueryRow(ctx, "SELECT func_contracts_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);", u.Id,
 		u.ContractNumber, u.Startdate, u.Enddate, u.Customer.SubId, u.Consignee.SubId, u.EsoContractNumber, u.Eso.Id, u.Area.Id,
 		u.CustomerGroup.Id, utils.NullableInt(int32(u.ContractMot.Id)), u.Notes, u.MotNotes).Scan(&ui)
 
@@ -148,7 +148,7 @@ func (est *ContractStorage) GetOne(ctx context.Context, i int) (models.Contract_
 	var rmi sql.NullInt32
 	var rmr, rmk sql.NullString
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_contract_get($1);", i).Scan(&g.Id, &g.BarCode, &g.PersonalAccount,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_contract_get($1);", i).Scan(&g.Id, &g.BarCode, &g.PersonalAccount,
 		&g.Id, &g.ContractNumber, &g.Startdate, &g.Enddate, &g.Customer.SubId, &g.Consignee.SubId, &g.EsoContractNumber, &g.Eso.Id,
 		&g.Area.Id, &g.CustomerGroup.Id, &rmi, &g.Notes, &g.MotNotes, &g.Customer.SubName, &g.Customer.SubAddr, &g.Consignee.SubName,
 		&g.Eso.EsoName, &g.Area.AreaName, &g.CustomerGroup.CustomerGroupName, &rmr, &rmk)

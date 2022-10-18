@@ -73,7 +73,7 @@ func (est *GRpStorage) Add(ctx context.Context, a models.GRp) (int, error) {
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_grp_add($1);", a.GRpName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_grp_add($1);", a.GRpName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_grp_add: ", err)
@@ -88,7 +88,7 @@ func (est *GRpStorage) Upd(ctx context.Context, u models.GRp) (int, error) {
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_grp_upd($1,$2);", u.Id, u.GRpName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_grp_upd($1,$2);", u.Id, u.GRpName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_grp_upd: ", err)
@@ -103,7 +103,7 @@ func (est *GRpStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_grp_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_grp_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *GRpStorage) GetOne(ctx context.Context, i int) (models.GRp_count, err
 	out_arr := []models.GRp{}
 	g := models.GRp{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_grp_getbyid($1);", i).Scan(&g.Id, &g.GRpName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_grp_getbyid($1);", i).Scan(&g.Id, &g.GRpName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_grp_getbyid: ", err)

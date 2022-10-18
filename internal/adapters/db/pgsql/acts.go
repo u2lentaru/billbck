@@ -77,8 +77,8 @@ func (est *ActStorage) Add(ctx context.Context, a models.Act) (int, error) {
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_acts_add($1,$2,$3,$4,$5,$6);",
-		a.ActType.Id, a.ActNumber, a.ActDate, a.Object.Id, a.Staff.Id, a.Notes).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_acts_add($1,$2,$3,$4,$5,$6);", a.ActType.Id, a.ActNumber, a.ActDate, a.Object.Id, a.Staff.Id,
+		a.Notes).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_acts_add: ", err)
@@ -93,8 +93,8 @@ func (est *ActStorage) Upd(ctx context.Context, u models.Act) (int, error) {
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_acts_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.ActType.Id, u.ActNumber,
-		u.ActDate, u.Object.Id, u.Staff.Id, u.Notes).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_acts_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.ActType.Id, u.ActNumber, u.ActDate, u.Object.Id,
+		u.Staff.Id, u.Notes).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_acts_upd: ", err)
@@ -109,7 +109,7 @@ func (est *ActStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_acts_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_acts_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -125,10 +125,10 @@ func (est *ActStorage) GetOne(ctx context.Context, i int) (models.Act_count, err
 	out_arr := []models.Act{}
 	g := models.Act{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_act_get($1);", i).Scan(&g.Id, &g.ActType.Id, &g.ActNumber,
-		&g.ActDate, &g.Object.Id, &g.Staff.Id, &g.Notes, &g.Activated, &g.ActType.ActTypeName, &g.Object.ObjectName,
-		&g.Object.FlatNumber, &g.Object.RegQty, &g.Object.House.Street.StreetName, &g.Object.House.Street.City.CityName,
-		&g.Object.House.HouseNumber, &g.Object.House.BuildingNumber, &g.Object.TariffGroup.TariffGroupName, &g.Staff.StaffName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_act_get($1);", i).Scan(&g.Id, &g.ActType.Id, &g.ActNumber, &g.ActDate, &g.Object.Id,
+		&g.Staff.Id, &g.Notes, &g.Activated, &g.ActType.ActTypeName, &g.Object.ObjectName, &g.Object.FlatNumber, &g.Object.RegQty,
+		&g.Object.House.Street.StreetName, &g.Object.House.Street.City.CityName, &g.Object.House.HouseNumber, &g.Object.House.BuildingNumber,
+		&g.Object.TariffGroup.TariffGroupName, &g.Staff.StaffName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_act_get: ", err)

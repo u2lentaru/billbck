@@ -73,7 +73,7 @@ func (est *BankStorage) Add(ctx context.Context, a models.Bank) (int, error) {
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_banks_add($1,$2,$3);", a.BankName, a.BankDescr, a.Mfo).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_banks_add($1,$2,$3);", a.BankName, a.BankDescr, a.Mfo).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_banks_add: ", err)
@@ -88,7 +88,7 @@ func (est *BankStorage) Upd(ctx context.Context, u models.Bank) (int, error) {
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_banks_upd($1,$2,$3,$4);", u.Id, u.BankName, u.BankDescr, u.Mfo).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_banks_upd($1,$2,$3,$4);", u.Id, u.BankName, u.BankDescr, u.Mfo).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_banks_upd: ", err)
@@ -103,7 +103,7 @@ func (est *BankStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_banks_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_banks_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *BankStorage) GetOne(ctx context.Context, i int) (models.Bank_count, e
 	out_arr := []models.Bank{}
 	g := models.Bank{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_bank_get($1);", i).Scan(&g.Id, &g.BankName, &g.BankDescr, &g.Mfo)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_bank_get($1);", i).Scan(&g.Id, &g.BankName, &g.BankDescr, &g.Mfo)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_bank_get: ", err)

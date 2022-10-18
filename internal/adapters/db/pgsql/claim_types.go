@@ -73,7 +73,7 @@ func (est *ClaimTypeStorage) Add(ctx context.Context, a models.ClaimType) (int, 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_claim_types_add($1);", a.ClaimTypeName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_claim_types_add($1);", a.ClaimTypeName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_claim_types_add: ", err)
@@ -88,7 +88,7 @@ func (est *ClaimTypeStorage) Upd(ctx context.Context, u models.ClaimType) (int, 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_claim_types_upd($1,$2);", u.Id, u.ClaimTypeName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_claim_types_upd($1,$2);", u.Id, u.ClaimTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_claim_types_upd: ", err)
@@ -103,7 +103,7 @@ func (est *ClaimTypeStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_claim_types_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_claim_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *ClaimTypeStorage) GetOne(ctx context.Context, i int) (models.ClaimTyp
 	out_arr := []models.ClaimType{}
 	g := models.ClaimType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_claim_type_get($1);", i).Scan(&g.Id, &g.ClaimTypeName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_claim_type_get($1);", i).Scan(&g.Id, &g.ClaimTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_claim_type_get: ", err)

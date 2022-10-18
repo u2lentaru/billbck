@@ -73,8 +73,8 @@ func (est *AskueTypeStorage) Add(ctx context.Context, a models.AskueType) (int, 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_askue_types_add($1,$2,$3,$4,$5,$6);", a.AskueTypeName, a.StartLine,
-		a.PuColumn, a.ValueColumn, a.DateColumn, a.DateColumnArray).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_askue_types_add($1,$2,$3,$4,$5,$6);", a.AskueTypeName, a.StartLine, a.PuColumn, a.ValueColumn,
+		a.DateColumn, a.DateColumnArray).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_askue_types_add: ", err)
@@ -89,8 +89,8 @@ func (est *AskueTypeStorage) Upd(ctx context.Context, u models.AskueType) (int, 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_askue_types_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.AskueTypeName,
-		u.StartLine, u.PuColumn, u.ValueColumn, u.DateColumn, u.DateColumnArray).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_askue_types_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.AskueTypeName, u.StartLine, u.PuColumn,
+		u.ValueColumn, u.DateColumn, u.DateColumnArray).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_askue_types_upd: ", err)
@@ -105,7 +105,7 @@ func (est *AskueTypeStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_askue_types_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_askue_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -121,7 +121,7 @@ func (est *AskueTypeStorage) GetOne(ctx context.Context, i int) (models.AskueTyp
 	out_arr := []models.AskueType{}
 	g := models.AskueType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_askue_type_get($1);", i).Scan(&g.Id, &g.AskueTypeName,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_askue_type_get($1);", i).Scan(&g.Id, &g.AskueTypeName,
 		&g.StartLine, &g.PuColumn, &g.ValueColumn, &g.DateColumn, &g.DateColumnArray)
 
 	if err != nil && err != pgx.ErrNoRows {

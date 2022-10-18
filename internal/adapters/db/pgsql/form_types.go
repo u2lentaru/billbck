@@ -73,7 +73,7 @@ func (est *FormTypeStorage) Add(ctx context.Context, a models.FormType) (int, er
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_add_form_type($1,$2);", a.FormTypeName, a.FormTypeDescr).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_add_form_type($1,$2);", a.FormTypeName, a.FormTypeDescr).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_add_form_type: ", err)
@@ -88,7 +88,7 @@ func (est *FormTypeStorage) Upd(ctx context.Context, u models.FormType) (int, er
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_upd_form_type($1,$2,$3);", u.Id, u.FormTypeName, u.FormTypeDescr).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_upd_form_type($1,$2,$3);", u.Id, u.FormTypeName, u.FormTypeDescr).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_upd_form_type: ", err)
@@ -103,7 +103,7 @@ func (est *FormTypeStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_del_form_type($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_del_form_type($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *FormTypeStorage) GetOne(ctx context.Context, i int) (models.FormType_
 	out_arr := []models.FormType{}
 	g := models.FormType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_get_form_type($1);", i).Scan(&g.Id, &g.FormTypeName, &g.FormTypeDescr)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_get_form_type($1);", i).Scan(&g.Id, &g.FormTypeName, &g.FormTypeDescr)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_get_form_type: ", err)

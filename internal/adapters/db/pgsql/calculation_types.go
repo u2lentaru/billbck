@@ -73,7 +73,7 @@ func (est *CalculationTypeStorage) Add(ctx context.Context, a models.Calculation
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_calculation_types_add($1);", a.CalculationTypeName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_calculation_types_add($1);", a.CalculationTypeName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_calculation_types_add: ", err)
@@ -88,7 +88,7 @@ func (est *CalculationTypeStorage) Upd(ctx context.Context, u models.Calculation
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_calculation_types_upd($1,$2);", u.Id, u.CalculationTypeName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_calculation_types_upd($1,$2);", u.Id, u.CalculationTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_calculation_types_upd: ", err)
@@ -103,7 +103,7 @@ func (est *CalculationTypeStorage) Del(ctx context.Context, d []int) ([]int, err
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_calculation_types_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_calculation_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *CalculationTypeStorage) GetOne(ctx context.Context, i int) (models.Ca
 	out_arr := []models.CalculationType{}
 	g := models.CalculationType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_calculation_type_get($1);", i).Scan(&g.Id, &g.CalculationTypeName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_calculation_type_get($1);", i).Scan(&g.Id, &g.CalculationTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_calculation_type_get: ", err)

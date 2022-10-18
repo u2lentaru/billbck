@@ -73,7 +73,7 @@ func (est *CityStorage) Add(ctx context.Context, a models.City) (int, error) {
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_cities_add($1);", a.CityName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_cities_add($1);", a.CityName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_cities_add: ", err)
@@ -88,7 +88,7 @@ func (est *CityStorage) Upd(ctx context.Context, u models.City) (int, error) {
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_cities_upd($1,$2);", u.Id, u.CityName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_cities_upd($1,$2);", u.Id, u.CityName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_cities_upd: ", err)
@@ -103,7 +103,7 @@ func (est *CityStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_cities_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_cities_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *CityStorage) GetOne(ctx context.Context, i int) (models.City_count, e
 	out_arr := []models.City{}
 	g := models.City{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_city_get($1);", i).Scan(&g.Id, &g.CityName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_city_get($1);", i).Scan(&g.Id, &g.CityName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_city_get: ", err)

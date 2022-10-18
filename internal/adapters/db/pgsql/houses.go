@@ -77,9 +77,9 @@ func (est *HouseStorage) Add(ctx context.Context, a models.House) (int, error) {
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_houses_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);",
-		a.BuildingType.Id, a.Street.Id, a.HouseNumber, a.BuildingNumber, a.RP.Id, a.Area.Id, a.Ksk.Id, a.Sector.Id, a.Connector.Id,
-		a.InputType.Id, a.Reliability.Id, a.Voltage.Id, a.Notes).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_houses_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);", a.BuildingType.Id, a.Street.Id,
+		a.HouseNumber, a.BuildingNumber, a.RP.Id, a.Area.Id, a.Ksk.Id, a.Sector.Id, a.Connector.Id, a.InputType.Id, a.Reliability.Id,
+		a.Voltage.Id, a.Notes).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_houses_add: ", err)
@@ -94,9 +94,9 @@ func (est *HouseStorage) Upd(ctx context.Context, u models.House) (int, error) {
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_houses_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);", u.Id,
-		u.BuildingType.Id, u.Street.Id, u.HouseNumber, u.BuildingNumber, u.RP.Id, u.Area.Id, u.Ksk.Id, u.Sector.Id, u.Connector.Id,
-		u.InputType.Id, u.Reliability.Id, u.Voltage.Id, u.Notes).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_houses_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);", u.Id, u.BuildingType.Id,
+		u.Street.Id, u.HouseNumber, u.BuildingNumber, u.RP.Id, u.Area.Id, u.Ksk.Id, u.Sector.Id, u.Connector.Id, u.InputType.Id,
+		u.Reliability.Id, u.Voltage.Id, u.Notes).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_houses_upd: ", err)
@@ -111,7 +111,7 @@ func (est *HouseStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_houses_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_houses_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -127,9 +127,9 @@ func (est *HouseStorage) GetOne(ctx context.Context, i int) (models.House_count,
 	out_arr := []models.House{}
 	g := models.House{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_house_get($1);", i).Scan(&g.Id, &g.BuildingType.Id, &g.Street.Id,
-		&g.HouseNumber, &g.BuildingNumber, &g.RP.Id, &g.Area.Id, &g.Ksk.Id, &g.Sector.Id, &g.Connector.Id, &g.InputType.Id, &g.Reliability.Id,
-		&g.Voltage.Id, &g.Notes, &g.BuildingType.BuildingTypeName, &g.Street.StreetName, &g.Street.Created, &g.Street.City.CityName, &g.RP.RpName,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_house_get($1);", i).Scan(&g.Id, &g.BuildingType.Id, &g.Street.Id, &g.HouseNumber,
+		&g.BuildingNumber, &g.RP.Id, &g.Area.Id, &g.Ksk.Id, &g.Sector.Id, &g.Connector.Id, &g.InputType.Id, &g.Reliability.Id, &g.Voltage.Id,
+		&g.Notes, &g.BuildingType.BuildingTypeName, &g.Street.StreetName, &g.Street.Created, &g.Street.City.CityName, &g.RP.RpName,
 		&g.Area.AreaName, &g.Area.AreaNumber, &g.Ksk.KskName, &g.Sector.SectorName, &g.Connector.ConnectorName, &g.InputType.InputTypeName,
 		&g.Reliability.ReliabilityName, &g.Voltage.VoltageName, &g.Voltage.VoltageValue)
 

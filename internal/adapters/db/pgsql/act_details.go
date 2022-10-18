@@ -99,8 +99,7 @@ func (est *ActDetailStorage) Add(ctx context.Context, a models.ActDetail) (int, 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(),
-		"SELECT func_act_details_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25);",
+	err := dbpool.QueryRow(ctx, "SELECT func_act_details_add($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25);",
 		a.Act.Id, a.PuId, a.SealNumber, a.AdPuValue, a.ActDetailDate, a.PuNumber, a.InstallDate, a.CheckInterval, a.InitialValue,
 		a.DevStopped, a.Startdate, a.Enddate, a.Pid, a.Seal.Id, a.SealDate, a.Notes, a.PuType.Id, a.Conclusion.Id,
 		a.ConclusionNumber, a.ShutdownType.Id, a.CustomerPhone, a.CustomerPos, a.Reason.Id, a.Violation.Id, a.Customer).Scan(&ai)
@@ -118,8 +117,7 @@ func (est *ActDetailStorage) Upd(ctx context.Context, u models.ActDetail) (int, 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(),
-		"SELECT func_act_details_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26);",
+	err := dbpool.QueryRow(ctx, "SELECT func_act_details_upd($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26);",
 		u.Id, u.Act.Id, u.PuId, u.SealNumber, u.AdPuValue, u.ActDetailDate, u.PuNumber, u.InstallDate, u.CheckInterval, u.InitialValue,
 		u.DevStopped, u.Startdate, u.Enddate, u.Pid, u.Seal.Id, u.SealDate, u.Notes, u.PuType.Id, u.Conclusion.Id,
 		u.ConclusionNumber, u.ShutdownType.Id, u.CustomerPhone, u.CustomerPos, u.Reason.Id, u.Violation.Id, u.Customer).Scan(&ui)
@@ -137,7 +135,7 @@ func (est *ActDetailStorage) Del(ctx context.Context, ed []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range ed {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_act_details_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_act_details_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -157,7 +155,7 @@ func (est *ActDetailStorage) GetOne(ctx context.Context, i int) (models.ActDetai
 	var pti, si, ci, sti, ri, vi sql.NullInt32
 	var ccn, ptn, stn, rn, vn sql.NullString
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_act_detail_get($1);", i).Scan(&g.Act.Id, &g.Act.ActType.Id,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_act_detail_get($1);", i).Scan(&g.Act.Id, &g.Act.ActType.Id,
 		&g.Act.ActNumber, &g.Act.ActDate, &g.Act.Object.Id, &g.Act.Staff.Id, &g.Act.Notes, &g.Act.Activated, &g.Act.ActType.ActTypeName,
 		&g.Act.Object.ObjectName, &g.Act.Object.FlatNumber, &g.Act.Object.RegQty, &g.Act.Object.House.Street.StreetName,
 		&g.Act.Object.House.Street.City.CityName, &g.Act.Object.House.HouseNumber, &g.Act.Object.House.BuildingNumber,

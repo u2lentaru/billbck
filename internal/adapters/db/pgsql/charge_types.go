@@ -73,7 +73,7 @@ func (est *ChargeTypeStorage) Add(ctx context.Context, a models.ChargeType) (int
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_charge_types_add($1);", a.ChargeTypeName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_charge_types_add($1);", a.ChargeTypeName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_charge_types_add: ", err)
@@ -88,7 +88,7 @@ func (est *ChargeTypeStorage) Upd(ctx context.Context, u models.ChargeType) (int
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_charge_types_upd($1,$2);", u.Id, u.ChargeTypeName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_charge_types_upd($1,$2);", u.Id, u.ChargeTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_charge_types_upd: ", err)
@@ -103,7 +103,7 @@ func (est *ChargeTypeStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_charge_types_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_charge_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *ChargeTypeStorage) GetOne(ctx context.Context, i int) (models.ChargeT
 	out_arr := []models.ChargeType{}
 	g := models.ChargeType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_charge_type_get($1);", i).Scan(&g.Id, &g.ChargeTypeName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_charge_type_get($1);", i).Scan(&g.Id, &g.ChargeTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_charge_type_get: ", err)

@@ -73,7 +73,7 @@ func (est *KskStorage) Add(ctx context.Context, a models.Ksk) (int, error) {
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_ksks_add($1,$2,$3,$4);", a.KskName, a.KskAddress, a.KskHead, a.KskPhone).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_ksks_add($1,$2,$3,$4);", a.KskName, a.KskAddress, a.KskHead, a.KskPhone).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_ksks_add: ", err)
@@ -88,7 +88,7 @@ func (est *KskStorage) Upd(ctx context.Context, u models.Ksk) (int, error) {
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_ksks_upd($1,$2,$3,$4,$5);", u.Id, u.KskName, u.KskAddress, u.KskHead, u.KskPhone).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_ksks_upd($1,$2,$3,$4,$5);", u.Id, u.KskName, u.KskAddress, u.KskHead, u.KskPhone).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_ksks_upd: ", err)
@@ -103,7 +103,7 @@ func (est *KskStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_ksks_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_ksks_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *KskStorage) GetOne(ctx context.Context, i int) (models.Ksk_count, err
 	out_arr := []models.Ksk{}
 	g := models.Ksk{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_ksk_get($1);", i).Scan(&g.Id, &g.KskName, &g.KskAddress, &g.KskHead, &g.KskPhone)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_ksk_get($1);", i).Scan(&g.Id, &g.KskName, &g.KskAddress, &g.KskHead, &g.KskPhone)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_ksk_get: ", err)

@@ -88,7 +88,7 @@ func (est *ActTypeStorage) Upd(ctx context.Context, eu models.ActType) (int, err
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_act_types_upd($1,$2);", eu.Id, eu.ActTypeName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_act_types_upd($1,$2);", eu.Id, eu.ActTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_act_types_upd: ", err)
@@ -120,7 +120,7 @@ func (est *ActTypeStorage) GetOne(ctx context.Context, i int) (models.ActType_co
 	out_arr := []models.ActType{}
 	e := models.ActType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_act_type_get($1);", i).Scan(&(e.Id), &(e.ActTypeName))
+	err := dbpool.QueryRow(ctx, "SELECT * from func_act_type_get($1);", i).Scan(&(e.Id), &(e.ActTypeName))
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_act_type_get: ", err)

@@ -81,8 +81,7 @@ func (est *ObjContractStorage) Add(ctx context.Context, a models.ObjContract) (i
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_contracts_add($1,$2,$3,$4);",
-		a.Contract.Id, a.Object.Id, a.ObjTypeId, a.Startdate).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_contracts_add($1,$2,$3,$4);", a.Contract.Id, a.Object.Id, a.ObjTypeId, a.Startdate).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_contracts_add: ", err)
@@ -97,8 +96,8 @@ func (est *ObjContractStorage) Upd(ctx context.Context, u models.ObjContract) (i
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_contracts_upd($1,$2,$3,$4,$5,$6);", u.Id,
-		u.Contract.Id, u.Object.Id, u.ObjTypeId, u.Startdate, u.Enddate).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_contracts_upd($1,$2,$3,$4,$5,$6);", u.Id, u.Contract.Id, u.Object.Id, u.ObjTypeId,
+		u.Startdate, u.Enddate).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_contracts_upd: ", err)
@@ -116,7 +115,7 @@ func (est *ObjContractStorage) Del(ctx context.Context, d models.IdClose) (int, 
 		d.CloseDate = time.Now().Format("2006-01-02")
 	}
 
-	err = dbpool.QueryRow(context.Background(), "SELECT func_obj_contracts_del($1,$2);", d.Id, d.CloseDate).Scan(&i)
+	err = dbpool.QueryRow(ctx, "SELECT func_obj_contracts_del($1,$2);", d.Id, d.CloseDate).Scan(&i)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_contracts_del: ", err)
@@ -130,12 +129,11 @@ func (est *ObjContractStorage) GetOne(ctx context.Context, i int, d string) (mod
 	out_arr := []models.ObjContract{}
 	g := models.ObjContract{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_contract_get($1,$2);", i, d).Scan(&g.Id, &g.Contract.Id,
-		&g.Object.Id, &g.ObjTypeId, &g.Startdate, &g.Enddate, &g.Object.ObjectName, &g.Object.RegQty, &g.Object.FlatNumber, &g.Object.House.Id,
-		&g.Object.House.HouseNumber, &g.Object.House.BuildingNumber, &g.Object.House.Street.City.CityName, &g.Object.House.Street.Id,
-		&g.Object.House.Street.StreetName, &g.Object.TariffGroup.Id, &g.Object.TariffGroup.TariffGroupName, &g.Contract.ContractNumber,
-		&g.Contract.Startdate, &g.Contract.Enddate, &g.Contract.Customer.SubId, &g.Contract.Customer.SubName, &g.Contract.Consignee.SubId,
-		&g.Contract.Consignee.SubName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_contract_get($1,$2);", i, d).Scan(&g.Id, &g.Contract.Id, &g.Object.Id, &g.ObjTypeId,
+		&g.Startdate, &g.Enddate, &g.Object.ObjectName, &g.Object.RegQty, &g.Object.FlatNumber, &g.Object.House.Id, &g.Object.House.HouseNumber,
+		&g.Object.House.BuildingNumber, &g.Object.House.Street.City.CityName, &g.Object.House.Street.Id, &g.Object.House.Street.StreetName,
+		&g.Object.TariffGroup.Id, &g.Object.TariffGroup.TariffGroupName, &g.Contract.ContractNumber, &g.Contract.Startdate, &g.Contract.Enddate,
+		&g.Contract.Customer.SubId, &g.Contract.Customer.SubName, &g.Contract.Consignee.SubId, &g.Contract.Consignee.SubName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_obj_contract_get: ", err)

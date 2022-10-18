@@ -73,7 +73,7 @@ func (est *DistributionZoneStorage) Add(ctx context.Context, a models.Distributi
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_add($1);", a.DistributionZoneName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_distribution_zones_add($1);", a.DistributionZoneName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_distribution_zones_add: ", err)
@@ -88,7 +88,7 @@ func (est *DistributionZoneStorage) Upd(ctx context.Context, u models.Distributi
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_upd($1,$2);", u.Id, u.DistributionZoneName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_distribution_zones_upd($1,$2);", u.Id, u.DistributionZoneName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_distribution_zones_upd: ", err)
@@ -103,7 +103,7 @@ func (est *DistributionZoneStorage) Del(ctx context.Context, d []int) ([]int, er
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_distribution_zones_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_distribution_zones_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *DistributionZoneStorage) GetOne(ctx context.Context, i int) (models.D
 	out_arr := []models.DistributionZone{}
 	g := models.DistributionZone{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_distribution_zone_get($1);", i).Scan(&g.Id, &g.DistributionZoneName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_distribution_zone_get($1);", i).Scan(&g.Id, &g.DistributionZoneName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_distribution_zone_get: ", err)

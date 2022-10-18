@@ -77,8 +77,7 @@ func (est *ObjTransVoltStorage) Add(ctx context.Context, a models.ObjTransVolt) 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_volt_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId,
-		a.TransVolt.Id, a.Startdate).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_volt_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId, a.TransVolt.Id, a.Startdate).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_trans_volt_add: ", err)
@@ -93,8 +92,8 @@ func (est *ObjTransVoltStorage) Upd(ctx context.Context, u models.ObjTransVolt) 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_volt_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId,
-		u.TransVolt.Id, u.Startdate, u.Enddate).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_volt_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId, u.TransVolt.Id, u.Startdate,
+		u.Enddate).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_trans_volt_upd: ", err)
@@ -109,7 +108,7 @@ func (est *ObjTransVoltStorage) Del(ctx context.Context, d []int) ([]int, error)
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_volt_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_volt_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -125,11 +124,11 @@ func (est *ObjTransVoltStorage) GetOne(ctx context.Context, i int) (models.ObjTr
 	out_arr := []models.ObjTransVolt{}
 	g := models.ObjTransVolt{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_volt_getbyid($1);", i).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransVolt.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransVolt.TransVoltName, &g.TransVolt.TransType.Id,
-		&g.TransVolt.CheckDate, &g.TransVolt.NextCheckDate, &g.TransVolt.ProdDate, &g.TransVolt.Serial1, &g.TransVolt.Serial2,
-		&g.TransVolt.Serial3, &g.TransVolt.TransType.TransTypeName, &g.TransVolt.TransType.Ratio, &g.TransVolt.TransType.Class,
-		&g.TransVolt.TransType.MaxCurr, &g.TransVolt.TransType.NomCurr)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_volt_getbyid($1);", i).Scan(&g.Id, &g.ObjId, &g.ObjTypeId, &g.TransVolt.Id,
+		&g.Startdate, &g.Enddate, &g.ObjName, &g.TransVolt.TransVoltName, &g.TransVolt.TransType.Id, &g.TransVolt.CheckDate,
+		&g.TransVolt.NextCheckDate, &g.TransVolt.ProdDate, &g.TransVolt.Serial1, &g.TransVolt.Serial2, &g.TransVolt.Serial3,
+		&g.TransVolt.TransType.TransTypeName, &g.TransVolt.TransType.Ratio, &g.TransVolt.TransType.Class, &g.TransVolt.TransType.MaxCurr,
+		&g.TransVolt.TransType.NomCurr)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute func_obj_trans_volt_getbyid: ", err)
@@ -148,7 +147,7 @@ func (est *ObjTransVoltStorage) GetObj(ctx context.Context, gs1, gs2 string) (mo
 	out_arr := []models.ObjTransVolt{}
 	g := models.ObjTransVolt{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_volt_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_volt_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId,
 		&g.ObjTypeId, &g.TransVolt.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransVolt.TransVoltName, &g.TransVolt.TransType.Id,
 		&g.TransVolt.CheckDate, &g.TransVolt.NextCheckDate, &g.TransVolt.ProdDate, &g.TransVolt.Serial1, &g.TransVolt.Serial2,
 		&g.TransVolt.Serial3, &g.TransVolt.TransType.TransTypeName, &g.TransVolt.TransType.Ratio, &g.TransVolt.TransType.Class,

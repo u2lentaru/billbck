@@ -73,7 +73,7 @@ func (est *ConclusionStorage) Add(ctx context.Context, a models.Conclusion) (int
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_conclusions_add($1);", a.ConclusionName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_conclusions_add($1);", a.ConclusionName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_conclusions_add: ", err)
@@ -88,7 +88,7 @@ func (est *ConclusionStorage) Upd(ctx context.Context, u models.Conclusion) (int
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_conclusions_upd($1,$2);", u.Id, u.ConclusionName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_conclusions_upd($1,$2);", u.Id, u.ConclusionName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_conclusions_upd: ", err)
@@ -103,7 +103,7 @@ func (est *ConclusionStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_conclusions_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_conclusions_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *ConclusionStorage) GetOne(ctx context.Context, i int) (models.Conclus
 	out_arr := []models.Conclusion{}
 	g := models.Conclusion{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_conclusion_get($1);", i).Scan(&g.Id, &g.ConclusionName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_conclusion_get($1);", i).Scan(&g.Id, &g.ConclusionName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_conclusion_get: ", err)

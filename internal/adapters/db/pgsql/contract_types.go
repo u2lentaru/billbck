@@ -73,7 +73,7 @@ func (est *ContractTypeStorage) Add(ctx context.Context, a models.ContractType) 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_contract_types_add($1);", a.ContractTypeName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_contract_types_add($1);", a.ContractTypeName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_contract_types_add: ", err)
@@ -88,7 +88,7 @@ func (est *ContractTypeStorage) Upd(ctx context.Context, u models.ContractType) 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_contract_types_upd($1,$2);", u.Id, u.ContractTypeName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_contract_types_upd($1,$2);", u.Id, u.ContractTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_contract_types_upd: ", err)
@@ -103,7 +103,7 @@ func (est *ContractTypeStorage) Del(ctx context.Context, d []int) ([]int, error)
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_contract_types_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_contract_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *ContractTypeStorage) GetOne(ctx context.Context, i int) (models.Contr
 	out_arr := []models.ContractType{}
 	g := models.ContractType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_contract_type_get($1);", i).Scan(&g.Id, &g.ContractTypeName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_contract_type_get($1);", i).Scan(&g.Id, &g.ContractTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_contract_type_get: ", err)

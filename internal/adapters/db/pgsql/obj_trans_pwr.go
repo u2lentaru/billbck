@@ -76,8 +76,7 @@ func (est *ObjTransPwrStorage) Add(ctx context.Context, a models.ObjTransPwr) (i
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_pwr_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId,
-		a.TransPwr.Id, a.Startdate).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_pwr_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId, a.TransPwr.Id, a.Startdate).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_trans_pwr_add: ", err)
@@ -92,8 +91,8 @@ func (est *ObjTransPwrStorage) Upd(ctx context.Context, u models.ObjTransPwr) (i
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_pwr_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId,
-		u.TransPwr.Id, u.Startdate, u.Enddate).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_pwr_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId, u.TransPwr.Id, u.Startdate,
+		u.Enddate).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_trans_pwr_upd: ", err)
@@ -108,7 +107,7 @@ func (est *ObjTransPwrStorage) Del(ctx context.Context, d []int) ([]int, error) 
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_pwr_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_pwr_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -124,10 +123,9 @@ func (est *ObjTransPwrStorage) GetOne(ctx context.Context, i int) (models.ObjTra
 	out_arr := []models.ObjTransPwr{}
 	g := models.ObjTransPwr{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_pwr_getbyid($1);", i).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransPwr.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransPwr.TransPwrName, &g.TransPwr.TransPwrType.Id,
-		&g.TransPwr.TransPwrType.TransPwrTypeName, &g.TransPwr.TransPwrType.ShortCircuitPower, &g.TransPwr.TransPwrType.IdlingLossPower,
-		&g.TransPwr.TransPwrType.NominalPower)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_pwr_getbyid($1);", i).Scan(&g.Id, &g.ObjId, &g.ObjTypeId, &g.TransPwr.Id,
+		&g.Startdate, &g.Enddate, &g.ObjName, &g.TransPwr.TransPwrName, &g.TransPwr.TransPwrType.Id, &g.TransPwr.TransPwrType.TransPwrTypeName,
+		&g.TransPwr.TransPwrType.ShortCircuitPower, &g.TransPwr.TransPwrType.IdlingLossPower, &g.TransPwr.TransPwrType.NominalPower)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute func_obj_trans_pwr_getbyid: ", err)
@@ -146,10 +144,9 @@ func (est *ObjTransPwrStorage) GetObj(ctx context.Context, gs1, gs2 string) (mod
 	out_arr := []models.ObjTransPwr{}
 	g := models.ObjTransPwr{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_pwr_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransPwr.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransPwr.TransPwrName, &g.TransPwr.TransPwrType.Id,
-		&g.TransPwr.TransPwrType.TransPwrTypeName, &g.TransPwr.TransPwrType.ShortCircuitPower, &g.TransPwr.TransPwrType.IdlingLossPower,
-		&g.TransPwr.TransPwrType.NominalPower)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_pwr_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId, &g.ObjTypeId, &g.TransPwr.Id,
+		&g.Startdate, &g.Enddate, &g.ObjName, &g.TransPwr.TransPwrName, &g.TransPwr.TransPwrType.Id, &g.TransPwr.TransPwrType.TransPwrTypeName,
+		&g.TransPwr.TransPwrType.ShortCircuitPower, &g.TransPwr.TransPwrType.IdlingLossPower, &g.TransPwr.TransPwrType.NominalPower)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute func_obj_trans_pwr_getbyobj: ", err)

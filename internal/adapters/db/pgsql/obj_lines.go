@@ -74,8 +74,8 @@ func (est *ObjLineStorage) Add(ctx context.Context, a models.ObjLine) (int, erro
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_lines_add($1,$2,$3,$4,$5);", a.ObjId, a.ObjTypeId,
-		a.CableResistance.Id, a.LineLength, a.Startdate).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_lines_add($1,$2,$3,$4,$5);", a.ObjId, a.ObjTypeId, a.CableResistance.Id, a.LineLength,
+		a.Startdate).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_lines_add: ", err)
@@ -90,8 +90,8 @@ func (est *ObjLineStorage) Upd(ctx context.Context, u models.ObjLine) (int, erro
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_lines_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.ObjId, u.ObjTypeId,
-		u.CableResistance.Id, u.LineLength, u.Startdate, u.Enddate).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_lines_upd($1,$2,$3,$4,$5,$6,$7);", u.Id, u.ObjId, u.ObjTypeId, u.CableResistance.Id,
+		u.LineLength, u.Startdate, u.Enddate).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_lines_upd: ", err)
@@ -106,7 +106,7 @@ func (est *ObjLineStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_obj_lines_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_obj_lines_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -122,9 +122,9 @@ func (est *ObjLineStorage) GetOne(ctx context.Context, i int) (models.ObjLine_co
 	out_arr := []models.ObjLine{}
 	g := models.ObjLine{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_line_get($1);", i).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.CableResistance.Id, &g.LineLength, &g.Startdate, &g.Enddate, &g.ObjName, &g.CableResistance.CableResistanceName,
-		&g.CableResistance.Resistance, &g.CableResistance.MaterialType)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_line_get($1);", i).Scan(&g.Id, &g.ObjId, &g.ObjTypeId, &g.CableResistance.Id,
+		&g.LineLength, &g.Startdate, &g.Enddate, &g.ObjName, &g.CableResistance.CableResistanceName, &g.CableResistance.Resistance,
+		&g.CableResistance.MaterialType)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute func_obj_line_get: ", err)

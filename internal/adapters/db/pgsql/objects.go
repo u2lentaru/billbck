@@ -133,15 +133,14 @@ func (est *ObjectStorage) GetOne(ctx context.Context, i int) (models.Object_coun
 	out_arr := []models.Object{}
 	g := models.Object{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_object_get($1);", i).Scan(&g.Id, &g.ObjectName, &g.House.Id,
-		&g.FlatNumber, &g.ObjType.Id, &g.RegQty, &g.Uzo.Id, &g.TariffGroup.Id, &g.Notes, &g.CalculationType.Id, &g.ObjStatus.Id, &g.MffId,
-		&g.House.BuildingType.Id, &g.House.Street.Id, &g.House.HouseNumber, &g.House.BuildingNumber, &g.House.RP.Id, &g.House.Area.Id,
-		&g.House.Ksk.Id, &g.House.Sector.Id, &g.House.Connector.Id, &g.House.InputType.Id, &g.House.Reliability.Id, &g.House.Voltage.Id,
-		&g.House.BuildingType.BuildingTypeName, &g.House.Street.StreetName, &g.House.Street.Created, &g.House.Street.City.CityName,
-		&g.House.RP.RpName, &g.House.Area.AreaName, &g.House.Area.AreaNumber, &g.House.Ksk.KskName, &g.House.Sector.SectorName,
-		&g.House.Connector.ConnectorName, &g.House.InputType.InputTypeName, &g.House.Reliability.ReliabilityName, &g.House.Voltage.VoltageName,
-		&g.House.Voltage.VoltageValue, &g.ObjType.ObjTypeName, &g.Uzo.UzoName, &g.Uzo.UzoValue, &g.TariffGroup.TariffGroupName,
-		&g.CalculationType.CalculationTypeName, &g.ObjStatus.ObjStatusName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_object_get($1);", i).Scan(&g.Id, &g.ObjectName, &g.House.Id, &g.FlatNumber, &g.ObjType.Id,
+		&g.RegQty, &g.Uzo.Id, &g.TariffGroup.Id, &g.Notes, &g.CalculationType.Id, &g.ObjStatus.Id, &g.MffId, &g.House.BuildingType.Id,
+		&g.House.Street.Id, &g.House.HouseNumber, &g.House.BuildingNumber, &g.House.RP.Id, &g.House.Area.Id, &g.House.Ksk.Id, &g.House.Sector.Id,
+		&g.House.Connector.Id, &g.House.InputType.Id, &g.House.Reliability.Id, &g.House.Voltage.Id, &g.House.BuildingType.BuildingTypeName,
+		&g.House.Street.StreetName, &g.House.Street.Created, &g.House.Street.City.CityName, &g.House.RP.RpName, &g.House.Area.AreaName,
+		&g.House.Area.AreaNumber, &g.House.Ksk.KskName, &g.House.Sector.SectorName, &g.House.Connector.ConnectorName, &g.House.InputType.InputTypeName,
+		&g.House.Reliability.ReliabilityName, &g.House.Voltage.VoltageName, &g.House.Voltage.VoltageValue, &g.ObjType.ObjTypeName, &g.Uzo.UzoName,
+		&g.Uzo.UzoValue, &g.TariffGroup.TariffGroupName, &g.CalculationType.CalculationTypeName, &g.ObjStatus.ObjStatusName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_object_get: ", err)
@@ -200,8 +199,8 @@ func (est *ObjectStorage) GetMff(ctx context.Context, i int) (models.Object_coun
 	g := models.Object{}
 	out_arr := []models.Object{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_objects_mff($1);", i).Scan(&g.Id, &g.ObjectName, &g.House.Id,
-		&g.FlatNumber, &g.ObjType.Id, &g.RegQty, &g.Uzo.Id, &g.TariffGroup.Id, &g.Notes, &g.CalculationType.Id, &g.ObjStatus.Id, &g.MffId)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_objects_mff($1);", i).Scan(&g.Id, &g.ObjectName, &g.House.Id, &g.FlatNumber, &g.ObjType.Id,
+		&g.RegQty, &g.Uzo.Id, &g.TariffGroup.Id, &g.Notes, &g.CalculationType.Id, &g.ObjStatus.Id, &g.MffId)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_objects_mff: ", err)

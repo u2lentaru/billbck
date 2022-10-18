@@ -73,7 +73,7 @@ func (est *EquipmentTypeStorage) Add(ctx context.Context, a models.EquipmentType
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_types_add($1,$2);", a.EquipmentTypeName,
+	err := dbpool.QueryRow(ctx, "SELECT func_equipment_types_add($1,$2);", a.EquipmentTypeName,
 		a.EquipmentTypePower).Scan(&ai)
 
 	if err != nil {
@@ -89,7 +89,7 @@ func (est *EquipmentTypeStorage) Upd(ctx context.Context, u models.EquipmentType
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_types_upd($1,$2,$3);", u.Id, u.EquipmentTypeName,
+	err := dbpool.QueryRow(ctx, "SELECT func_equipment_types_upd($1,$2,$3);", u.Id, u.EquipmentTypeName,
 		u.EquipmentTypePower).Scan(&ui)
 
 	if err != nil {
@@ -121,7 +121,7 @@ func (est *EquipmentTypeStorage) GetOne(ctx context.Context, i int) (models.Equi
 	out_arr := []models.EquipmentType{}
 	g := models.EquipmentType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_equipment_type_get($1);", i).Scan(&g.Id, &g.EquipmentTypeName,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_equipment_type_get($1);", i).Scan(&g.Id, &g.EquipmentTypeName,
 		&g.EquipmentTypePower)
 
 	if err != nil && err != pgx.ErrNoRows {

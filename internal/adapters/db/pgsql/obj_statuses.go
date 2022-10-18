@@ -73,7 +73,7 @@ func (est *ObjStatusStorage) Add(ctx context.Context, a models.ObjStatus) (int, 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_statuses_add($1);", a.ObjStatusName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_statuses_add($1);", a.ObjStatusName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_statuses_add: ", err)
@@ -88,7 +88,7 @@ func (est *ObjStatusStorage) Upd(ctx context.Context, u models.ObjStatus) (int, 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_statuses_upd($1,$2);", u.Id, u.ObjStatusName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_statuses_upd($1,$2);", u.Id, u.ObjStatusName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_statuses_upd: ", err)
@@ -103,7 +103,7 @@ func (est *ObjStatusStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_obj_statuses_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_obj_statuses_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *ObjStatusStorage) GetOne(ctx context.Context, i int) (models.ObjStatu
 	out_arr := []models.ObjStatus{}
 	g := models.ObjStatus{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_status_get($1);", i).Scan(&g.Id, &g.ObjStatusName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_status_get($1);", i).Scan(&g.Id, &g.ObjStatusName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute func_obj_status_get: ", err)

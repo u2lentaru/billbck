@@ -73,8 +73,7 @@ func (est *CableResistanceStorage) Add(ctx context.Context, a models.CableResist
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_cable_resistances_add($1,$2,$3);", a.CableResistanceName,
-		a.Resistance, a.MaterialType).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_cable_resistances_add($1,$2,$3);", a.CableResistanceName, a.Resistance, a.MaterialType).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_cable_resistances_add: ", err)
@@ -89,8 +88,8 @@ func (est *CableResistanceStorage) Upd(ctx context.Context, u models.CableResist
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_cable_resistances_upd($1,$2,$3,$4);", u.Id, u.CableResistanceName,
-		u.Resistance, u.MaterialType).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_cable_resistances_upd($1,$2,$3,$4);", u.Id, u.CableResistanceName, u.Resistance,
+		u.MaterialType).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_cable_resistances_upd: ", err)
@@ -105,7 +104,7 @@ func (est *CableResistanceStorage) Del(ctx context.Context, d []int) ([]int, err
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_cable_resistances_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_cable_resistances_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -121,8 +120,8 @@ func (est *CableResistanceStorage) GetOne(ctx context.Context, i int) (models.Ca
 	out_arr := []models.CableResistance{}
 	g := models.CableResistance{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_cable_resistance_get($1);", i).Scan(&g.Id,
-		&g.CableResistanceName, &g.Resistance, &g.MaterialType)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_cable_resistance_get($1);", i).Scan(&g.Id, &g.CableResistanceName, &g.Resistance,
+		&g.MaterialType)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_cable_resistance_get: ", err)

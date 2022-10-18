@@ -73,7 +73,7 @@ func (est *BuildingTypeStorage) Add(ctx context.Context, a models.BuildingType) 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_building_types_add($1);", a.BuildingTypeName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_building_types_add($1);", a.BuildingTypeName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_building_types_add: ", err)
@@ -88,7 +88,7 @@ func (est *BuildingTypeStorage) Upd(ctx context.Context, u models.BuildingType) 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_building_types_upd($1,$2);", u.Id, u.BuildingTypeName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_building_types_upd($1,$2);", u.Id, u.BuildingTypeName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_building_types_upd: ", err)
@@ -103,7 +103,7 @@ func (est *BuildingTypeStorage) Del(ctx context.Context, d []int) ([]int, error)
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_building_types_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_building_types_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *BuildingTypeStorage) GetOne(ctx context.Context, i int) (models.Build
 	out_arr := []models.BuildingType{}
 	g := models.BuildingType{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_building_type_get($1);", i).Scan(&g.Id, &g.BuildingTypeName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_building_type_get($1);", i).Scan(&g.Id, &g.BuildingTypeName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_building_type_get: ", err)

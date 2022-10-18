@@ -73,7 +73,7 @@ func (est *CustomerGroupStorage) Add(ctx context.Context, a models.CustomerGroup
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_customer_groups_add($1);", a.CustomerGroupName).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_customer_groups_add($1);", a.CustomerGroupName).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_customer_groups_add: ", err)
@@ -88,7 +88,7 @@ func (est *CustomerGroupStorage) Upd(ctx context.Context, u models.CustomerGroup
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_customer_groups_upd($1,$2);", u.Id, u.CustomerGroupName).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_customer_groups_upd($1,$2);", u.Id, u.CustomerGroupName).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_customer_groups_upd: ", err)
@@ -103,7 +103,7 @@ func (est *CustomerGroupStorage) Del(ctx context.Context, d []int) ([]int, error
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_customer_groups_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_customer_groups_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -119,7 +119,7 @@ func (est *CustomerGroupStorage) GetOne(ctx context.Context, i int) (models.Cust
 	out_arr := []models.CustomerGroup{}
 	g := models.CustomerGroup{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_customer_group_get($1);", i).Scan(&g.Id, &g.CustomerGroupName)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_customer_group_get($1);", i).Scan(&g.Id, &g.CustomerGroupName)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute from func_customer_group_get: ", err)

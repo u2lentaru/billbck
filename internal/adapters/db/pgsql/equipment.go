@@ -75,7 +75,7 @@ func (est *EquipmentStorage) Add(ctx context.Context, a models.Equipment) (int, 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_add($1,$2,$3,$4);", a.EquipmentType.Id, a.Object.Id,
+	err := dbpool.QueryRow(ctx, "SELECT func_equipment_add($1,$2,$3,$4);", a.EquipmentType.Id, a.Object.Id,
 		a.Qty, a.WorkingHours).Scan(&ai)
 
 	if err != nil {
@@ -91,7 +91,7 @@ func (est *EquipmentStorage) Upd(ctx context.Context, u models.Equipment) (int, 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_upd($1,$2,$3,$4,$5);", u.Id, u.EquipmentType.Id, u.Object.Id,
+	err := dbpool.QueryRow(ctx, "SELECT func_equipment_upd($1,$2,$3,$4,$5);", u.Id, u.EquipmentType.Id, u.Object.Id,
 		u.Qty, u.WorkingHours).Scan(&ui)
 
 	if err != nil {
@@ -107,7 +107,7 @@ func (est *EquipmentStorage) Del(ctx context.Context, d []int) ([]int, error) {
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_equipment_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -123,7 +123,7 @@ func (est *EquipmentStorage) GetOne(ctx context.Context, i int) (models.Equipmen
 	out_arr := []models.Equipment{}
 	g := models.Equipment{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_equipment_getbyid($1);", i).Scan(&g.Id, &g.EquipmentType.Id, &g.Object.Id,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_equipment_getbyid($1);", i).Scan(&g.Id, &g.EquipmentType.Id, &g.Object.Id,
 		&g.Qty, &g.WorkingHours, &g.EquipmentType.EquipmentTypeName, &g.EquipmentType.EquipmentTypePower, &g.Object.ObjectName)
 
 	if err != nil && err != pgx.ErrNoRows {
@@ -148,7 +148,7 @@ func (est *EquipmentStorage) AddList(ctx context.Context, al models.Equipment_co
 	for _, a := range al.Values {
 
 		if first_value {
-			err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_delbyobj($1);", a.Object.Id).Scan(&i)
+			err := dbpool.QueryRow(ctx, "SELECT func_equipment_delbyobj($1);", a.Object.Id).Scan(&i)
 
 			if err != nil {
 				log.Println("Failed execute func_equipment_delbyobj: ", err)
@@ -158,7 +158,7 @@ func (est *EquipmentStorage) AddList(ctx context.Context, al models.Equipment_co
 			i = 0
 		}
 
-		err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_add($1,$2,$3,$4);", a.EquipmentType.Id, a.Object.Id,
+		err := dbpool.QueryRow(ctx, "SELECT func_equipment_add($1,$2,$3,$4);", a.EquipmentType.Id, a.Object.Id,
 			a.Qty, a.WorkingHours).Scan(&i)
 		res = append(res, i)
 
@@ -175,7 +175,7 @@ func (est *EquipmentStorage) DelObj(ctx context.Context, d []int) ([]int, error)
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_equipment_delbyobj($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_equipment_delbyobj($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {

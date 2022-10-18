@@ -77,8 +77,7 @@ func (est *ObjTransCurrStorage) Add(ctx context.Context, a models.ObjTransCurr) 
 	dbpool := pgclient.WDB
 	ai := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_curr_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId,
-		a.TransCurr.Id, a.Startdate).Scan(&ai)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_curr_add($1,$2,$3,$4);", a.ObjId, a.ObjTypeId, a.TransCurr.Id, a.Startdate).Scan(&ai)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_trans_curr_add: ", err)
@@ -93,8 +92,8 @@ func (est *ObjTransCurrStorage) Upd(ctx context.Context, u models.ObjTransCurr) 
 	dbpool := pgclient.WDB
 	ui := 0
 
-	err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_curr_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId,
-		u.TransCurr.Id, u.Startdate, u.Enddate).Scan(&ui)
+	err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_curr_upd($1,$2,$3,$4,$5,$6);", u.Id, u.ObjId, u.ObjTypeId, u.TransCurr.Id,
+		u.Startdate, u.Enddate).Scan(&ui)
 
 	if err != nil {
 		log.Println("Failed execute func_obj_trans_curr_upd: ", err)
@@ -109,7 +108,7 @@ func (est *ObjTransCurrStorage) Del(ctx context.Context, d []int) ([]int, error)
 	res := []int{}
 	i := 0
 	for _, id := range d {
-		err := dbpool.QueryRow(context.Background(), "SELECT func_obj_trans_curr_del($1);", id).Scan(&i)
+		err := dbpool.QueryRow(ctx, "SELECT func_obj_trans_curr_del($1);", id).Scan(&i)
 		res = append(res, i)
 
 		if err != nil {
@@ -125,11 +124,11 @@ func (est *ObjTransCurrStorage) GetOne(ctx context.Context, i int) (models.ObjTr
 	out_arr := []models.ObjTransCurr{}
 	g := models.ObjTransCurr{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_curr_getbyid($1);", i).Scan(&g.Id, &g.ObjId,
-		&g.ObjTypeId, &g.TransCurr.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransCurr.TransCurrName, &g.TransCurr.TransType.Id,
-		&g.TransCurr.CheckDate, &g.TransCurr.NextCheckDate, &g.TransCurr.ProdDate, &g.TransCurr.Serial1, &g.TransCurr.Serial2,
-		&g.TransCurr.Serial3, &g.TransCurr.TransType.TransTypeName, &g.TransCurr.TransType.Ratio, &g.TransCurr.TransType.Class,
-		&g.TransCurr.TransType.MaxCurr, &g.TransCurr.TransType.NomCurr)
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_curr_getbyid($1);", i).Scan(&g.Id, &g.ObjId, &g.ObjTypeId, &g.TransCurr.Id,
+		&g.Startdate, &g.Enddate, &g.ObjName, &g.TransCurr.TransCurrName, &g.TransCurr.TransType.Id, &g.TransCurr.CheckDate,
+		&g.TransCurr.NextCheckDate, &g.TransCurr.ProdDate, &g.TransCurr.Serial1, &g.TransCurr.Serial2, &g.TransCurr.Serial3,
+		&g.TransCurr.TransType.TransTypeName, &g.TransCurr.TransType.Ratio, &g.TransCurr.TransType.Class, &g.TransCurr.TransType.MaxCurr,
+		&g.TransCurr.TransType.NomCurr)
 
 	if err != nil && err != pgx.ErrNoRows {
 		log.Println("Failed execute func_obj_trans_curr_getbyid: ", err)
@@ -148,7 +147,7 @@ func (est *ObjTransCurrStorage) GetObj(ctx context.Context, gs1, gs2 string) (mo
 	out_arr := []models.ObjTransCurr{}
 	g := models.ObjTransCurr{}
 
-	err := dbpool.QueryRow(context.Background(), "SELECT * from func_obj_trans_curr_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId,
+	err := dbpool.QueryRow(ctx, "SELECT * from func_obj_trans_curr_getbyobj($1,$2);", gs1, gs2).Scan(&g.Id, &g.ObjId,
 		&g.ObjTypeId, &g.TransCurr.Id, &g.Startdate, &g.Enddate, &g.ObjName, &g.TransCurr.TransCurrName, &g.TransCurr.TransType.Id,
 		&g.TransCurr.CheckDate, &g.TransCurr.NextCheckDate, &g.TransCurr.ProdDate, &g.TransCurr.Serial1, &g.TransCurr.Serial2,
 		&g.TransCurr.Serial3, &g.TransCurr.TransType.TransTypeName, &g.TransCurr.TransType.Ratio, &g.TransCurr.TransType.Class,

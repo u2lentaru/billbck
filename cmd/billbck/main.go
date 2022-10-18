@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/u2lentaru/billbck/internal/routes"
 	"github.com/u2lentaru/billbck/internal/utils"
 	"github.com/u2lentaru/billbck/pkg/pgclient"
@@ -19,11 +18,6 @@ import (
 	_ "github.com/u2lentaru/billbck/docs"
 	"github.com/urfave/negroni"
 )
-
-//PG - server struct
-type PG struct {
-	dbpool *pgxpool.Pool
-}
 
 // @title Billing Backend Server
 // @version 1.0
@@ -42,28 +36,23 @@ type PG struct {
 // @name Authorization
 // @description Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwicGFzc3dvcmQiOiJ1c2VyMSJ9.-qgJjYhayo7CT1YD1xLB36Xytf1HprRBeLbi5tZcOPE
 func main() {
-	ctx := context.Background()
 	url := "postgres://postgres:postgres@" + os.Getenv("DB_HOST") + ":5432/postgres"
 	// url := "postgres://postgres:postgres@" + os.Getenv("DB_HOST") + ":5432/billing"
 
-	dbpool, err := pgclient.GetDb(ctx, url)
+	dbpool, err := pgclient.GetDb(context.Background(), url)
 	defer dbpool.Close()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// apg := api.APG{Dbpool: dbpool}
 	route := mux.NewRouter()
 
 	route.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler).Methods("GET", "OPTIONS")
 
-	// routes.AddRoutes(route, &apg)
 	routes.AddRoutes(route)
 
 	n := negroni.New(negroni.HandlerFunc(utils.MWSetupResponse))
-
-	log.Println("Server is listening at http://localhost:8080/")
 
 	//go run . noauth - run without utils.AuthValidate middleware
 	//docker run ... -e NOAUTH="TRUE" - run without utils.AuthValidate middleware
@@ -97,7 +86,7 @@ func main() {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
-	log.Print("Server Started")
+	log.Print("Server Started at http://localhost:8080/")
 
 	<-done
 	log.Print("Server Stopped")
